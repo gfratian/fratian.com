@@ -11,18 +11,18 @@ description: Software projects and long-form write-ups in progress.
   </header>
 
   <ul class="cards">
-    <li class="card card--soon">
+    <li class="card">
       <div class="card__body">
-        <span class="tag tag--soon">Coming soon</span>
-        <h2><a href="{{ '/moon/' | relative_url }}">The Moon Landing</a></h2>
-        <p>Notes and arguments on Apollo.</p>
+        <span class="tag">Space · {{ site.moon.size }} post{% if site.moon.size != 1 %}s{% endif %}</span>
+        <h2><a href="{{ '/moon/' | relative_url }}">Low Cost Moon Landing</a></h2>
+        <p>Landing on the Moon from lunar orbit using a rocket jetpack.</p>
       </div>
     </li>
     <li class="card card--soon">
       <div class="card__body">
-        <span class="tag tag--soon">Coming soon</span>
-        <h2><a href="{{ '/legaleagle/' | relative_url }}">LegalEagle</a></h2>
-        <p>A software project in progress.</p>
+        <span class="tag tag--soon">In the works</span>
+        <h2><a href="{{ '/ai/' | relative_url }}">AI Projects</a></h2>
+        <p>Write-ups to follow.</p>
       </div>
     </li>
   </ul>

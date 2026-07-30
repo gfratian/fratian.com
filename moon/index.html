@@ -1,0 +1,33 @@
+---
+layout: default
+title: Low Cost Moon Landing
+permalink: /moon/
+description: >-
+  A proposal for landing on the Moon from an orbiting commercial spacecraft
+  using jetpack technology, at a fraction of the cost of a dedicated lander.
+---
+{% assign posts = site.moon | sort: 'date' | reverse %}
+
+<div class="wrap section">
+  <header class="prose">
+    <p class="meta">Space · since 2019</p>
+    <h1 class="page-title">Low Cost Moon Landing</h1>
+    <p class="lede">
+      Getting a person onto the lunar surface without building a lunar module —
+      and what that would actually take.
+    </p>
+  </header>
+
+  <ol class="toc">
+    {% for p in posts %}
+    <li>
+      <a href="{{ p.url | relative_url }}">
+        <span>
+          <span class="t">{{ p.title }}</span>
+          <span class="d">{{ p.date | date: "%B %-d, %Y" }}{% if p.subtitle %} · {{ p.subtitle }}{% endif %}</span>
+        </span>
+      </a>
+    </li>
+    {% endfor %}
+  </ol>
+</div>

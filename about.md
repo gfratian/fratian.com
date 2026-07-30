@@ -14,8 +14,9 @@ the privilege.
 
 The travel writing came first. In 2024 I drove a 2003 Audi S8 called Rocinante
 from San Diego to Newfoundland and back, and wrote it up as it happened. That's
-[Roci and I](/travel/). More is on the way — a longer piece on the Apollo
-landings, and a software project called LegalEagle.
+[Roci and I](/travel/). There's also [a 2019 proposal](/moon/) for getting onto
+the Moon rather more cheaply than NASA managed, and write-ups on
+[AI projects](/ai/) are in the works.
 
 <!-- To publish an email address here, uncomment the line below. Consider that
      addresses posted publicly do attract spam; an alternative is a contact

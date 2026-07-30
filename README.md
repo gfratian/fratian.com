@@ -44,14 +44,33 @@ using HTML tags.
 in. Keep them under about 2 MB each; anything from a phone should be resized
 first.
 
+## Adding a Moon landing post
+
+Same idea, but the folder is `_moon` and the front matter is shorter:
+
+```
+---
+layout: post
+title: "Your title"
+subtitle: "One line under the title"
+date: "2026-08-01"
+permalink: /moon/your-title/
+---
+
+<p>Write here.</p>
+```
+
+The list on `/moon/` picks it up automatically, newest first.
+
 ## Starting a whole new blog
 
-Say you want the Moon landing pieces as their own section:
+Say you want the AI write-ups as their own section:
 
-1. Add `moon:` under `collections:` in `_config.yml`, copying how `chapters:`
-   is written.
-2. Create a `_moon` folder with one file per post.
-3. Edit `moon/index.md` to list them.
+1. Add `ai:` under `collections:` in `_config.yml`, copying how `moon:` is
+   written.
+2. Create an `_ai` folder with one file per post.
+3. Replace `ai/index.md` with a listing page — copy `moon/index.html` and
+   change `site.moon` to `site.ai`.
 
 The homepage card already exists and will start linking to real content.
 

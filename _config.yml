@@ -13,10 +13,15 @@ collections:
   chapters:
     output: true
     label: Roci and I
+  moon:
+    output: true
+    label: Low Cost Moon Landing
 
 defaults:
   - scope: { path: "", type: chapters }
     values: { layout: chapter }
+  - scope: { path: "", type: moon }
+    values: { layout: post }
   - scope: { path: "" }
     values: { layout: page }
 

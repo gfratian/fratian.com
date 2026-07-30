@@ -11,7 +11,7 @@ lang: en
 # Get a key by entering your address at https://web3forms.com — it's emailed
 # to you straight away, no account or password. Paste it below and the form
 # goes live. Leave it empty and the page shows a placeholder instead.
-contact_form_key: ""
+contact_form_key: "f1a691dc-93f5-4de7-87c3-ac67e392f000"
 
 # Each blog on the site is a collection. Add a new one by copying this
 # pattern, creating the matching _<name> folder, and adding a card to

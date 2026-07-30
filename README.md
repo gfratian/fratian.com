@@ -74,6 +74,48 @@ Say you want the AI write-ups as their own section:
 
 The homepage card already exists and will start linking to real content.
 
+## Adding an ordinary page
+
+A page is one file in a folder named after the address you want. To create
+`fratian.com/speaking/`, make a folder called `speaking` containing a file
+called `index.md`:
+
+```
+---
+title: Speaking
+permalink: /speaking/
+lede: One line under the heading.
+---
+
+Write here in plain Markdown.
+
+## A subheading
+
+- a list item
+- another
+
+A [link](https://example.com), and **bold** text.
+```
+
+That's the whole recipe. The three lines between the `---` markers are the
+only required part:
+
+| Line | What it does |
+|---|---|
+| `title:` | the heading, the browser tab, the name in search results |
+| `permalink:` | the address — always start and end with `/` |
+| `lede:` | optional grey line under the heading |
+
+Use `.md` for text-heavy pages and `.html` when you want full control of the
+markup (see `books/index.html` for a worked example with cards).
+
+**To add it to the menu**, edit `_layouts/default.html` and copy one of the
+existing `<a href=...>` lines in the `site-nav` block.
+
+**To add a tile on the front page**, copy one of the `<li class="card">` blocks
+in `index.html` and change the words. Add `card--soon` to the class and
+`tag--soon` to the tag if it's a placeholder.
+
 ## Editing the ordinary pages
 
 `index.html` is the front page, `about.md` is the about page, and

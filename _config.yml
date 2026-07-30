@@ -1,0 +1,40 @@
+title: George Fratian
+tagline: Travels, projects and other detours
+description: >-
+  Travel writing, side projects and assorted curiosities from George Fratian.
+url: https://fratian.com
+baseurl: ""
+lang: en
+
+# Each blog on the site is a collection. Add a new one by copying this
+# pattern, creating the matching _<name> folder, and adding a card to
+# index.html. Nothing else needs to change.
+collections:
+  chapters:
+    output: true
+    label: Roci and I
+
+defaults:
+  - scope: { path: "", type: chapters }
+    values: { layout: chapter }
+  - scope: { path: "" }
+    values: { layout: page }
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  smart_quotes: ["apos", "apos", "quot", "quot"]
+
+sass:
+  style: compressed
+
+exclude:
+  - tools
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor
+  - .jekyll-cache
+
+# GitHub Pages builds this automatically; no plugins beyond the built-ins.
+plugins: []

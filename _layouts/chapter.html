@@ -1,0 +1,46 @@
+---
+layout: default
+---
+<article class="wrap section prose">
+
+  <header>
+    <p class="meta">
+      Roci and I · Chapter {{ page.chapter }}{% if page.date %} · {{ page.date | date: "%B %-d, %Y" }}{% endif %}
+    </p>
+    <h1 class="page-title">{{ page.title }}</h1>
+  </header>
+
+  {{ content }}
+
+  <nav class="pager" aria-label="Chapters">
+    {% if page.prev %}
+      <a href="{{ page.prev | relative_url }}" rel="prev">
+        <span class="dir">← Previous</span>
+        <span class="t">{{ page.prev_title }}</span>
+      </a>
+    {% endif %}
+    {% if page.next %}
+      <a class="next" href="{{ page.next | relative_url }}" rel="next">
+        <span class="dir">Next →</span>
+        <span class="t">{{ page.next_title }}</span>
+      </a>
+    {% endif %}
+  </nav>
+
+  {% if page.comments and page.comments.size > 0 %}
+  <section class="comments" aria-label="Comments">
+    <h2>{{ page.comments.size }} response{% if page.comments.size != 1 %}s{% endif %}</h2>
+    <p>Preserved from the original blog. New comments aren’t open — email is on the <a href="{{ '/about/' | relative_url }}">about page</a>.</p>
+    {% for c in page.comments %}
+      <div class="comment" data-depth="{{ c.depth }}">
+        <div class="comment__head">
+          <span class="comment__who">{{ c.author }}</span>
+          <span class="comment__when">· {{ c.date }}</span>
+        </div>
+        {{ c.html }}
+      </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+</article>

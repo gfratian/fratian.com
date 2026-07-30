@@ -1,0 +1,56 @@
+---
+layout: default
+title: George Fratian
+description: Travel writing, side projects and assorted curiosities.
+---
+{% assign chapters = site.chapters | sort: 'chapter' %}
+{% assign first = chapters | first %}
+
+<div class="wrap section">
+
+  <header class="prose">
+    <h1 class="page-title">George Fratian</h1>
+    <p class="lede">{{ site.tagline }} — a home for the things I write and build.</p>
+  </header>
+
+  <ul class="cards">
+
+    <li class="card">
+      {% if first.cover %}<img class="card__img" src="{{ first.cover | relative_url }}" alt="" loading="lazy">{% endif %}
+      <div class="card__body">
+        <span class="tag">Travel · {{ chapters.size }} chapters</span>
+        <h2><a href="{{ '/travel/' | relative_url }}">Roci and I</a></h2>
+        <p>Driving a 2003 Audi S8 named Rocinante from San Diego across the U.S.
+           and Atlantic Canada — Quebec, Labrador, Newfoundland, Nova Scotia and
+           the French islands of St. Pierre and Miquelon.</p>
+      </div>
+    </li>
+
+    <li class="card card--soon">
+      <div class="card__body">
+        <span class="tag tag--soon">Coming soon</span>
+        <h2><a href="{{ '/moon/' | relative_url }}">The Moon Landing</a></h2>
+        <p>Notes and arguments on Apollo — what happened, how we know, and why
+           the record holds up.</p>
+      </div>
+    </li>
+
+    <li class="card card--soon">
+      <div class="card__body">
+        <span class="tag tag--soon">Coming soon</span>
+        <h2><a href="{{ '/legaleagle/' | relative_url }}">LegalEagle</a></h2>
+        <p>A software project in progress. Write-up to follow.</p>
+      </div>
+    </li>
+
+    <li class="card">
+      <div class="card__body">
+        <span class="tag">Garage</span>
+        <h2><a href="{{ '/rocinante-silver-2003-audi-s8/' | relative_url }}">Rocinante</a></h2>
+        <p>The car itself — upgrades, repairs and the running tally of what it
+           takes to keep a 2003 S8 on the road.</p>
+      </div>
+    </li>
+
+  </ul>
+</div>

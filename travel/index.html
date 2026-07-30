@@ -1,0 +1,46 @@
+---
+layout: default
+title: Roci and I
+permalink: /travel/
+description: >-
+  A road trip from San Diego across the United States and Atlantic Canada in a
+  2003 Audi S8 named Rocinante.
+---
+{% assign chapters = site.chapters | sort: 'chapter' %}
+{% assign first = chapters | first %}
+
+<div class="wrap section">
+
+  {% if first.cover %}
+  <div class="hero"><img src="{{ first.cover | relative_url }}" alt="Rocinante, a silver 2003 Audi S8"></div>
+  {% endif %}
+
+  <header class="prose">
+    <p class="meta">Travel blog · 2024</p>
+    <h1 class="page-title">Roci and I</h1>
+    <p class="lede">
+      In September 2024 I put Rocinante — a 2003 Audi S8, the car from
+      <em>Ronin</em> — on the road from San Diego and pointed her east. This is
+      the whole trip: across the States, up through Quebec and Labrador, out to
+      Newfoundland and St. Pierre, and the long way home.
+    </p>
+    <p>
+      Originally published on this site under WordPress and restored here in
+      full, including the photographs and the comments people left at the time.
+    </p>
+  </header>
+
+  <ol class="toc">
+    {% for c in chapters %}
+    <li>
+      <a href="{{ c.url | relative_url }}">
+        <span>
+          <span class="t">{{ c.title | remove: 'Roci and I – ' }}</span>
+          <span class="d">{{ c.date | date: "%B %-d, %Y" }}{% if c.comments.size > 0 %} · {{ c.comments.size }} comment{% if c.comments.size != 1 %}s{% endif %}{% endif %}</span>
+        </span>
+      </a>
+    </li>
+    {% endfor %}
+  </ol>
+
+</div>

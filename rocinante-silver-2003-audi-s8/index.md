@@ -1,19 +1,23 @@
 ---
 title: Rocinante — Silver 2003 Audi S8
 permalink: /rocinante-silver-2003-audi-s8/
-lede: The car, and what it took to keep it running.
-description: Upgrades, repairs and maintenance on a 2003 Audi S8.
+lede: The car that did the driving.
+description: About Rocinante, the 2003 Audi S8 from the Roci and I travel blog.
 ---
 
-The travel blog links here several times, so the address is kept alive — but
-the original page wasn't among the PDFs that were saved, so there's nothing to
-restore yet.
+Rocinante — Roci to her friends — is a 2003 Audi S8, the car from *Ronin*. She
+carried me from San Diego across the United States, up through Quebec and
+Labrador, out to Newfoundland and back. That trip is
+[Roci and I](/travel/).
+
+The original page here catalogued her upgrades and repairs. It didn't survive
+the move off WordPress: it wasn't among the pages saved as PDFs, and no web
+archive ever captured it. This address stays in place so the links from the
+travel chapters still lead somewhere.
 
 <div class="notice" markdown="1">
-**To fill this in:** replace everything below the `---` block in
-`rocinante-silver-2003-audi-s8/index.md` with the write-up. Photos go in
+**To write a new one:** replace everything below the `---` block in
+`rocinante-silver-2003-audi-s8/index.md`. Photos go in
 `assets/roci/rocinante/` and are referenced as
 `![caption](/assets/roci/rocinante/photo.jpg)`.
 </div>
-
-Back to [Roci and I](/travel/).

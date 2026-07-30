@@ -27,6 +27,7 @@
       <a href="{{ '/travel/' | relative_url }}"{% if page.url contains '/travel' or page.chapter %} aria-current="page"{% endif %}>Travel</a>
       <a href="{{ '/projects/' | relative_url }}"{% if page.url contains '/projects' %} aria-current="page"{% endif %}>Projects</a>
       <a href="{{ '/about/' | relative_url }}"{% if page.url contains '/about' %} aria-current="page"{% endif %}>About</a>
+      <a href="{{ '/contact/' | relative_url }}"{% if page.url contains '/contact' %} aria-current="page"{% endif %}>Contact</a>
     </nav>
   </div>
 </header>
@@ -38,7 +39,8 @@
 <footer class="site-foot">
   <div class="wrap">
     <span>© {{ site.time | date: '%Y' }} George Fratian</span>
-    <span><a href="{{ '/travel/' | relative_url }}">Travel</a> · <a href="{{ '/projects/' | relative_url }}">Projects</a> · <a href="{{ '/about/' | relative_url }}">About</a></span>
+    <span>Also worth a look: <a href="https://www.geofratian.com" target="_blank" rel="noopener">geofratian.com</a></span>
+    <span><a href="{{ '/travel/' | relative_url }}">Travel</a> · <a href="{{ '/projects/' | relative_url }}">Projects</a> · <a href="{{ '/about/' | relative_url }}">About</a> · <a href="{{ '/contact/' | relative_url }}">Contact</a></span>
   </div>
 </footer>
 </body>

@@ -6,6 +6,13 @@ url: https://fratian.com
 baseurl: ""
 lang: en
 
+# Contact form. Messages are relayed to your inbox by Web3Forms; your email
+# address is never written into the page, so scrapers can't harvest it.
+# Get a key by entering your address at https://web3forms.com — it's emailed
+# to you straight away, no account or password. Paste it below and the form
+# goes live. Leave it empty and the page shows a placeholder instead.
+contact_form_key: ""
+
 # Each blog on the site is a collection. Add a new one by copying this
 # pattern, creating the matching _<name> folder, and adding a card to
 # index.html. Nothing else needs to change.

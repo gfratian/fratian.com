@@ -1,0 +1,50 @@
+---
+layout: default
+title: Contact
+permalink: /contact/
+description: Send George Fratian a message.
+---
+<div class="wrap section">
+  <header class="prose">
+    <h1 class="page-title">Contact</h1>
+    <p class="lede">Questions, corrections, or just saying hello — this reaches
+       me directly.</p>
+  </header>
+
+  <div class="prose">
+  {% if site.contact_form_key and site.contact_form_key != "" %}
+    <form class="form" action="https://api.web3forms.com/submit" method="POST">
+      <input type="hidden" name="access_key" value="{{ site.contact_form_key }}">
+      <input type="hidden" name="subject" value="New message from fratian.com">
+      <input type="hidden" name="from_name" value="fratian.com">
+      <input type="hidden" name="redirect" value="{{ '/thanks/' | absolute_url }}">
+      <!-- honeypot: real people leave this empty, bots fill it in -->
+      <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off">
+
+      <label>
+        <span>Your name</span>
+        <input type="text" name="name" required autocomplete="name">
+      </label>
+
+      <label>
+        <span>Your email</span>
+        <input type="email" name="email" required autocomplete="email">
+      </label>
+
+      <label>
+        <span>Message</span>
+        <textarea name="message" rows="7" required></textarea>
+      </label>
+
+      <button type="submit">Send message</button>
+    </form>
+  {% else %}
+    <div class="notice" markdown="1">
+The contact form isn't switched on yet. To enable it, go to
+[web3forms.com](https://web3forms.com), enter the address you want messages
+sent to, and paste the key they email you into `contact_form_key` in
+`_config.yml`.
+    </div>
+  {% endif %}
+  </div>
+</div>

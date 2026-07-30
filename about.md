@@ -18,7 +18,7 @@ from San Diego to Newfoundland and back, and wrote it up as it happened. That's
 the Moon rather more cheaply than NASA managed, and write-ups on
 [AI projects](/ai/) are in the works.
 
-<!-- To publish an email address here, uncomment the line below. Consider that
-     addresses posted publicly do attract spam; an alternative is a contact
-     form service like Formspree, which keeps your address private. -->
-<!-- Reach me at [you@example.com](mailto:you@example.com). -->
+My son keeps his own corner of the web at
+[geofratian.com](https://www.geofratian.com).
+
+If you want to reach me, there's [a contact form](/contact/).

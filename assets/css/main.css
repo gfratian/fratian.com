@@ -205,6 +205,37 @@ article.prose { padding-bottom: 1rem; }
   font-family: var(--sans); font-size: .95rem; color: var(--ink-soft); background: var(--card);
 }
 
+/* ------------------------------------------------------------- forms */
+
+.form { display: flex; flex-direction: column; gap: 1.1rem; max-width: var(--measure); margin-top: 2rem; }
+.form label { display: flex; flex-direction: column; gap: .4rem; }
+.form label > span {
+  font-family: var(--sans); font-size: .8125rem; font-weight: 600;
+  letter-spacing: .03em; color: var(--ink-soft);
+}
+.form input[type="text"], .form input[type="email"], .form textarea {
+  font: inherit; font-size: 1rem; color: var(--ink); background: var(--card);
+  border: 1px solid var(--rule); border-radius: 10px; padding: .7rem .85rem;
+  width: 100%; resize: vertical;
+}
+.form input:focus, .form textarea:focus {
+  outline: none; border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+.form button {
+  align-self: flex-start; font-family: var(--sans); font-size: .95rem; font-weight: 600;
+  color: #fff; background: var(--accent); border: 0; border-radius: 10px;
+  padding: .7rem 1.4rem; cursor: pointer;
+}
+.form button:hover { background: var(--accent-ink); }
+.form button:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px; }
+/* honeypot — hidden from people, still reachable by bots */
+.form .hp { position: absolute; left: -9999px; opacity: 0; height: 0; width: 0; }
+
+@media (prefers-color-scheme: dark) {
+  .form button { color: #10231d; }
+}
+
 .skip { position: absolute; left: -9999px; }
 .skip:focus { left: 1rem; top: .5rem; padding: .5rem .75rem; background: var(--card); z-index: 50; border-radius: 8px; }
 

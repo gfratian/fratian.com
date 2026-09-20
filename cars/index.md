@@ -14,7 +14,7 @@ book. That story lives in [Roci and I](/travel/).)
 
 ## VW Golf TD — *the first one* (~1987, dark blue)
 
-<div class="car-photo" data-src="/assets/cars/golf.jpg">📷 photo to come — VW Golf TD (a representative example, not my actual car)</div>
+<div class="car-photo" data-src="/assets/cars/golf.jpg" data-caption="Representative photo — not my actual car">📷 photo to come — VW Golf TD (a representative example, not my actual car)</div>
 
 Everyone should learn on something this honest. Mine was dark blue, with those
 funny little triangular vent windows up front that you could crack open with a
@@ -24,7 +24,7 @@ mine, and nothing since has felt quite that big a deal.
 
 ## Honda Prelude — *the coupe years* (1992, black)
 
-<div class="car-photo" data-src="/assets/cars/prelude.jpg">📷 photo to come — Honda Prelude</div>
+<div class="car-photo" data-src="/assets/cars/prelude.jpg" data-caption="Representative photo — not my actual car">📷 photo to come — Honda Prelude</div>
 
 Low, wide, black, and far more serious about corners than a car that shape had
 any right to be. The Prelude was where I learned that a car could be a hobby and
@@ -32,7 +32,7 @@ not just an appliance.
 
 ## Mitsubishi Montero SR — *the go-anywhere phase* (1996)
 
-<div class="car-photo" data-src="/assets/cars/montero.jpg">📷 photo to come — Mitsubishi Montero SR</div>
+<div class="car-photo" data-src="/assets/cars/montero.jpg" data-caption="Representative photo — not my actual car">📷 photo to come — Mitsubishi Montero SR</div>
 
 Big, boxy, V6, and utterly unbothered by weather, terrain, or good sense. If the
 Prelude was about corners, the Montero was about not caring whether there was a

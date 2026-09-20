@@ -15,7 +15,7 @@ câștigat propria carte. Povestea aceea trăiește în [Roci and I](/travel/).)
 
 ## VW Golf TD — *prima* (~1987, albastru închis)
 
-<div class="car-photo" data-src="/assets/cars/golf.jpg">📷 poză în curând — VW Golf TD (un exemplu reprezentativ, nu mașina mea)</div>
+<div class="car-photo" data-src="/assets/cars/golf.jpg" data-caption="Fotografie reprezentativă — nu mașina mea">📷 poză în curând — VW Golf TD (un exemplu reprezentativ, nu mașina mea)</div>
 
 Toată lumea ar trebui să învețe pe ceva atât de cinstit. A mea era albastru
 închis, cu geamurile alea mici triunghiulare de aerisire în față, pe care le
@@ -26,7 +26,7 @@ lucru.
 
 ## Honda Prelude — *anii coupé-ului* (1992, negru)
 
-<div class="car-photo" data-src="/assets/cars/prelude.jpg">📷 poză în curând — Honda Prelude</div>
+<div class="car-photo" data-src="/assets/cars/prelude.jpg" data-caption="Fotografie reprezentativă — nu mașina mea">📷 poză în curând — Honda Prelude</div>
 
 Joasă, lată, neagră și mult mai serioasă în privința virajelor decât avea
 dreptul să fie o mașină de forma aia. Prelude-ul a fost locul unde am învățat că
@@ -34,7 +34,7 @@ o mașină poate fi o pasiune, nu doar un electrocasnic.
 
 ## Mitsubishi Montero SR — *faza mergi-oriunde* (1996)
 
-<div class="car-photo" data-src="/assets/cars/montero.jpg">📷 poză în curând — Mitsubishi Montero SR</div>
+<div class="car-photo" data-src="/assets/cars/montero.jpg" data-caption="Fotografie reprezentativă — nu mașina mea">📷 poză în curând — Mitsubishi Montero SR</div>
 
 Mare, colțuros, V6 și complet nepăsător față de vreme, teren sau bun-simț. Dacă
 Prelude-ul era despre viraje, Montero era despre a nu-ți păsa dacă există vreun

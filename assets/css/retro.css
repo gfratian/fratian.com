@@ -71,6 +71,7 @@ html[data-theme="retro"] .retro-hot{ display:inline; }
 html[data-theme="retro"] .car-photo{ border:2px inset #808080; background:#fff; color:#000080;
   font-family:"Courier New",monospace; border-radius:0; }
 html[data-theme="retro"] .car-img{ border:2px inset #808080; border-radius:0; }
+html[data-theme="retro"] .car-cap{ color:#000080; font-family:"Times New Roman",serif; }
 
 html[data-theme="retro"] .mt-notice{ background:#ffffcc; border:2px ridge #cc0;
   border-left:2px ridge #cc0; border-radius:0; color:#000;

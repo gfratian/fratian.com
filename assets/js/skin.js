@@ -51,7 +51,16 @@
         var img = document.createElement('img');
         img.src = src; img.className = 'car-img'; img.loading = 'lazy';
         img.alt = box.textContent.replace(/^📷[^—]*—\s*/, '').trim();
-        box.replaceWith(img);
+        var cap = box.getAttribute('data-caption');
+        if (cap) {
+          var fig = document.createElement('figure'); fig.className = 'car-fig';
+          var fc = document.createElement('figcaption'); fc.className = 'car-cap';
+          fc.textContent = cap;
+          fig.appendChild(img); fig.appendChild(fc);
+          box.replaceWith(fig);
+        } else {
+          box.replaceWith(img);
+        }
       };
       probe.src = src;
     });

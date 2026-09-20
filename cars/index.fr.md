@@ -16,7 +16,7 @@ son propre livre. Cette histoire vit dans [Roci and I](/travel/).)
 
 ## VW Golf TD — *la première* (~1987, bleu foncé)
 
-<div class="car-photo" data-src="/assets/cars/golf.jpg">📷 photo à venir — VW Golf TD (un exemple représentatif, pas ma vraie voiture)</div>
+<div class="car-photo" data-src="/assets/cars/golf.jpg" data-caption="Photo représentative — pas ma voiture">📷 photo à venir — VW Golf TD (un exemple représentatif, pas ma vraie voiture)</div>
 
 Tout le monde devrait apprendre sur quelque chose d'aussi honnête. La mienne était
 bleu foncé, avec ces drôles de petites vitres triangulaires d'aération à l'avant,
@@ -27,7 +27,7 @@ rien depuis n'a semblé aussi important.
 
 ## Honda Prelude — *les années coupé* (1992, noire)
 
-<div class="car-photo" data-src="/assets/cars/prelude.jpg">📷 photo à venir — Honda Prelude</div>
+<div class="car-photo" data-src="/assets/cars/prelude.jpg" data-caption="Photo représentative — pas ma voiture">📷 photo à venir — Honda Prelude</div>
 
 Basse, large, noire et bien plus sérieuse en virage qu'une voiture de cette forme
 n'avait le droit de l'être. La Prelude, c'est là que j'ai appris qu'une voiture
@@ -35,7 +35,7 @@ pouvait être une passion et pas seulement un appareil ménager.
 
 ## Mitsubishi Montero SR — *la phase va-partout* (1996)
 
-<div class="car-photo" data-src="/assets/cars/montero.jpg">📷 photo à venir — Mitsubishi Montero SR</div>
+<div class="car-photo" data-src="/assets/cars/montero.jpg" data-caption="Photo représentative — pas ma voiture">📷 photo à venir — Mitsubishi Montero SR</div>
 
 Grand, carré, V6 et totalement indifférent à la météo, au terrain ou au bon sens.
 Si la Prelude était une histoire de virages, le Montero était une histoire de se

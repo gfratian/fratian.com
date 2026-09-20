@@ -16,7 +16,7 @@ guadagnarsi un libro tutto suo. Quella storia vive in [Roci and I](/travel/).)
 
 ## VW Golf TD — *la prima* (~1987, blu scuro)
 
-<div class="car-photo" data-src="/assets/cars/golf.jpg">📷 foto in arrivo — VW Golf TD (un esempio rappresentativo, non la mia auto)</div>
+<div class="car-photo" data-src="/assets/cars/golf.jpg" data-caption="Foto rappresentativa — non la mia auto">📷 foto in arrivo — VW Golf TD (un esempio rappresentativo, non la mia auto)</div>
 
 Tutti dovrebbero imparare su qualcosa di così onesto. La mia era blu scuro, con
 quei buffi finestrini triangolari di aerazione davanti, che aprivi con il
@@ -26,7 +26,7 @@ andava, ed era mia, e da allora niente è più sembrato altrettanto importante.
 
 ## Honda Prelude — *gli anni della coupé* (1992, nera)
 
-<div class="car-photo" data-src="/assets/cars/prelude.jpg">📷 foto in arrivo — Honda Prelude</div>
+<div class="car-photo" data-src="/assets/cars/prelude.jpg" data-caption="Foto rappresentativa — non la mia auto">📷 foto in arrivo — Honda Prelude</div>
 
 Bassa, larga, nera e molto più seria sulle curve di quanto un'auto di quella
 forma avesse il diritto di essere. La Prelude è stata dove ho imparato che
@@ -34,7 +34,7 @@ un'auto può essere una passione e non solo un elettrodomestico.
 
 ## Mitsubishi Montero SR — *la fase vai-ovunque* (1996)
 
-<div class="car-photo" data-src="/assets/cars/montero.jpg">📷 foto in arrivo — Mitsubishi Montero SR</div>
+<div class="car-photo" data-src="/assets/cars/montero.jpg" data-caption="Foto rappresentativa — non la mia auto">📷 foto in arrivo — Mitsubishi Montero SR</div>
 
 Grande, squadrato, V6 e del tutto indifferente a meteo, terreno o buonsenso. Se
 la Prelude era una questione di curve, il Montero era una questione di non

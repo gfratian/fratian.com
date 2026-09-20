@@ -1,0 +1,1 @@
+# Drop car photos here, named to match cars/index.md data-src (golf.jpg, prelude.jpg, montero.jpg, odyssey.jpg, alfa-4c.jpg, bmw-30cs.jpg, bmw-535d.jpg, bmw-640i.jpg, bmw-840i.jpg). They auto-appear on the page.

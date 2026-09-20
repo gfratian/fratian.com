@@ -30,6 +30,20 @@
       lcd.textContent = ('00000000' + n).slice(-8);
     }
 
+    // Car-history photos: swap a placeholder for the real image once it exists
+    var slots = document.querySelectorAll('.car-photo[data-src]');
+    Array.prototype.forEach.call(slots, function (box) {
+      var src = box.getAttribute('data-src');
+      var probe = new Image();
+      probe.onload = function () {
+        var img = document.createElement('img');
+        img.src = src; img.className = 'car-img'; img.loading = 'lazy';
+        img.alt = box.textContent.replace(/^📷[^—]*—\s*/, '').trim();
+        box.replaceWith(img);
+      };
+      probe.src = src;
+    });
+
     // Click-to-play chiptune via WebAudio — never autoplay, no asset needed
     var midi = document.getElementById('midi-btn');
     if (midi) {

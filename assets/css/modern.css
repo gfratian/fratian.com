@@ -110,6 +110,12 @@ h1,h2,h3{ font-family:var(--sans); font-weight:800; letter-spacing:-.02em; line-
 .site-foot a{ color:var(--muted); }
 .site-foot a:hover{ color:var(--accent); }
 
+/* car-history photo slots */
+.car-photo{ border:1px dashed var(--border); color:var(--muted); background:var(--panel2);
+  border-radius:10px; padding:2.5rem 1rem; text-align:center; font:600 .85rem/1.5 var(--mono);
+  margin:1rem 0; }
+.car-img{ display:block; width:100%; border-radius:10px; margin:1rem 0; }
+
 /* retro-only ornaments never show in modern */
 .retro-only{ display:none; }
 .retro-hot{ display:none; }

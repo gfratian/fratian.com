@@ -1,0 +1,49 @@
+---
+layout: default
+title: Roci and I
+permalink: /travel/
+lang: fr
+description: >-
+  Un road-trip de San Diego à travers les États-Unis et le Canada atlantique,
+  au volant d'une Audi S8 de 2003 nommée Rocinante.
+---
+{% assign chapters = site.chapters | sort: 'chapter' %}
+{% assign first = chapters | first %}
+
+<div class="wrap section">
+
+  {% if first.cover %}
+  <div class="hero"><img src="{{ first.cover | relative_url }}" alt="Rocinante, une Audi S8 argentée de 2003"></div>
+  {% endif %}
+
+  <header class="prose">
+    <p class="meta">Carnet de voyage · 2024</p>
+    <h1 class="page-title">Roci and I</h1>
+    <p class="lede">
+      En septembre 2024, j'ai lancé Rocinante — une Audi S8 de 2003, la voiture
+      de <em>Ronin</em> — sur la route, au départ de San Diego, cap à l'est.
+      Voici tout le voyage : à travers les États-Unis, en remontant par le
+      Québec et le Labrador, jusqu'à Terre-Neuve et Saint-Pierre, puis le long
+      chemin du retour.
+    </p>
+    <p>
+      Publié à l'origine sur ce site sous WordPress et restauré ici dans son
+      intégralité, y compris les photographies et les commentaires laissés par
+      les gens à l'époque.
+    </p>
+  </header>
+
+  <ol class="toc">
+    {% for c in chapters %}
+    <li>
+      <a href="{{ c.url | relative_url }}">
+        <span>
+          <span class="t">{{ c.title | remove: 'Roci and I – ' }}</span>
+          <span class="d">{{ c.date | date: "%B %-d, %Y" }}{% if c.comments.size > 0 %} · {{ c.comments.size }} commentaire{% if c.comments.size != 1 %}s{% endif %}{% endif %}</span>
+        </span>
+      </a>
+    </li>
+    {% endfor %}
+  </ol>
+
+</div>

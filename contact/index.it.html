@@ -1,0 +1,43 @@
+---
+layout: default
+title: Contatti
+permalink: /contact/
+lang: it
+description: Invia un messaggio a George Fratian.
+---
+<div class="wrap section">
+  <header class="prose">
+    <h1 class="page-title">Contatti</h1>
+    <p class="lede">Domande, correzioni o solo un saluto — arriva direttamente
+       a me.</p>
+  </header>
+
+  <div class="prose">
+  {% if site.contact_form_key and site.contact_form_key != "" %}
+    <form class="form" action="https://api.web3forms.com/submit" method="POST">
+      <input type="hidden" name="access_key" value="{{ site.contact_form_key }}">
+      <input type="hidden" name="subject" value="Nuovo messaggio da fratian.com">
+      <input type="hidden" name="from_name" value="fratian.com">
+      <input type="hidden" name="redirect" value="{{ '/thanks/' | absolute_url }}">
+      <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off">
+
+      <label>
+        <span>Il tuo nome</span>
+        <input type="text" name="name" required autocomplete="name">
+      </label>
+
+      <label>
+        <span>La tua email</span>
+        <input type="email" name="email" required autocomplete="email">
+      </label>
+
+      <label>
+        <span>Messaggio</span>
+        <textarea name="message" rows="7" required></textarea>
+      </label>
+
+      <button type="submit">Invia il messaggio</button>
+    </form>
+  {% endif %}
+  </div>
+</div>

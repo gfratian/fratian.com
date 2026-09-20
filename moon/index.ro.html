@@ -1,0 +1,34 @@
+---
+layout: default
+title: Aselenizare la preț mic
+permalink: /moon/
+lang: ro
+description: >-
+  O propunere de aselenizare de la o navă comercială aflată pe orbită, folosind
+  tehnologia rucsacului-rachetă, la o fracțiune din costul unui modul dedicat.
+---
+{% assign posts = site.moon | sort: 'date' | reverse %}
+
+<div class="wrap section">
+  <header class="prose">
+    <p class="meta">Spațiu · din 2019</p>
+    <h1 class="page-title">Aselenizare la preț mic</h1>
+    <p class="lede">
+      Cum ajungi un om pe suprafața Lunii fără să construiești un modul lunar —
+      și ce ar presupune asta de fapt.
+    </p>
+  </header>
+
+  <ol class="toc">
+    {% for p in posts %}
+    <li>
+      <a href="{{ p.url | relative_url }}">
+        <span>
+          <span class="t">{{ p.title }}</span>
+          <span class="d">{{ p.date | date: "%B %-d, %Y" }}{% if p.subtitle %} · {{ p.subtitle }}{% endif %}</span>
+        </span>
+      </a>
+    </li>
+    {% endfor %}
+  </ol>
+</div>

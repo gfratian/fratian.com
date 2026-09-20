@@ -1,0 +1,30 @@
+---
+layout: default
+title: Projets
+permalink: /projects/
+lang: fr
+description: Projets logiciels et articles de fond, en cours.
+---
+<div class="wrap section">
+  <header class="prose">
+    <h1 class="page-title">Projets</h1>
+    <p class="lede">Des choses que l'on construit, et des choses que l'on raconte.</p>
+  </header>
+
+  <ul class="cards">
+    <li class="card">
+      <div class="card__body">
+        <span class="tag">Espace · {{ site.moon.size }} article</span>
+        <h2><a href="{{ '/moon/' | relative_url }}">Alunissage à bas coût</a></h2>
+        <p>Alunir depuis l'orbite lunaire à l'aide d'un jetpack.</p>
+      </div>
+    </li>
+    <li class="card card--soon">
+      <div class="card__body">
+        <span class="tag tag--soon">En chantier</span>
+        <h2><a href="{{ '/ai/' | relative_url }}">Projets d'IA</a></h2>
+        <p>Articles à venir.</p>
+      </div>
+    </li>
+  </ul>
+</div>

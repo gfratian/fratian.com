@@ -19,31 +19,25 @@ description: Travel writing, side projects and assorted curiosities.
     <li class="card">
       {% if first.cover %}<img class="card__img" src="{{ first.cover | relative_url }}" alt="" loading="lazy">{% endif %}
       <div class="card__body">
-        <span class="tag">Travel · {{ chapters.size }} chapters</span>
+        <span class="tag">{{ t.home.travel_tag }} · {{ chapters.size }} {{ t.home.travel_unit }}</span>
         <h2><a href="{{ '/travel/' | relative_url }}">Roci and I</a></h2>
-        <p>Driving a 2003 Audi S8 named Rocinante from San Diego across the U.S.
-           and Atlantic Canada — Quebec, Labrador, Newfoundland, Nova Scotia and
-           the French islands of St. Pierre and Miquelon.</p>
+        <p>{{ t.home.travel_blurb }}</p>
       </div>
     </li>
 
     <li class="card">
       <div class="card__body">
-        <span class="tag">Space · {{ site.moon.size }} post{% if site.moon.size != 1 %}s{% endif %}</span>
-        <h2><a href="{{ '/moon/' | relative_url }}">Low Cost Moon Landing</a></h2>
-        <p>A proposal for reaching the lunar surface from an orbiting commercial
-           spacecraft using a rocket jetpack — no lunar module required.</p>
+        <span class="tag">{{ t.home.space_tag }} · {{ site.moon.size }} {{ t.home.space_unit }}</span>
+        <h2><a href="{{ '/moon/' | relative_url }}">{{ t.home.moon_title }}</a></h2>
+        <p>{{ t.home.space_blurb }}</p>
       </div>
     </li>
 
     <li class="card">
       <div class="card__body">
-        <span class="tag">Books · 2</span>
-        <h2><a href="{{ '/books/' | relative_url }}">My Books</a></h2>
-        <p><em>Game World</em>, a novel about the first AI-controlled video game
-           and how it takes over the world (serious topic, and not so serious
-           story), and <em>Planning Your SAP CRM Implementation</em> from
-           SAP PRESS (btw, topic now obsolete).</p>
+        <span class="tag">{{ t.home.books_tag }} · 2</span>
+        <h2><a href="{{ '/books/' | relative_url }}">{{ t.home.books_title }}</a></h2>
+        <p>{{ t.home.books_blurb_html }}</p>
       </div>
     </li>
 
@@ -58,16 +52,16 @@ description: Travel writing, side projects and assorted curiosities.
     <li class="card card--soon">
       <div class="card__body">
         <span class="tag tag--soon">{{ t.in_the_works }}</span>
-        <h2><a href="{{ '/cars/' | relative_url }}">A Brief History of Time… in Cars</a></h2>
-        <p>Every car I've owned, in order of appearance — write-ups to follow.</p>
+        <h2><a href="{{ '/cars/' | relative_url }}">{{ t.home.cars_title }}</a></h2>
+        <p>{{ t.home.cars_blurb }}</p>
       </div>
     </li>
 
     <li class="card card--soon">
       <div class="card__body">
         <span class="tag tag--soon">{{ t.in_the_works }}</span>
-        <h2><a href="{{ '/ai/' | relative_url }}">AI Projects</a></h2>
-        <p>Write-ups to follow.</p>
+        <h2><a href="{{ '/ai/' | relative_url }}">{{ t.home.ai_title }}</a></h2>
+        <p>{{ t.home.ai_blurb }}</p>
       </div>
     </li>
 

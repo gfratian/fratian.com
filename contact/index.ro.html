@@ -1,0 +1,43 @@
+---
+layout: default
+title: Contact
+permalink: /contact/
+lang: ro
+description: Trimite-i un mesaj lui George Fratian.
+---
+<div class="wrap section">
+  <header class="prose">
+    <h1 class="page-title">Contact</h1>
+    <p class="lede">Întrebări, corecturi sau doar un salut — ajunge direct la
+       mine.</p>
+  </header>
+
+  <div class="prose">
+  {% if site.contact_form_key and site.contact_form_key != "" %}
+    <form class="form" action="https://api.web3forms.com/submit" method="POST">
+      <input type="hidden" name="access_key" value="{{ site.contact_form_key }}">
+      <input type="hidden" name="subject" value="Mesaj nou de pe fratian.com">
+      <input type="hidden" name="from_name" value="fratian.com">
+      <input type="hidden" name="redirect" value="{{ '/thanks/' | absolute_url }}">
+      <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off">
+
+      <label>
+        <span>Numele tău</span>
+        <input type="text" name="name" required autocomplete="name">
+      </label>
+
+      <label>
+        <span>E-mailul tău</span>
+        <input type="email" name="email" required autocomplete="email">
+      </label>
+
+      <label>
+        <span>Mesaj</span>
+        <textarea name="message" rows="7" required></textarea>
+      </label>
+
+      <button type="submit">Trimite mesajul</button>
+    </form>
+  {% endif %}
+  </div>
+</div>

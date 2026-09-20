@@ -50,5 +50,13 @@ exclude:
   - vendor
   - .jekyll-cache
 
-# GitHub Pages builds this automatically; no plugins beyond the built-ins.
-plugins: []
+# Built with GitHub Actions (see .github/workflows/pages.yml) so we can use
+# jekyll-polyglot for the four-language site.
+plugins:
+  - jekyll-polyglot
+
+# --- Multilingual (jekyll-polyglot) ---
+languages: ["en", "ro", "it", "fr"]
+default_lang: "en"
+exclude_from_localization: ["assets", "CNAME", ".nojekyll"]
+parallel_localization: false

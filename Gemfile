@@ -5,4 +5,5 @@
 source "https://rubygems.org"
 
 gem "jekyll", "~> 4.4"
+gem "jekyll-polyglot", "~> 1.14"
 gem "webrick"

@@ -45,7 +45,7 @@ html[data-theme="retro"] .skin-toggle .skin-seg{ color:#000; font-size:12px; pad
 html[data-theme="retro"] .skin-toggle .skin-seg[data-skin="retro"]{ display:none; }
 html[data-theme="retro"] .skin-toggle .skin-seg[data-skin="modern"]{ font-size:0; }
 html[data-theme="retro"] .skin-toggle .skin-seg[data-skin="modern"]::before{
-  content:"🖥️ Switch to MODERN site »"; font-size:12px; }
+  content:attr(data-label); font-size:12px; }
 
 /* headings */
 html[data-theme="retro"] .page-title{ text-align:center; font-family:"Times New Roman",serif;

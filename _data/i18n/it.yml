@@ -1,0 +1,41 @@
+# Italiano (machine-drafted).
+skip: "Vai al contenuto"
+nav_aria: "Principale"
+lang_aria: "Lingua"
+in_the_works: "In lavorazione"
+
+nav:
+  travel: "Viaggi"
+  books: "Libri"
+  projects: "Progetti"
+  about: "Chi sono"
+  contact: "Contatti"
+
+home_lede: "Viaggi, progetti e altre digressioni — uno spazio per le cose che scrivo e costruisco."
+
+skin:
+  aria: "Cambia il design del sito tra moderno e anni '90"
+  to_modern: "🖥️ Passa al sito MODERNO »"
+  new: "NUOVO"
+  old: "RETRO"
+
+mt_notice: "Traduzione automatica — leggi l'originale in inglese"
+mt_en: "EN ↗"
+mt_dismiss: "Chiudi"
+
+footer_also: "Vale la pena vedere anche:"
+
+retro:
+  welcome: "Benvenuto nella Home Page personale di George Fratian sul World Wide Web!!!   Firma il mio guestbook!   Ottimizzato per Netscape Navigator a 800×600"
+  under_construction: "SITO IN COSTRUZIONE"
+  visitor: "Sei il visitatore numero:"
+  new_badge: "NUOVO!"
+  play_midi: "Riproduci MIDI"
+  guestbook: "Firma il guestbook"
+  email: "Scrivimi"
+  webring: "Membro del Travel WebRing"
+
+son_tile:
+  tag: "Famiglia · ↗"
+  title: "La tana del mio figlio preferito"
+  body: "Avventurati fuori sito su geofratian.com — l'angolo di web di mio figlio. Entra a tuo rischio."

@@ -3,6 +3,7 @@ layout: default
 title: George Fratian
 description: Travel writing, side projects and assorted curiosities.
 ---
+{% assign t = site.data.i18n[site.active_lang] | default: site.data.i18n[site.default_lang] | default: site.data.i18n.en %}
 {% assign chapters = site.chapters | sort: 'chapter' %}
 {% assign first = chapters | first %}
 
@@ -10,7 +11,7 @@ description: Travel writing, side projects and assorted curiosities.
 
   <header class="prose">
     <h1 class="page-title">George Fratian</h1>
-    <p class="lede">{{ site.tagline }} — a home for the things I write and build.</p>
+    <p class="lede">{{ t.home_lede }}</p>
   </header>
 
   <ul class="cards">
@@ -48,16 +49,15 @@ description: Travel writing, side projects and assorted curiosities.
 
     <li class="card card--son">
       <div class="card__body">
-        <span class="tag">Family · ↗</span>
-        <h2><a href="https://www.geofratian.com" target="_blank" rel="noopener">My Favorite Son's Lair</a> <span class="retro-hot blink">HOT!</span></h2>
-        <p>Venture off-site to <em>geofratian.com</em> — my son's corner of the web.
-           Enter at your own risk.</p>
+        <span class="tag">{{ t.son_tile.tag }}</span>
+        <h2><a href="https://www.geofratian.com" target="_blank" rel="noopener">{{ t.son_tile.title }}</a> <span class="retro-hot blink">HOT!</span></h2>
+        <p>{{ t.son_tile.body }}</p>
       </div>
     </li>
 
     <li class="card card--soon">
       <div class="card__body">
-        <span class="tag tag--soon">In the works</span>
+        <span class="tag tag--soon">{{ t.in_the_works }}</span>
         <h2><a href="{{ '/cars/' | relative_url }}">A Brief History of Time… in Cars</a></h2>
         <p>Every car I've owned, in order of appearance — write-ups to follow.</p>
       </div>
@@ -65,7 +65,7 @@ description: Travel writing, side projects and assorted curiosities.
 
     <li class="card card--soon">
       <div class="card__body">
-        <span class="tag tag--soon">In the works</span>
+        <span class="tag tag--soon">{{ t.in_the_works }}</span>
         <h2><a href="{{ '/ai/' | relative_url }}">AI Projects</a></h2>
         <p>Write-ups to follow.</p>
       </div>

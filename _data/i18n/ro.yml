@@ -1,0 +1,41 @@
+# Română (machine-drafted; George to proofread).
+skip: "Sari la conținut"
+nav_aria: "Principal"
+lang_aria: "Limbă"
+in_the_works: "În lucru"
+
+nav:
+  travel: "Călătorii"
+  books: "Cărți"
+  projects: "Proiecte"
+  about: "Despre"
+  contact: "Contact"
+
+home_lede: "Călătorii, proiecte și alte ocolișuri — un loc pentru lucrurile pe care le scriu și le construiesc."
+
+skin:
+  aria: "Comută designul site-ului între modern și anii 1990"
+  to_modern: "🖥️ Treci la site-ul MODERN »"
+  new: "NOU"
+  old: "VECHI"
+
+mt_notice: "Traducere automată — citește originalul în engleză"
+mt_en: "EN ↗"
+mt_dismiss: "Închide"
+
+footer_also: "Merită văzut și:"
+
+retro:
+  welcome: "Bine ai venit pe pagina personală a lui George Fratian de pe World Wide Web!!!   Semnează cartea de oaspeți!   Vizualizare optimă în Netscape Navigator la 800×600"
+  under_construction: "ACEST SITE ESTE ÎN CONSTRUCȚIE"
+  visitor: "Ești vizitatorul numărul:"
+  new_badge: "NOU!"
+  play_midi: "Redă MIDI"
+  guestbook: "Semnează cartea de oaspeți"
+  email: "Scrie-mi"
+  webring: "Membru al inelului web de călătorii"
+
+son_tile:
+  tag: "Familie · ↗"
+  title: "Bârlogul fiului meu preferat"
+  body: "Aventurează-te în afara site-ului, la geofratian.com — colțul de web al fiului meu. Intri pe propriul risc."

@@ -6,8 +6,8 @@
     <a class="lang" href="#" hreflang="fr" lang="fr">FR</a>
   </div>
   <button id="skin-toggle" type="button" class="skin-toggle"
-          aria-label="Switch site design between modern and 1990s">
-    <span class="skin-seg" data-skin="modern">NEW</span>
-    <span class="skin-seg" data-skin="retro">OLD</span>
+          aria-label="{{ t.skin.aria }}">
+    <span class="skin-seg" data-skin="modern" data-label="{{ t.skin.to_modern }}">{{ t.skin.new }}</span>
+    <span class="skin-seg" data-skin="retro">{{ t.skin.old }}</span>
   </button>
 </div>

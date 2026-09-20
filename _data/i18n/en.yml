@@ -1,0 +1,41 @@
+# English — canonical key set. Every other language file mirrors these keys.
+skip: "Skip to content"
+nav_aria: "Main"
+lang_aria: "Language"
+in_the_works: "In the works"
+
+nav:
+  travel: "Travel"
+  books: "Books"
+  projects: "Projects"
+  about: "About"
+  contact: "Contact"
+
+home_lede: "Travels, projects and other detours — a home for the things I write and build."
+
+skin:
+  aria: "Switch site design between modern and 1990s"
+  to_modern: "🖥️ Switch to MODERN site »"
+  new: "NEW"
+  old: "OLD"
+
+mt_notice: "Machine-translated — read the original in English"
+mt_en: "EN ↗"
+mt_dismiss: "Dismiss"
+
+footer_also: "Also worth a look:"
+
+retro:
+  welcome: "Welcome to George Fratian's Personal Homepage on the World Wide Web!!!   Sign my guestbook!   Best viewed in Netscape Navigator at 800×600"
+  under_construction: "THIS SITE IS UNDER CONSTRUCTION"
+  visitor: "You are visitor number:"
+  new_badge: "NEW!"
+  play_midi: "Play MIDI"
+  guestbook: "Sign Guestbook"
+  email: "Email me"
+  webring: "Member of the Travel WebRing"
+
+son_tile:
+  tag: "Family · ↗"
+  title: "My Favorite Son's Lair"
+  body: "Venture off-site to geofratian.com — my son's corner of the web. Enter at your own risk."

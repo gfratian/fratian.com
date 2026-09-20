@@ -1,0 +1,41 @@
+# Français (machine-drafted).
+skip: "Aller au contenu"
+nav_aria: "Principal"
+lang_aria: "Langue"
+in_the_works: "En chantier"
+
+nav:
+  travel: "Voyages"
+  books: "Livres"
+  projects: "Projets"
+  about: "À propos"
+  contact: "Contact"
+
+home_lede: "Voyages, projets et autres détours — un chez-moi pour ce que j'écris et ce que je construis."
+
+skin:
+  aria: "Basculer le design du site entre moderne et années 1990"
+  to_modern: "🖥️ Passer au site MODERNE »"
+  new: "NEUF"
+  old: "RÉTRO"
+
+mt_notice: "Traduction automatique — lire l'original en anglais"
+mt_en: "EN ↗"
+mt_dismiss: "Fermer"
+
+footer_also: "À voir aussi :"
+
+retro:
+  welcome: "Bienvenue sur la page perso de George Fratian sur le World Wide Web !!!   Signez mon livre d'or !   Optimisé pour Netscape Navigator en 800×600"
+  under_construction: "SITE EN CONSTRUCTION"
+  visitor: "Vous êtes le visiteur numéro :"
+  new_badge: "NOUVEAU !"
+  play_midi: "Lire le MIDI"
+  guestbook: "Signer le livre d'or"
+  email: "Écrivez-moi"
+  webring: "Membre du WebRing Voyages"
+
+son_tile:
+  tag: "Famille · ↗"
+  title: "L'antre de mon fils préféré"
+  body: "Aventurez-vous hors du site sur geofratian.com — le coin de web de mon fils. Entrez à vos risques et périls."

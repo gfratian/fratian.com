@@ -10,4 +10,6 @@ done
 grep -q 'html lang="en"' "$S/index.html" || fail "root not lang=en"
 grep -q 'html lang="ro"' "$S/ro/index.html" || fail "/ro not lang=ro"
 
+grep -q "Călătorii" "$S/ro/index.html" || fail "ro nav not localized"
+grep -q "Voyages" "$S/fr/index.html" || fail "fr nav not localized"
 echo "OK: i18n build"

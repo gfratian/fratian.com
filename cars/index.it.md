@@ -48,6 +48,16 @@ Il veicolo meno affascinante e più utile che abbia mai posseduto. Ogni vita ha
 bisogno di un'era del monovolume, e non ho troppa vergogna ad ammettere che la
 mia mi è piaciuta.
 
+## Honda S2000 — *Baby, l'unica e sola* (2002, argento)
+
+<div class="car-photo" data-src="/assets/cars/s2000.jpg" data-caption="★ Baby — la mia preferita di sempre">📷 foto in arrivo — Honda S2000 «Baby»</div>
+
+Ed eccola: **Baby**. Ultimo e migliore anno dell'AP1, un quattro cilindri che gira
+fino a 9.000 giri e suona come una superbike, e un telaio che ti parla per tutto il
+tragitto. Di tutte le auto in questa pagina — e ce ne sono state alcune — questa è
+*quella giusta*. La mia preferita di sempre e, dato che le auto vanno e vengono,
+l'unica rimasta nel mio vialetto. Tutte le altre sono state un capitolo; Baby è casa.
+
 ## Alfa Romeo 4C — *quella col cuore sopra la testa*
 
 <div class="car-photo" data-src="/assets/cars/alfa-4c.jpg">📷 foto in arrivo — Alfa Romeo 4C</div>

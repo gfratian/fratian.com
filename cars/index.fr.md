@@ -49,6 +49,17 @@ Le véhicule le moins glamour et le plus utile que j'aie jamais possédé. Toute
 a besoin de son ère du monospace, et je n'ai pas trop honte d'avouer que j'ai
 apprécié la mienne.
 
+## Honda S2000 — *Baby, l'unique* (2002, argentée)
+
+<div class="car-photo" data-src="/assets/cars/s2000.jpg" data-caption="★ Baby — ma préférée de toujours">📷 photo à venir — Honda S2000 « Baby »</div>
+
+Et la voici : **Baby**. Dernière et meilleure année de l'AP1, un quatre-cylindres
+qui monte à 9 000 tr/min et sonne comme une superbike, et un châssis qui te parle
+tout le long. De toutes les voitures de cette page — et il y en a eu quelques-unes —
+c'est *la bonne*. Ma préférée de toujours et, les voitures allant et venant, la
+seule encore dans mon allée. Toutes les autres ont été un chapitre ; Baby, c'est la
+maison.
+
 ## Alfa Romeo 4C — *celle du cœur avant la raison*
 
 <div class="car-photo" data-src="/assets/cars/alfa-4c.jpg">📷 photo à venir — Alfa Romeo 4C</div>

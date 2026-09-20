@@ -48,6 +48,16 @@ Cel mai puțin spectaculos și cel mai util vehicul pe care l-am avut vreodată.
 Fiecare viață are nevoie de o eră a monovolumului, și nu-mi e prea rușine să
 recunosc că mi-a plăcut a mea.
 
+## Honda S2000 — *Baby, singura și unica* (2002, argintiu)
+
+<div class="car-photo" data-src="/assets/cars/s2000.jpg" data-caption="★ Baby — preferata mea dintotdeauna">📷 poză în curând — Honda S2000 „Baby”</div>
+
+Și iat-o: **Baby**. Ultimul și cel mai bun an de AP1, un patru cilindri care urcă la
+9.000 de rotații și sună ca o motocicletă sport, și un șasiu care îți vorbește tot
+drumul. Dintre toate mașinile de pe pagina asta — și au fost câteva — asta e
+*aleasa*. Preferata mea dintotdeauna și, cum mașinile vin și pleacă, singura rămasă
+în curtea mea. Toate celelalte au fost câte un capitol; Baby e acasă.
+
 ## Alfa Romeo 4C — *cea cu capul după inimă*
 
 <div class="car-photo" data-src="/assets/cars/alfa-4c.jpg">📷 poză în curând — Alfa Romeo 4C</div>

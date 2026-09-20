@@ -45,6 +45,16 @@ road there at all.
 The least glamorous and most useful vehicle I have ever owned. Every life needs
 a minivan era, and I am not too proud to admit I enjoyed mine.
 
+## Honda S2000 — *Baby, the one and only* (2002, silver)
+
+<div class="car-photo" data-src="/assets/cars/s2000.jpg" data-caption="★ Baby — my all-time favourite">📷 photo to come — Honda S2000 "Baby"</div>
+
+And here she is: **Baby**. The last-and-best year of the AP1, a four-cylinder
+that spins to 9,000 rpm and sounds like a superbike, and a chassis that talks to
+you the whole way. Of every car on this page — and there have been a few — this
+is *the one*. My all-time favourite, and, cars coming and going as they do, the
+only one still in my driveway. Everything else was a chapter; Baby is home.
+
 ## Alfa Romeo 4C — *the head-over-heart one*
 
 <div class="car-photo" data-src="/assets/cars/alfa-4c.jpg">📷 photo to come — Alfa Romeo 4C</div>

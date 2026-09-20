@@ -1,9 +1,9 @@
 <div class="site-controls">
-  <div class="lang-pill" role="group" aria-label="Language">
-    <a class="lang is-on" href="#" hreflang="en" lang="en" aria-current="true">EN</a>
-    <a class="lang" href="#" hreflang="ro" lang="ro">RO</a>
-    <a class="lang" href="#" hreflang="it" lang="it">IT</a>
-    <a class="lang" href="#" hreflang="fr" lang="fr">FR</a>
+  <div class="lang-pill" role="group" aria-label="{{ t.lang_aria }}">
+    {% for lang in site.languages %}
+      {% if lang == site.default_lang %}{% assign href = page.url %}{% else %}{% assign href = page.url | prepend: lang | prepend: '/' %}{% endif %}
+      <a class="lang{% if lang == site.active_lang %} is-on{% endif %}" {% static_href %}href="{{ href }}"{% endstatic_href %} hreflang="{{ lang }}" lang="{{ lang }}"{% if lang == site.active_lang %} aria-current="true"{% endif %}>{{ lang | upcase }}</a>
+    {% endfor %}
   </div>
   <button id="skin-toggle" type="button" class="skin-toggle"
           aria-label="{{ t.skin.aria }}">

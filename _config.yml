@@ -42,6 +42,8 @@ sass:
 
 exclude:
   - tools
+  - tests
+  - docs
   - README.md
   - Gemfile
   - Gemfile.lock

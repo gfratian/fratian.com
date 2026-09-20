@@ -40,7 +40,7 @@ road there at all.
 
 ## Honda Odyssey — *the sensible chapter* (2001)
 
-<div class="car-photo" data-src="/assets/cars/odyssey.jpg">📷 photo to come — Honda Odyssey</div>
+<div class="car-photo" data-src="/assets/cars/odyssey.jpg" data-caption="Representative photo — not my actual car">📷 photo to come — Honda Odyssey</div>
 
 The least glamorous and most useful vehicle I have ever owned. Every life needs
 a minivan era, and I am not too proud to admit I enjoyed mine.

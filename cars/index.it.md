@@ -42,7 +42,7 @@ curarsi affatto se lì ci fosse una strada.
 
 ## Honda Odyssey — *il capitolo assennato* (2001)
 
-<div class="car-photo" data-src="/assets/cars/odyssey.jpg">📷 foto in arrivo — Honda Odyssey</div>
+<div class="car-photo" data-src="/assets/cars/odyssey.jpg" data-caption="Foto rappresentativa — non la mia auto">📷 foto in arrivo — Honda Odyssey</div>
 
 Il veicolo meno affascinante e più utile che abbia mai posseduto. Ogni vita ha
 bisogno di un'era del monovolume, e non ho troppa vergogna ad ammettere che la

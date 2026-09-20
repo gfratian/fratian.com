@@ -43,7 +43,7 @@ moquer complètement qu'il y ait une route ou non.
 
 ## Honda Odyssey — *le chapitre raisonnable* (2001)
 
-<div class="car-photo" data-src="/assets/cars/odyssey.jpg">📷 photo à venir — Honda Odyssey</div>
+<div class="car-photo" data-src="/assets/cars/odyssey.jpg" data-caption="Photo représentative — pas ma voiture">📷 photo à venir — Honda Odyssey</div>
 
 Le véhicule le moins glamour et le plus utile que j'aie jamais possédé. Toute vie
 a besoin de son ère du monospace, et je n'ai pas trop honte d'avouer que j'ai

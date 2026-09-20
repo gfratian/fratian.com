@@ -42,7 +42,7 @@ drum acolo.
 
 ## Honda Odyssey — *capitolul cuminte* (2001)
 
-<div class="car-photo" data-src="/assets/cars/odyssey.jpg">📷 poză în curând — Honda Odyssey</div>
+<div class="car-photo" data-src="/assets/cars/odyssey.jpg" data-caption="Fotografie reprezentativă — nu mașina mea">📷 poză în curând — Honda Odyssey</div>
 
 Cel mai puțin spectaculos și cel mai util vehicul pe care l-am avut vreodată.
 Fiecare viață are nevoie de o eră a monovolumului, și nu-mi e prea rușine să

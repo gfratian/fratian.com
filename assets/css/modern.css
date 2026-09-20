@@ -110,6 +110,17 @@ h1,h2,h3{ font-family:var(--sans); font-weight:800; letter-spacing:-.02em; line-
 .site-foot a{ color:var(--muted); }
 .site-foot a:hover{ color:var(--accent); }
 
+/* machine-translation notice */
+.mt-notice{ display:flex; align-items:center; gap:.75rem; flex-wrap:wrap;
+  background:rgba(94,163,255,.08); border:1px solid var(--border);
+  border-left:3px solid var(--accent); border-radius:8px;
+  padding:.6rem .85rem; margin:0 0 1.25rem; font-size:.85rem; color:var(--muted); }
+.mt-notice .mt-en{ font:600 .8rem/1 var(--mono); color:var(--accent); text-decoration:none; }
+.mt-notice .mt-x{ margin-left:auto; background:none; border:0; color:var(--muted);
+  font-size:1.1rem; line-height:1; cursor:pointer; padding:0 .2rem; }
+.mt-notice .mt-x:hover{ color:var(--text); }
+.mt-notice[hidden]{ display:none !important; }
+
 /* car-history photo slots */
 .car-photo{ border:1px dashed var(--border); color:var(--muted); background:var(--panel2);
   border-radius:10px; padding:2.5rem 1rem; text-align:center; font:600 .85rem/1.5 var(--mono);

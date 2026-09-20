@@ -1,7 +1,10 @@
 ---
 layout: default
 ---
+{% assign t = site.data.i18n[site.active_lang] | default: site.data.i18n[site.default_lang] | default: site.data.i18n.en %}
 <div class="wrap section"><div class="reading"><article class="prose">
+
+  {% include mt-notice.html %}
 
   <header>
     {% if page.kicker %}<p class="meta">{{ page.kicker }}</p>{% endif %}

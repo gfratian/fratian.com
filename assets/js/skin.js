@@ -30,6 +30,18 @@
       lcd.textContent = ('00000000' + n).slice(-8);
     }
 
+    // Machine-translation notice: dismissible, remembered per page+language
+    var mt = document.getElementById('mt-notice');
+    if (mt) {
+      var mtKey = mt.getAttribute('data-key');
+      try { if (localStorage.getItem(mtKey) === '1') mt.hidden = true; } catch (e) {}
+      var mx = mt.querySelector('.mt-x');
+      if (mx) mx.addEventListener('click', function () {
+        mt.hidden = true;
+        try { localStorage.setItem(mtKey, '1'); } catch (e) {}
+      });
+    }
+
     // Car-history photos: swap a placeholder for the real image once it exists
     var slots = document.querySelectorAll('.car-photo[data-src]');
     Array.prototype.forEach.call(slots, function (box) {

@@ -1,4 +1,4 @@
-{% if site.active_lang != site.default_lang %}
+{% if page.lang == site.active_lang and site.active_lang != site.default_lang %}
 <div class="mt-notice" id="mt-notice" data-key="mt-{{ page.url }}-{{ site.active_lang }}">
   <span class="mt-text">{{ t.mt_notice }}</span>
   <a class="mt-en" {% static_href %}href="{{ page.url }}"{% endstatic_href %} hreflang="{{ site.default_lang }}" lang="{{ site.default_lang }}">{{ t.mt_en }}</a>

@@ -112,5 +112,6 @@ h1,h2,h3{ font-family:var(--sans); font-weight:800; letter-spacing:-.02em; line-
 
 /* retro-only ornaments never show in modern */
 .retro-only{ display:none; }
+.retro-hot{ display:none; }
 
 @media (max-width:560px){ .site-nav{ order:3; width:100%; margin:0; } }

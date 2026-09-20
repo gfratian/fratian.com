@@ -1,0 +1,120 @@
+/* ------------------------------------------------------------------
+   fratian.com — RETRO "Old" skin. Every rule scoped under the retro
+   selector, so it layers cleanly on top of the modern baseline.
+   ------------------------------------------------------------------ */
+
+/* ornaments render in the DOM always; shown only under retro */
+.retro-only{ display:none; }
+html[data-theme="retro"] .retro-only{ display:block; }
+
+html[data-theme="retro"] body{
+  font-family:"Times New Roman",Times,serif; color:#000; background:#000080;
+  background-image:radial-gradient(#ffffff22 1px,transparent 1px),
+                   radial-gradient(#ffff0033 1px,transparent 1px);
+  background-size:22px 22px,16px 16px; background-position:0 0,8px 8px;
+  font-size:1.0625rem; line-height:1.5;
+}
+
+/* content sits on a light beveled panel over the tiled background */
+html[data-theme="retro"] main#main{ width:94%; max-width:900px; margin:14px auto;
+  background:#c0c0c0; border:2px inset #fff; padding:14px; }
+html[data-theme="retro"] .wrap{ max-width:none; padding:0; }
+html[data-theme="retro"] .section{ padding:0; }
+html[data-theme="retro"] .reading{ background:#fff; border:2px inset #808080; border-radius:0;
+  padding:14px; margin:8px 0; max-width:none; }
+html[data-theme="retro"] .prose{ color:#000; font-size:1.05rem; line-height:1.5; }
+html[data-theme="retro"] .prose > *{ max-width:none; }
+
+/* header / nav */
+html[data-theme="retro"] .site-head{ position:static; background:#000080; border:0; }
+html[data-theme="retro"] .site-head .wrap{ min-height:0; padding:6px 10px; }
+html[data-theme="retro"] .brand{ color:#fff; font-weight:bold; }
+html[data-theme="retro"] .brand span{ color:#ff0; }
+html[data-theme="retro"] .site-nav a{ color:#fff; text-decoration:underline; }
+html[data-theme="retro"] .site-nav a[aria-current]{ color:#ff0; }
+
+/* controls in retro */
+html[data-theme="retro"] .site-controls{ gap:.4rem; }
+html[data-theme="retro"] .lang-pill{ border:0; border-radius:0; background:transparent; }
+html[data-theme="retro"] .lang-pill .lang{ color:#fff; text-decoration:underline;
+  font-family:"Times New Roman",serif; font-weight:normal; }
+html[data-theme="retro"] .lang-pill .lang.is-on{ background:transparent; color:#ff0; }
+html[data-theme="retro"] .skin-toggle{ border:2px outset #fff; border-radius:0; background:#c0c0c0;
+  font-family:"MS Sans Serif",Tahoma,sans-serif; }
+html[data-theme="retro"] .skin-toggle .skin-seg{ color:#000; font-size:12px; padding:2px 8px; }
+html[data-theme="retro"] .skin-toggle .skin-seg[data-skin="retro"]{ display:none; }
+html[data-theme="retro"] .skin-toggle .skin-seg[data-skin="modern"]{ font-size:0; }
+html[data-theme="retro"] .skin-toggle .skin-seg[data-skin="modern"]::before{
+  content:"🖥️ Switch to MODERN site »"; font-size:12px; }
+
+/* headings */
+html[data-theme="retro"] .page-title{ text-align:center; font-family:"Times New Roman",serif;
+  font-weight:bold; letter-spacing:0;
+  background:linear-gradient(90deg,#f00,#f80,#ff0,#0f0,#0ff,#00f,#f0f);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  text-shadow:2px 2px 0 rgba(0,0,0,.2); }
+html[data-theme="retro"] .lede{ text-align:center; font-style:italic; color:#000080; max-width:none; }
+html[data-theme="retro"] .meta{ font-family:"Courier New",monospace; text-transform:none;
+  letter-spacing:0; color:#000080; }
+
+/* links */
+html[data-theme="retro"] a{ color:#00e; }
+html[data-theme="retro"] a:visited{ color:#551a8b; }
+
+/* cards → simple bordered boxes */
+html[data-theme="retro"] .cards{ display:block; margin-top:10px; }
+html[data-theme="retro"] .card{ background:#fff; border:2px outset #fff; border-radius:0;
+  margin:8px 0; transform:none; }
+html[data-theme="retro"] .card:hover{ transform:none; border-color:#fff; }
+html[data-theme="retro"] .card--son{ border:2px ridge #ff0; }
+html[data-theme="retro"] .retro-hot{ display:inline; }
+html[data-theme="retro"] .card__body h2 a{ color:#00e; text-decoration:underline; }
+html[data-theme="retro"] .card__body p{ color:#000; }
+html[data-theme="retro"] .tag{ color:#000080; font-family:"Courier New",monospace; }
+
+/* chapter pager */
+html[data-theme="retro"] .pager{ border-top:1px solid #808080; }
+html[data-theme="retro"] .pager a{ color:#00e; }
+html[data-theme="retro"] .pager .dir{ color:#000080; font-family:"Courier New",monospace; }
+
+/* comments */
+html[data-theme="retro"] .comment{ background:#fff; border:1px solid #808080; border-radius:0; }
+html[data-theme="retro"] .comment__who{ color:#000; }
+html[data-theme="retro"] .comment__when{ color:#000080; }
+
+/* ---- ornaments ---- */
+html[data-theme="retro"] .retro-marquee{ background:#000; color:#ff0; font-weight:bold;
+  padding:4px; overflow:hidden; white-space:nowrap; }
+html[data-theme="retro"] .retro-marquee__t{ display:inline-block; animation:retro-marq 14s linear infinite; }
+@keyframes retro-marq{ from{transform:translateX(100%)} to{transform:translateX(-100%)} }
+
+html[data-theme="retro"] .retro-uc{ background:repeating-linear-gradient(45deg,#000,#000 10px,#fc0 10px,#fc0 20px);
+  color:#fff; text-align:center; font-weight:bold; padding:5px; border:2px solid #000;
+  text-shadow:1px 1px 0 #000; margin:8px 0; }
+
+html[data-theme="retro"] .retro-counter{ text-align:center; margin:8px 0; }
+html[data-theme="retro"] .lcd{ display:inline-block; background:#000; color:#0f0;
+  font-family:"Courier New",monospace; font-weight:bold; letter-spacing:3px;
+  padding:3px 6px; border:2px inset #444; }
+
+html[data-theme="retro"] .blink{ animation:retro-blink 1s steps(1) infinite; color:#f00; font-weight:bold; }
+@keyframes retro-blink{ 50%{ opacity:0 } }
+
+/* footer + foot ornaments */
+html[data-theme="retro"] .site-foot{ border:0; color:#fff; text-align:center; }
+html[data-theme="retro"] .site-foot .wrap{ align-items:center; }
+html[data-theme="retro"] .site-foot a{ color:#ff0; }
+html[data-theme="retro"] .retro-foot{ text-align:center; margin-top:10px; }
+html[data-theme="retro"] .retro-links{ margin-bottom:8px; }
+html[data-theme="retro"] .retro-a{ color:#00e; background:none; border:0; font:inherit;
+  cursor:pointer; text-decoration:underline; padding:0; }
+html[data-theme="retro"] .retro-badges{ display:flex; gap:6px; flex-wrap:wrap; justify-content:center; }
+html[data-theme="retro"] .b88{ width:88px; height:31px; font-size:9px; font-weight:bold; line-height:1.05;
+  display:flex; align-items:center; justify-content:center; text-align:center; border:1px solid #000;
+  font-family:"MS Sans Serif",Tahoma,sans-serif; }
+
+/* respect reduced motion */
+@media (prefers-reduced-motion: reduce){
+  html[data-theme="retro"] .retro-marquee__t{ animation:none; }
+  html[data-theme="retro"] .blink{ animation:none; }
+}

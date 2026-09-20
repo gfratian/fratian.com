@@ -1,5 +1,8 @@
-# Only needed to preview the site on your own machine. GitHub Pages builds
-# the live site itself and ignores this file's contents beyond the version pin.
+# Local preview only. GitHub Pages builds the live site with its own gems and
+# ignores this file. We use standalone Jekyll here (the system's github-pages
+# metagem won't run on modern Ruby); Plan B's Actions build pins its own set
+# (jekyll + jekyll-polyglot).
 source "https://rubygems.org"
-gem "github-pages", group: :jekyll_plugins
+
+gem "jekyll", "~> 4.4"
 gem "webrick"

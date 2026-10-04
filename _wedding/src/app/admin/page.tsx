@@ -1064,11 +1064,35 @@ export default function AdminPage() {
                       </td>
 
                       {/* Dietary */}
-                      <td className="py-3.5 px-4">
+                      <td className="py-3.5 px-4 min-w-[180px]">
                         {g.dietary && g.dietary.trim() ? (
-                          <span className="text-amber-300 bg-amber-950/40 px-2 py-0.5 rounded text-[10px] font-mono border border-amber-800/30">
-                            {g.dietary}
-                          </span>
+                          g.dietary.includes("|") ? (
+                            <div className="space-y-1">
+                              {g.dietary.split("|").map((part, pIdx) => {
+                                const colonIdx = part.indexOf(":");
+                                const person = colonIdx > -1 ? part.slice(0, colonIdx).trim() : "";
+                                const diet = colonIdx > -1 ? part.slice(colonIdx + 1).trim() : part.trim();
+                                return (
+                                  <div key={pIdx} className="text-[10px] font-mono flex items-center gap-1.5 flex-wrap">
+                                    <span className="text-stone-400 font-semibold">{person || (pIdx === 0 ? "Primary" : "Plus-One")}:</span>
+                                    <span
+                                      className={
+                                        pIdx === 0
+                                          ? "text-amber-300 bg-amber-950/40 px-1.5 py-0.5 rounded border border-amber-800/30"
+                                          : "text-emerald-300 bg-emerald-950/40 px-1.5 py-0.5 rounded border border-emerald-800/30"
+                                      }
+                                    >
+                                      {diet}
+                                    </span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            <span className="text-amber-300 bg-amber-950/40 px-2 py-0.5 rounded text-[10px] font-mono border border-amber-800/30">
+                              {g.dietary}
+                            </span>
+                          )
                         ) : (
                           <span className="text-stone-600 font-mono text-[11px]">None</span>
                         )}

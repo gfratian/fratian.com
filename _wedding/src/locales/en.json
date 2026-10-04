@@ -309,7 +309,14 @@
     "declineMessage": "We will miss you deeply in Romania, but thank you for letting us know. Sending all our love!",
     "submitAnother": "Submit another response",
     "errorMessage": "There was an issue transmitting your RSVP. Please verify your connection or email your response directly to the couple.",
-    "contactHelp": "Need to update your RSVP or have questions? Email us directly at"
+    "contactHelp": "Need to update your RSVP or have questions? Email us directly at",
+    "hasPlusOneLabel": "Will you be bringing a partner or plus-one?",
+    "hasPlusOneYes": "Yes, bringing a plus-one / partner",
+    "primaryDietaryTitle": "Primary Guest Dietary Needs & Allergies",
+    "primaryDietaryDetailsPlaceholder": "Specific allergies for you (e.g. Shellfish, Celiac, Low-sodium)...",
+    "plusOneDietaryTitle": "Partner / Plus-One Dietary Needs & Allergies",
+    "plusOneDietaryDetailsPlaceholder": "Specific allergies for your partner (e.g. Nut allergy, Gluten-Free, Vegan)...",
+    "customAllergiesLabel": "Specific Allergies or Details (optional)"
   },
   "footer": {
     "couple": "Elizabeth & George",

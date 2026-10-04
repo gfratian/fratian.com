@@ -309,7 +309,14 @@
     "declineMessage": "Ne va fi dor de dumneavoastră în România, dar vă mulțumim că ne-ați anunțat. Vă trimitem toată dragostea noastră!",
     "submitAnother": "Trimite alt răspuns",
     "errorMessage": "A apărut o eroare la trimiterea răspunsului. Vă rugăm să verificați conexiunea sau să contactați direct mirii.",
-    "contactHelp": "Doriți să actualizați răspunsul sau aveți întrebări? Trimiteți-ne un email la"
+    "contactHelp": "Doriți să actualizați răspunsul sau aveți întrebări? Trimiteți-ne un email la",
+    "hasPlusOneLabel": "Veți veni însoțit(ă) de un partener sau invitat?",
+    "hasPlusOneYes": "Da, voi veni cu un partener / plus-one",
+    "primaryDietaryTitle": "Nevoi Alimentare & Alergii (Invitat Principal)",
+    "primaryDietaryDetailsPlaceholder": "Alergii specifice pentru dumneavoastră (ex: fructe de mare, celiachie, fără sare)...",
+    "plusOneDietaryTitle": "Nevoi Alimentare & Alergii (Partener / Plus-One)",
+    "plusOneDietaryDetailsPlaceholder": "Alergii specifice pentru partener (ex: alune/nuci, fără gluten, vegan)...",
+    "customAllergiesLabel": "Alergii Specifice sau Detalii (opțional)"
   },
   "footer": {
     "couple": "Elizabeth & George",

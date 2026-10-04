@@ -112,6 +112,7 @@ function doPost(e) {
     var isAttending = data.attending === true || data.attending === "yes" || data.attending === "true";
     var responseStatus = isAttending ? "Accepted" : "Declined";
     var additionalGuests = (data.additionalGuests || data.plusOne || "").toString().trim();
+    var partySize = parseInt(data.partySize, 10) || (additionalGuests ? 2 : 1);
     var dietary = Array.isArray(data.dietary) ? data.dietary.join(", ") : (data.dietary || "None").toString().trim();
     var thuPeles = data.thuPeles ? "YES" : "NO";
     var satBrunch = data.satBrunch ? "YES" : "NO";
@@ -138,6 +139,7 @@ function doPost(e) {
     if (existingRow > 0) {
       // Update existing invited guest row with their response and details
       sheet.getRange(existingRow, 1).setValue(timestamp);
+      sheet.getRange(existingRow, 5).setValue(partySize);
       sheet.getRange(existingRow, 7).setValue(responseStatus);
       sheet.getRange(existingRow, 8).setValue(additionalGuests);
       sheet.getRange(existingRow, 9).setValue(dietary);
@@ -164,7 +166,7 @@ function doPost(e) {
         primaryName,
         email,
         safePhone,
-        1,
+        partySize,
         "YES",
         responseStatus,
         additionalGuests,

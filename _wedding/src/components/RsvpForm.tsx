@@ -39,9 +39,12 @@ export default function RsvpForm() {
     fullName: '',
     email: '',
     attending: 'yes', // 'yes' or 'no'
+    hasPlusOne: false,
     additionalGuests: '',
     dietary: [] as string[],
     dietaryOther: '',
+    plusOneDietary: [] as string[],
+    plusOneDietaryOther: '',
     thuPeles: false,
     satBrunch: false,
     satExcursion: false,
@@ -70,6 +73,17 @@ export default function RsvpForm() {
     });
   };
 
+  const handlePlusOneDietaryToggle = (item: string) => {
+    setFormData((prev) => {
+      const exists = prev.plusOneDietary.includes(item);
+      if (exists) {
+        return { ...prev, plusOneDietary: prev.plusOneDietary.filter((d) => d !== item) };
+      } else {
+        return { ...prev, plusOneDietary: [...prev.plusOneDietary, item] };
+      }
+    });
+  };
+
   const handleSubmit = async (submitEvent: React.FormEvent) => {
     submitEvent.preventDefault();
     if (!formData.fullName.trim() || !formData.email.trim()) {
@@ -80,8 +94,41 @@ export default function RsvpForm() {
     setErrorMessage('');
 
     try {
+      // Primary guest dietary
+      const primaryList = [...formData.dietary];
+      if (formData.dietaryOther.trim()) {
+        primaryList.push(formData.dietaryOther.trim());
+      }
+      const primaryDietaryStr = primaryList.length > 0 ? primaryList.join(", ") : "None";
+
+      // Plus one dietary
+      const partnerName = formData.additionalGuests.trim();
+      const hasPartner = formData.hasPlusOne || !!partnerName;
+      const plusOneList = [...formData.plusOneDietary];
+      if (formData.plusOneDietaryOther.trim()) {
+        plusOneList.push(formData.plusOneDietaryOther.trim());
+      }
+      const plusOneDietaryStr = plusOneList.length > 0 ? plusOneList.join(", ") : "";
+
+      // Composite string for Google Sheets Column 9
+      let compositeDietary = primaryDietaryStr;
+      if (hasPartner) {
+        const guestName = formData.fullName.trim() || "Primary";
+        const pName = partnerName || "Plus-One";
+        if (plusOneDietaryStr && plusOneDietaryStr !== "None") {
+          compositeDietary = `${guestName}: ${primaryDietaryStr} | ${pName}: ${plusOneDietaryStr}`;
+        } else if (primaryDietaryStr !== "None") {
+          compositeDietary = `${guestName}: ${primaryDietaryStr} | ${pName}: None`;
+        }
+      }
+
       const payload = {
         ...formData,
+        additionalGuests: partnerName,
+        partySize: hasPartner ? 2 : 1,
+        dietary: compositeDietary,
+        primaryDietary: primaryDietaryStr,
+        plusOneDietary: plusOneDietaryStr,
         language: locale,
         submittedAt: new Date().toISOString(),
       };
@@ -118,9 +165,12 @@ export default function RsvpForm() {
       fullName: '',
       email: '',
       attending: 'yes',
+      hasPlusOne: false,
       additionalGuests: '',
       dietary: [],
       dietaryOther: '',
+      plusOneDietary: [],
+      plusOneDietaryOther: '',
       thuPeles: false,
       satBrunch: false,
       satExcursion: false,
@@ -287,21 +337,136 @@ export default function RsvpForm() {
               </div>
             </div>
 
-            {/* Additional Guest / Partner */}
-            <div className="space-y-1.5">
-              <label className="block text-xs uppercase tracking-wider text-stone-300 font-medium">
-                {dict.rsvp.plusOneLabel}
-              </label>
-              <input
-                type="text"
-                value={formData.additionalGuests}
-                onChange={(e) =>
-                  setFormData((p) => ({ ...p, additionalGuests: e.target.value }))
-                }
-                placeholder={dict.rsvp.plusOnePlaceholder}
-                className="w-full px-4 py-3 bg-stone-950/70 border border-stone-800 rounded-xl text-stone-100 placeholder-stone-600 text-sm focus:outline-none focus:ring-2 focus:ring-gold-500/40 focus:border-gold-500 transition-all"
-              />
-            </div>
+            {/* Primary Guest Dietary Restrictions (only shown if attending) */}
+            {formData.attending === 'yes' && (
+              <div className="p-4 sm:p-5 rounded-2xl bg-stone-950/60 border border-stone-800/80 space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs uppercase tracking-wider text-stone-300 font-medium">
+                    {formData.fullName.trim()
+                      ? `${formData.fullName.trim()}'s Dietary Needs & Allergies`
+                      : (dict.rsvp.primaryDietaryTitle || dict.rsvp.dietaryLabel)}
+                  </label>
+                  <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-amber-950/60 border border-amber-800/40 text-amber-300">
+                    Primary Guest
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                  {[
+                    dict.rsvp.dietaryOptions.vegetarian,
+                    dict.rsvp.dietaryOptions.vegan,
+                    dict.rsvp.dietaryOptions.glutenFree,
+                    dict.rsvp.dietaryOptions.dairyFree,
+                    dict.rsvp.dietaryOptions.nutAllergy,
+                    dict.rsvp.dietaryOptions.other,
+                  ].map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => handleDietaryToggle(option)}
+                      className={`p-2.5 rounded-xl border text-center transition-all ${
+                        formData.dietary.includes(option)
+                          ? 'bg-carpathian-800/80 border-gold-500/50 text-gold-300 font-medium'
+                          : 'bg-stone-950/50 border-stone-800 text-stone-400 hover:text-stone-300 hover:border-stone-700'
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+                <input
+                  type="text"
+                  value={formData.dietaryOther}
+                  onChange={(e) => setFormData((p) => ({ ...p, dietaryOther: e.target.value }))}
+                  placeholder={dict.rsvp.primaryDietaryDetailsPlaceholder || "Specific allergies or details for primary guest..."}
+                  className="w-full px-3.5 py-2.5 bg-stone-900/60 border border-stone-800 rounded-xl text-stone-100 placeholder-stone-600 text-xs focus:outline-none focus:ring-2 focus:ring-gold-500/40 focus:border-gold-500 transition-all"
+                />
+              </div>
+            )}
+
+            {/* Additional Guest / Plus-One Section */}
+            {formData.attending === 'yes' && (
+              <div className="space-y-4 pt-1">
+                <label className="flex items-center gap-3 p-3.5 rounded-xl bg-stone-950/60 border border-stone-800/80 hover:border-stone-700 cursor-pointer transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={formData.hasPlusOne || !!formData.additionalGuests.trim()}
+                    onChange={() =>
+                      setFormData((p) => ({
+                        ...p,
+                        hasPlusOne: !p.hasPlusOne,
+                      }))
+                    }
+                    className="w-4 h-4 rounded border-stone-700 text-gold-600 focus:ring-gold-500/40 bg-stone-900"
+                  />
+                  <span className="text-xs sm:text-sm text-stone-200">
+                    {dict.rsvp.hasPlusOneYes || "Yes, I will be attending with a partner / plus-one"}
+                  </span>
+                </label>
+
+                {(formData.hasPlusOne || !!formData.additionalGuests.trim()) && (
+                  <div className="space-y-3.5 pl-3 sm:pl-4 border-l-2 border-gold-500/40 ml-1 sm:ml-2">
+                    <div className="space-y-1.5">
+                      <label className="block text-xs uppercase tracking-wider text-stone-300 font-medium">
+                        {dict.rsvp.plusOneLabel}
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.additionalGuests}
+                        onChange={(e) =>
+                          setFormData((p) => ({ ...p, additionalGuests: e.target.value }))
+                        }
+                        placeholder={dict.rsvp.plusOnePlaceholder}
+                        className="w-full px-4 py-3 bg-stone-950/70 border border-stone-800 rounded-xl text-stone-100 placeholder-stone-600 text-sm focus:outline-none focus:ring-2 focus:ring-gold-500/40 focus:border-gold-500 transition-all"
+                      />
+                    </div>
+
+                    {/* Dedicated Plus-One Dietary Needs & Allergies */}
+                    <div className="p-4 sm:p-5 rounded-2xl bg-stone-950/60 border border-stone-800/80 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <label className="block text-xs uppercase tracking-wider text-stone-300 font-medium">
+                          {formData.additionalGuests.trim()
+                            ? `${formData.additionalGuests.trim()}'s Dietary Needs & Allergies`
+                            : (dict.rsvp.plusOneDietaryTitle || "Partner / Plus-One Dietary & Allergies")}
+                        </label>
+                        <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-800/40 text-emerald-400">
+                          Plus-One
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                        {[
+                          dict.rsvp.dietaryOptions.vegetarian,
+                          dict.rsvp.dietaryOptions.vegan,
+                          dict.rsvp.dietaryOptions.glutenFree,
+                          dict.rsvp.dietaryOptions.dairyFree,
+                          dict.rsvp.dietaryOptions.nutAllergy,
+                          dict.rsvp.dietaryOptions.other,
+                        ].map((option) => (
+                          <button
+                            key={option}
+                            type="button"
+                            onClick={() => handlePlusOneDietaryToggle(option)}
+                            className={`p-2.5 rounded-xl border text-center transition-all ${
+                              formData.plusOneDietary.includes(option)
+                                ? 'bg-carpathian-800/80 border-gold-500/50 text-gold-300 font-medium'
+                                : 'bg-stone-950/50 border-stone-800 text-stone-400 hover:text-stone-300 hover:border-stone-700'
+                            }`}
+                          >
+                            {option}
+                          </button>
+                        ))}
+                      </div>
+                      <input
+                        type="text"
+                        value={formData.plusOneDietaryOther}
+                        onChange={(e) => setFormData((p) => ({ ...p, plusOneDietaryOther: e.target.value }))}
+                        placeholder={dict.rsvp.plusOneDietaryDetailsPlaceholder || "Specific allergies or details for your partner / plus-one..."}
+                        className="w-full px-3.5 py-2.5 bg-stone-900/60 border border-stone-800 rounded-xl text-stone-100 placeholder-stone-600 text-xs focus:outline-none focus:ring-2 focus:ring-gold-500/40 focus:border-gold-500 transition-all"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Optional Events Checkboxes (only shown if attending) */}
             {formData.attending === 'yes' && (
@@ -345,38 +510,6 @@ export default function RsvpForm() {
                       {dict.rsvp.events.satExcursion}
                     </span>
                   </label>
-                </div>
-              </div>
-            )}
-
-            {/* Dietary Restrictions (only shown if attending) */}
-            {formData.attending === 'yes' && (
-              <div className="space-y-2.5 pt-2">
-                <label className="block text-sm font-medium text-stone-200 font-serif">
-                  {dict.rsvp.dietaryLabel}
-                </label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
-                  {[
-                    dict.rsvp.dietaryOptions.vegetarian,
-                    dict.rsvp.dietaryOptions.vegan,
-                    dict.rsvp.dietaryOptions.glutenFree,
-                    dict.rsvp.dietaryOptions.dairyFree,
-                    dict.rsvp.dietaryOptions.nutAllergy,
-                    dict.rsvp.dietaryOptions.other,
-                  ].map((option) => (
-                    <button
-                      key={option}
-                      type="button"
-                      onClick={() => handleDietaryToggle(option)}
-                      className={`p-2.5 rounded-xl border text-center transition-all ${
-                        formData.dietary.includes(option)
-                          ? 'bg-carpathian-800/80 border-gold-500/50 text-gold-300 font-medium'
-                          : 'bg-stone-950/50 border-stone-800 text-stone-400 hover:text-stone-300 hover:border-stone-700'
-                      }`}
-                    >
-                      {option}
-                    </button>
-                  ))}
                 </div>
               </div>
             )}

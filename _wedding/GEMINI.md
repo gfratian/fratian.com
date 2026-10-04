@@ -26,9 +26,14 @@
   - The Admin Manifest parses this format and displays individual chips (amber for primary, emerald for partner).
 - **RSVP-Focused Admin Dashboard**:
   - Eliminated pre-invitee workflow (no pre-loaded roster, no "Invited" column, no "Bulk Load" button).
-  - Live Event Headcount KPI Cards: Total RSVPs (seats & parties), Attending (Yes), Declined (No), Peleș Castle Tour, Recovery Brunch, Cable Car / Bran Excursion.
+  - Live Event Headcount KPI Cards: 7 cards tracking Total RSVPs (seats & parties), Attending (Yes), Declined (No), Peleș Castle Tour (Thu 11:30 AM), Welcome Dinner (Thu 6:30 PM), Recovery Brunch (Sat 10:30 AM), Cable Car / Bran Excursion (Sat 1:30 PM).
   - Filter Tabs: All RSVPs, Attending, Declined, Dietary Requirements.
   - Manual RSVP Entry: `+ Record RSVP` modal allows hosts to record phone/verbal RSVPs with full attendee details.
+- **Split Thursday Events**:
+  - Split former combined Thursday event into two distinct options:
+    1. Thursday, May 27 (11:30 AM – 2:30 PM): Peleș Castle Royal Tour
+    2. Thursday, May 27 (6:30 PM – 9:30 PM): Carpathian Welcome Gathering & Dinner
+  - Backward compatibility: existing responses default `thuDinner` to the Peleș value so no headcount is dropped.
 - **Design & Aesthetics**:
   - Obsidian dark luxury aesthetic (`bg-stone-950`, gold and emerald accents, Cormorant Garamond serif).
   - Cleaned up RSVP form: removed unnecessary wavy decorative SVG divider.

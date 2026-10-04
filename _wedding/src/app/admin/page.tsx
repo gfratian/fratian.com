@@ -77,26 +77,27 @@ export default function AdminPage() {
 
   // Filters & Search
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [statusFilter, setStatusFilter] = useState<'All' | 'Accepted' | 'Declined' | 'No response' | 'Dietary'>('All');
+  const [statusFilter, setStatusFilter] = useState<'All' | 'Accepted' | 'Declined' | 'Dietary'>('All');
 
   // Modals
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
-  const [isBulkModalOpen, setIsBulkModalOpen] = useState<boolean>(false);
   const [editingGuest, setEditingGuest] = useState<SheetGuest | null>(null);
 
-  // Single Add Form
-  const [newGuest, setNewGuest] = useState({
-    name: '',
+  // Manual RSVP Entry Form
+  const [newRsvp, setNewRsvp] = useState({
+    fullName: '',
     email: '',
     phone: '',
-    partySize: 2,
-    invited: true,
-    responseStatus: 'No response' as ResponseStatus,
+    partySize: 1,
+    responseStatus: 'Accepted' as ResponseStatus,
+    additionalGuests: '',
+    dietary: '',
+    thuPeles: false,
+    satBrunch: false,
+    satExcursion: false,
+    lodging: '',
+    notes: '',
   });
-
-  // Bulk Load Text Area
-  const [bulkText, setBulkText] = useState<string>('');
-  const [bulkError, setBulkError] = useState<string>('');
 
   // Load configuration on mount
   useEffect(() => {
@@ -180,13 +181,19 @@ export default function AdminPage() {
             responseStatus = r.attending ? 'Accepted' : 'No response';
           }
 
+          // Party Size calculation:
+          // If a plus-one / additional guest is listed, party size must be at least 2
+          const hasPartner = !!(additionalGuests && additionalGuests.trim() && additionalGuests.trim() !== 'None' && additionalGuests.trim() !== 'NO' && additionalGuests.trim() !== 'YES');
+          const rawParty = parseInt(r.partySize, 10);
+          const partySize = hasPartner ? (rawParty > 1 ? rawParty : 2) : (rawParty > 0 ? rawParty : 1);
+
           return {
             id: r.id,
             timestamp: r.timestamp || '',
             fullName: r.fullName || 'Guest',
             email: r.email || '',
             phone: phone,
-            partySize: parseInt(r.partySize, 10) || 1,
+            partySize: partySize,
             invited: r.invited !== false,
             responseStatus: responseStatus as ResponseStatus,
             attending: responseStatus === 'Accepted',
@@ -289,124 +296,82 @@ export default function AdminPage() {
     }
   };
 
-  // Add Single Invitee
-  const handleAddSingle = async (e: React.FormEvent) => {
+  // Record Manual RSVP
+  const handleRecordManualRsvp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newGuest.name || !newGuest.name.trim()) return;
+    if (!newRsvp.fullName || !newRsvp.fullName.trim()) return;
 
-    const inviteeItem = {
-      name: newGuest.name.trim(),
-      email: (newGuest.email || '').trim(),
-      phone: (newGuest.phone || '').trim(),
-      partySize: Math.max(1, Number(newGuest.partySize) || 1),
-      invited: newGuest.invited,
-      responseStatus: newGuest.responseStatus,
-    };
+    const hasPartner = !!(newRsvp.additionalGuests && newRsvp.additionalGuests.trim());
+    const seats = hasPartner ? Math.max(2, Number(newRsvp.partySize) || 2) : Math.max(1, Number(newRsvp.partySize) || 1);
 
-    // Optimistically update UI
-    const tempGuest: SheetGuest = {
+    const rsvpItem: SheetGuest = {
       id: Date.now(),
       timestamp: new Date().toISOString(),
-      fullName: inviteeItem.name,
-      email: inviteeItem.email,
-      phone: inviteeItem.phone,
-      partySize: inviteeItem.partySize,
-      invited: inviteeItem.invited,
-      responseStatus: inviteeItem.responseStatus,
-      attending: inviteeItem.responseStatus === 'Accepted',
+      fullName: newRsvp.fullName.trim(),
+      email: newRsvp.email.trim(),
+      phone: newRsvp.phone.trim(),
+      partySize: seats,
+      invited: true,
+      responseStatus: newRsvp.responseStatus,
+      attending: newRsvp.responseStatus === 'Accepted',
+      additionalGuests: newRsvp.additionalGuests.trim(),
+      dietary: newRsvp.dietary.trim(),
+      thuPeles: newRsvp.thuPeles,
+      satBrunch: newRsvp.satBrunch,
+      satExcursion: newRsvp.satExcursion,
+      lodging: newRsvp.lodging.trim(),
+      notes: newRsvp.notes.trim(),
+      language: 'EN',
     };
-    setGuests((prev) => [...prev, tempGuest]);
 
+    setGuests((prev) => [...prev, rsvpItem]);
     setIsAddModalOpen(false);
-    setNewGuest({
-      name: '',
+    setNewRsvp({
+      fullName: '',
       email: '',
       phone: '',
-      partySize: 2,
-      invited: true,
-      responseStatus: 'No response',
+      partySize: 1,
+      responseStatus: 'Accepted',
+      additionalGuests: '',
+      dietary: '',
+      thuPeles: false,
+      satBrunch: false,
+      satExcursion: false,
+      lodging: '',
+      notes: '',
     });
 
-    // Write to Google Sheet
-    await postInviteesToSheet([inviteeItem]);
-  };
-
-  // Bulk Load / Paste Invitees
-  const handleBulkImport = async () => {
-    if (!bulkText.trim()) return;
-    setBulkError('');
-
-    try {
-      const lines = bulkText.split('\n').map((l) => l.trim()).filter((l) => l.length > 0);
-      const parsedList: any[] = [];
-
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        const parts = line.split(/,|\t|\|/).map((p) => p.trim());
-        if (parts.length === 0 || !parts[0]) continue;
-
-        // Skip header lines
-        if (i === 0 && (parts[0].toLowerCase() === 'name' || parts[0].toLowerCase() === 'full name')) {
-          continue;
-        }
-
-        const name = parts[0];
-        const email = parts[1] || '';
-        const phone = parts[2] || '';
-        const count = Math.max(1, parseInt(parts[3], 10) || 2);
-
-        parsedList.push({
-          name,
-          email,
-          phone,
-          partySize: count,
-          invited: true,
-          responseStatus: 'No response',
+    if (webhookUrl && webhookUrl.startsWith('http')) {
+      setIsSaving(true);
+      try {
+        await fetch(webhookUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            fullName: rsvpItem.fullName,
+            email: rsvpItem.email,
+            phone: rsvpItem.phone,
+            partySize: rsvpItem.partySize,
+            attending: rsvpItem.attending,
+            additionalGuests: rsvpItem.additionalGuests,
+            dietary: rsvpItem.dietary,
+            thuPeles: rsvpItem.thuPeles,
+            satBrunch: rsvpItem.satBrunch,
+            satExcursion: rsvpItem.satExcursion,
+            lodging: rsvpItem.lodging,
+            notes: rsvpItem.notes,
+          }),
         });
+        setTimeout(() => {
+          fetchSheetData();
+        }, 1500);
+      } catch (err) {
+        console.error('Failed to post manual RSVP to sheet', err);
+      } finally {
+        setIsSaving(false);
       }
-
-      if (parsedList.length === 0) {
-        setBulkError('No valid rows found. Format: Name, Email, Cell, People Count');
-        return;
-      }
-
-      setIsBulkModalOpen(false);
-      setBulkText('');
-
-      // Send to Google Sheet
-      await postInviteesToSheet(parsedList);
-      setStatusMessage(`Sending ${parsedList.length} invitees to Google Sheets...`);
-    } catch (err: any) {
-      setBulkError(`Import error: ${err.message}`);
     }
-  };
-
-  const insertSampleBulk = () => {
-    setBulkText(
-      `Andrei and Mary Fratian, andreifratian@gmail.com, +1 (408) 555-0199, 2\n` +
-      `Alexander and Elena Vancea, alex.vancea@gmail.com, +40 722 123 456, 2\n` +
-      `Marcus Aurelius Sterling, m.sterling@investments.co.uk, +44 20 7946 0912, 1\n` +
-      `David and Rachel Miller, david.miller@techfirm.io, +1 (650) 555-0144, 2\n` +
-      `Sophia Maria Popescu, sophia.m.popescu@gmail.com, +40 744 987 654, 2`
-    );
-  };
-
-  // Toggle Invited Checkbox directly in row
-  const toggleInvited = async (guest: SheetGuest) => {
-    const updated = guests.map((g) => (g.id === guest.id ? { ...g, invited: !g.invited } : g));
-    setGuests(updated);
-
-    // Sync update to sheet
-    await postInviteesToSheet([
-      {
-        name: guest.fullName,
-        email: guest.email,
-        phone: guest.phone,
-        partySize: guest.partySize,
-        invited: !guest.invited,
-        responseStatus: guest.responseStatus,
-      },
-    ]);
   };
 
   // Update Response Status directly in row dropdown
@@ -436,7 +401,6 @@ export default function AdminPage() {
       'Email Address',
       'Cell Phone',
       'Number of People (Seats)',
-      'Invited Indicator',
       'Response Status',
       'Plus-One / Additional',
       'Dietary Restrictions',
@@ -452,7 +416,6 @@ export default function AdminPage() {
       `"${(g.email || '').replace(/"/g, '""')}"`,
       `"${(g.phone || '').replace(/"/g, '""')}"`,
       g.partySize,
-      g.invited ? 'YES' : 'NO',
       g.responseStatus,
       `"${(g.additionalGuests || '').replace(/"/g, '""')}"`,
       `"${(g.dietary || '').replace(/"/g, '""')}"`,
@@ -483,32 +446,24 @@ export default function AdminPage() {
     setTimeout(() => setCopiedLink(false), 2500);
   };
 
-  // Computed Comparison Metrics: Invitees vs Accepted vs Declined vs No Response
+  // Computed RSVP Metrics
   const stats = useMemo(() => {
-    const totalParties = guests.length;
-    const totalGuests = guests.reduce((acc, g) => acc + (Number(g.partySize) || 1), 0);
+    // Only count actual RSVP submissions (Accepted or Declined)
+    const rsvpList = guests.filter((g) => g.responseStatus === 'Accepted' || g.responseStatus === 'Declined');
+    const totalRsvps = rsvpList.length;
+    const totalSeats = rsvpList.reduce((acc, g) => acc + (Number(g.partySize) || 1), 0);
 
-    const acceptedList = guests.filter((g) => g.responseStatus === 'Accepted');
+    const acceptedList = rsvpList.filter((g) => g.responseStatus === 'Accepted');
     const acceptedParties = acceptedList.length;
     const acceptedSeats = acceptedList.reduce((acc, g) => acc + (Number(g.partySize) || 1), 0);
 
-    const declinedList = guests.filter((g) => g.responseStatus === 'Declined');
+    const declinedList = rsvpList.filter((g) => g.responseStatus === 'Declined');
     const declinedParties = declinedList.length;
 
-    const noResponseList = guests.filter((g) => g.responseStatus === 'No response');
-    const noResponseParties = noResponseList.length;
-    const noResponseSeats = noResponseList.reduce((acc, g) => acc + (Number(g.partySize) || 1), 0);
-
-    const invitedCount = guests.filter((g) => g.invited).length;
-    const noEmailCount = guests.filter((g) => !g.email || !g.email.trim()).length;
-    const noPhoneCount = guests.filter((g) => !g.phone || !g.phone.trim()).length;
-
-    const pelesCount = guests.filter((g) => g.responseStatus === 'Accepted' && g.thuPeles).length;
-    const brunchCount = guests.filter((g) => g.responseStatus === 'Accepted' && g.satBrunch).length;
-    const excursionCount = guests.filter((g) => g.responseStatus === 'Accepted' && g.satExcursion).length;
-    const dietaryCount = guests.filter((g) => g.dietary && g.dietary.trim().length > 0).length;
-
-    const responseRate = totalParties > 0 ? Math.round(((totalParties - noResponseParties) / totalParties) * 100) : 0;
+    const pelesCount = acceptedList.filter((g) => g.thuPeles).length;
+    const brunchCount = acceptedList.filter((g) => g.satBrunch).length;
+    const excursionCount = acceptedList.filter((g) => g.satExcursion).length;
+    const dietaryCount = rsvpList.filter((g) => g.dietary && g.dietary.trim().length > 0 && g.dietary.trim() !== 'None').length;
 
     // Countdown to May 28, 2027
     const weddingDate = new Date('2027-05-28T16:00:00');
@@ -516,28 +471,27 @@ export default function AdminPage() {
     const daysToGo = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
 
     return {
-      totalParties,
-      totalGuests,
+      totalRsvps,
+      totalSeats,
       acceptedParties,
       acceptedSeats,
       declinedParties,
-      noResponseParties,
-      noResponseSeats,
-      invitedCount,
-      noEmailCount,
-      noPhoneCount,
       pelesCount,
       brunchCount,
       excursionCount,
       dietaryCount,
-      responseRate,
       daysToGo: daysToGo > 0 ? daysToGo : 236,
     };
   }, [guests]);
 
-  // Filtered Guests
+  // Filtered Guests (RSVP Submissions)
   const filteredGuests = useMemo(() => {
     return guests.filter((g) => {
+      // Exclude un-responded invitee entries so manifest displays confirmed RSVPs
+      if (g.responseStatus === 'No response') {
+        return false;
+      }
+
       const q = searchQuery.toLowerCase().trim();
       const matchesSearch =
         !q ||
@@ -552,8 +506,7 @@ export default function AdminPage() {
 
       if (statusFilter === 'Accepted') return g.responseStatus === 'Accepted';
       if (statusFilter === 'Declined') return g.responseStatus === 'Declined';
-      if (statusFilter === 'No response') return g.responseStatus === 'No response';
-      if (statusFilter === 'Dietary') return g.dietary && g.dietary.trim().length > 0;
+      if (statusFilter === 'Dietary') return g.dietary && g.dietary.trim().length > 0 && g.dietary.trim() !== 'None';
       return true;
     });
   }, [guests, searchQuery, statusFilter]);
@@ -788,26 +741,26 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* 3. Comparison Metrics: Invitees vs Accepted vs Declined vs No Response */}
+        {/* 3. Live RSVP Headcounts & Event Attendance */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-          {/* Total Invitees */}
+          {/* Total RSVPs */}
           <div className="p-4 rounded-2xl bg-stone-900/70 border border-stone-800">
             <div className="flex items-center justify-between text-stone-400 mb-2">
-              <span className="text-[11px] uppercase tracking-wider font-medium">Total Invitees</span>
+              <span className="text-[11px] uppercase tracking-wider font-medium">Total RSVPs</span>
               <Users className="w-4 h-4 text-stone-400" />
             </div>
-            <div className="text-2xl font-serif text-stone-100 font-semibold">{stats.totalGuests}</div>
-            <p className="text-[10px] text-stone-500 mt-1">{stats.totalParties} parties in sheet</p>
+            <div className="text-2xl font-serif text-stone-100 font-semibold">{stats.totalSeats}</div>
+            <p className="text-[10px] text-stone-500 mt-1">{stats.totalRsvps} {stats.totalRsvps === 1 ? 'party' : 'parties'} recorded</p>
           </div>
 
-          {/* Accepted (Yes) */}
+          {/* Attending (Yes) */}
           <div className="p-4 rounded-2xl bg-stone-900/70 border border-emerald-900/40">
             <div className="flex items-center justify-between text-stone-400 mb-2">
-              <span className="text-[11px] uppercase tracking-wider font-medium">Accepted (Yes)</span>
+              <span className="text-[11px] uppercase tracking-wider font-medium">Attending (Yes)</span>
               <UserCheck className="w-4 h-4 text-emerald-400" />
             </div>
             <div className="text-2xl font-serif text-emerald-400 font-semibold">{stats.acceptedSeats}</div>
-            <p className="text-[10px] text-stone-500 mt-1">{stats.acceptedParties} parties accepted</p>
+            <p className="text-[10px] text-stone-500 mt-1">{stats.acceptedParties} {stats.acceptedParties === 1 ? 'party' : 'parties'} confirmed</p>
           </div>
 
           {/* Declined (No) */}
@@ -820,40 +773,38 @@ export default function AdminPage() {
             <p className="text-[10px] text-stone-500 mt-1">With regrets</p>
           </div>
 
-          {/* No Response */}
-          <div className="p-4 rounded-2xl bg-stone-900/70 border border-amber-900/30">
-            <div className="flex items-center justify-between text-stone-400 mb-2">
-              <span className="text-[11px] uppercase tracking-wider font-medium">No Response</span>
-              <UserMinus className="w-4 h-4 text-amber-400" />
-            </div>
-            <div className="text-2xl font-serif text-amber-400 font-semibold">{stats.noResponseSeats}</div>
-            <p className="text-[10px] text-stone-500 mt-1">{stats.noResponseParties} parties pending</p>
-          </div>
-
-          {/* Planning Email Sent (Invited) */}
+          {/* Peleș Castle Tour */}
           <div className="p-4 rounded-2xl bg-stone-900/70 border border-stone-800">
             <div className="flex items-center justify-between text-stone-400 mb-2">
-              <span className="text-[11px] uppercase tracking-wider font-medium">Invited Sent</span>
-              <Mail className="w-4 h-4 text-emerald-400" />
+              <span className="text-[11px] uppercase tracking-wider font-medium">Peleș Tour</span>
+              <Calendar className="w-4 h-4 text-gold-400" />
             </div>
-            <div className="text-2xl font-serif text-stone-200 font-semibold">
-              {stats.invitedCount} <span className="text-sm font-sans text-stone-500">/ {stats.totalParties}</span>
-            </div>
-            <p className="text-[10px] text-stone-500 mt-1">Invited = YES</p>
+            <div className="text-2xl font-serif text-gold-400 font-semibold">{stats.pelesCount}</div>
+            <p className="text-[10px] text-stone-500 mt-1">Thursday 27 May</p>
           </div>
 
-          {/* Response Rate */}
+          {/* Recovery Brunch */}
           <div className="p-4 rounded-2xl bg-stone-900/70 border border-stone-800">
             <div className="flex items-center justify-between text-stone-400 mb-2">
-              <span className="text-[11px] uppercase tracking-wider font-medium">Response Rate</span>
-              <Clock className="w-4 h-4 text-gold-400" />
+              <span className="text-[11px] uppercase tracking-wider font-medium">Recovery Brunch</span>
+              <Utensils className="w-4 h-4 text-amber-400" />
             </div>
-            <div className="text-2xl font-serif text-gold-400 font-semibold">{stats.responseRate}%</div>
-            <p className="text-[10px] text-stone-500 mt-1">Responded so far</p>
+            <div className="text-2xl font-serif text-amber-400 font-semibold">{stats.brunchCount}</div>
+            <p className="text-[10px] text-stone-500 mt-1">Saturday 29 May</p>
+          </div>
+
+          {/* Cable Car / Bran Excursion */}
+          <div className="p-4 rounded-2xl bg-stone-900/70 border border-stone-800">
+            <div className="flex items-center justify-between text-stone-400 mb-2">
+              <span className="text-[11px] uppercase tracking-wider font-medium">Cable Car / Bran</span>
+              <Mountain className="w-4 h-4 text-sky-400" />
+            </div>
+            <div className="text-2xl font-serif text-sky-400 font-semibold">{stats.excursionCount}</div>
+            <p className="text-[10px] text-stone-500 mt-1">Saturday excursion</p>
           </div>
         </div>
 
-        {/* 4. Action Bar: Search, Filters, Load Guests */}
+        {/* 4. Action Bar: Search, Filters, Record RSVP */}
         <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 pt-1">
           {/* Status Tabs */}
           <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-2xl bg-stone-900 border border-stone-800 text-xs">
@@ -865,7 +816,7 @@ export default function AdminPage() {
                   : 'text-stone-400 hover:text-stone-200'
               }`}
             >
-              All ({guests.length})
+              All RSVPs ({stats.totalRsvps})
             </button>
             <button
               onClick={() => setStatusFilter('Accepted')}
@@ -888,16 +839,6 @@ export default function AdminPage() {
               Declined ({stats.declinedParties})
             </button>
             <button
-              onClick={() => setStatusFilter('No response')}
-              className={`px-3 py-1.5 rounded-xl font-medium transition-all ${
-                statusFilter === 'No response'
-                  ? 'bg-amber-950/80 text-amber-300 border border-amber-800/40 shadow-sm'
-                  : 'text-stone-400 hover:text-stone-200'
-              }`}
-            >
-              No Response ({stats.noResponseParties})
-            </button>
-            <button
               onClick={() => setStatusFilter('Dietary')}
               className={`px-3 py-1.5 rounded-xl font-medium transition-all ${
                 statusFilter === 'Dietary'
@@ -909,7 +850,7 @@ export default function AdminPage() {
             </button>
           </div>
 
-          {/* Right: Search + Load Buttons */}
+          {/* Right: Search + Record RSVP Button */}
           <div className="flex flex-wrap items-center gap-2">
             <div className="relative min-w-[240px]">
               <Search className="w-4 h-4 text-stone-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -917,26 +858,17 @@ export default function AdminPage() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search name, email, cell, notes..."
+                placeholder="Search guest, email, partner, notes..."
                 className="w-full pl-9 pr-4 py-2 bg-stone-900 border border-stone-800 rounded-xl text-xs text-stone-100 placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-gold-500/40 focus:border-gold-500"
               />
             </div>
-
-            <button
-              onClick={() => setIsBulkModalOpen(true)}
-              className="px-3.5 py-2 rounded-xl bg-stone-800 hover:bg-stone-750 border border-stone-700 text-stone-200 hover:text-stone-100 text-xs font-medium flex items-center gap-1.5 transition-all shadow-xs"
-              title="Bulk load guests from CSV or text paste"
-            >
-              <Upload className="w-3.5 h-3.5 text-gold-400" />
-              <span>Bulk Load</span>
-            </button>
 
             <button
               onClick={() => setIsAddModalOpen(true)}
               className="px-3.5 py-2 rounded-xl bg-gold-500/20 hover:bg-gold-500/30 border border-gold-500/40 text-gold-300 hover:text-gold-100 text-xs font-medium flex items-center gap-1.5 transition-all shadow-xs"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>+ Add Invitee</span>
+              <span>+ Record RSVP</span>
             </button>
           </div>
         </div>
@@ -946,25 +878,19 @@ export default function AdminPage() {
           <div className="py-16 text-center rounded-3xl bg-stone-900/60 border border-stone-800 text-stone-400 space-y-3">
             <Users className="w-8 h-8 text-stone-600 mx-auto" />
             <div className="space-y-1">
-              <p className="font-medium text-stone-300">No Guests Found</p>
+              <p className="font-medium text-stone-300">No RSVPs Found</p>
               <p className="text-xs text-stone-500 max-w-md mx-auto">
                 {searchQuery
                   ? `No guests match "${searchQuery}".`
-                  : 'Load your invitees or wait for guests to submit RSVPs. All entries sync directly to your Google Sheet.'}
+                  : 'Guests who submit their RSVP will appear here in real time. You can also record RSVPs manually.'}
               </p>
             </div>
             <div className="flex items-center justify-center gap-2 pt-2">
               <button
-                onClick={() => setIsBulkModalOpen(true)}
+                onClick={() => setIsAddModalOpen(true)}
                 className="px-4 py-2 rounded-xl bg-carpathian-700 hover:bg-carpathian-600 text-stone-100 text-xs font-medium border border-gold-500/30"
               >
-                ⚡ Bulk Load Guest List
-              </button>
-              <button
-                onClick={() => setIsAddModalOpen(true)}
-                className="px-4 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-300 text-xs font-medium border border-stone-700"
-              >
-                + Add Single Invitee
+                + Record RSVP
               </button>
             </div>
           </div>
@@ -974,13 +900,13 @@ export default function AdminPage() {
               <table className="w-full text-left text-xs">
                 <thead className="bg-stone-950/70 border-b border-stone-800 text-[11px] uppercase tracking-wider text-stone-400 font-mono">
                   <tr>
-                    <th className="py-3.5 px-4 font-normal">Primary Guest(s)</th>
-                    <th className="py-3.5 px-4 font-normal">Contact (Email & Cell)</th>
-                    <th className="py-3.5 px-4 font-normal">Seats</th>
-                    <th className="py-3.5 px-4 font-normal">Invited</th>
-                    <th className="py-3.5 px-4 font-normal">Response Status</th>
-                    <th className="py-3.5 px-4 font-normal">Events RSVP</th>
-                    <th className="py-3.5 px-4 font-normal">Dietary</th>
+                    <th className="py-3.5 px-4 font-normal">Primary Guest</th>
+                    <th className="py-3.5 px-4 font-normal">Contact</th>
+                    <th className="py-3.5 px-4 font-normal text-center">Seats</th>
+                    <th className="py-3.5 px-4 font-normal text-center">Response</th>
+                    <th className="py-3.5 px-4 font-normal">Partner / Plus-One</th>
+                    <th className="py-3.5 px-4 font-normal text-center">Events RSVP</th>
+                    <th className="py-3.5 px-4 font-normal">Dietary & Allergies</th>
                     <th className="py-3.5 px-4 font-normal">Lodging</th>
                     <th className="py-3.5 px-4 font-normal">Notes</th>
                   </tr>
@@ -1013,44 +939,41 @@ export default function AdminPage() {
                       </td>
 
                       {/* Number of People */}
-                      <td className="py-3.5 px-4">
-                        <span className="text-stone-200 font-mono bg-stone-950 px-2 py-0.5 rounded border border-stone-800">
+                      <td className="py-3.5 px-4 text-center">
+                        <span className={`font-mono text-xs px-2.5 py-1 rounded-full font-semibold border ${
+                          g.partySize > 1
+                            ? 'bg-carpathian-950 text-emerald-300 border-emerald-800/50'
+                            : 'bg-stone-950 text-stone-300 border-stone-800'
+                        }`}>
                           {g.partySize} {g.partySize === 1 ? 'seat' : 'seats'}
                         </span>
                       </td>
 
-                      {/* Invited Indicator */}
-                      <td className="py-3.5 px-4 whitespace-nowrap">
-                        <label className="flex items-center gap-2 cursor-pointer select-none">
-                          <input
-                            type="checkbox"
-                            checked={g.invited}
-                            onChange={() => toggleInvited(g)}
-                            className="w-4 h-4 rounded text-carpathian-600 accent-carpathian-600 bg-stone-950 border-stone-800 cursor-pointer"
-                          />
-                          <span className={`text-[11px] font-mono ${g.invited ? 'text-emerald-400' : 'text-stone-600'}`}>
-                            {g.invited ? 'YES' : 'NO'}
-                          </span>
-                        </label>
-                      </td>
-
                       {/* Response Status Indicator */}
-                      <td className="py-3.5 px-4 whitespace-nowrap">
-                        <select
-                          value={g.responseStatus}
-                          onChange={(e) => updateStatus(g, e.target.value as ResponseStatus)}
-                          className={`text-[11px] font-medium px-2.5 py-1 rounded-full cursor-pointer border appearance-none focus:outline-none transition-all ${
+                      <td className="py-3.5 px-4 text-center whitespace-nowrap">
+                        <span
+                          className={`text-[11px] font-medium px-3 py-1 rounded-full border ${
                             g.responseStatus === 'Accepted'
-                              ? 'bg-emerald-950/50 text-emerald-400 border-emerald-800/40'
+                              ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800/40'
                               : g.responseStatus === 'Declined'
-                              ? 'bg-stone-950 text-stone-500 border-stone-800'
-                              : 'bg-amber-950/30 text-amber-300 border-amber-800/30'
+                              ? 'bg-rose-950/40 text-rose-300 border-rose-800/40'
+                              : 'bg-stone-950 text-stone-400 border-stone-800'
                           }`}
                         >
-                          <option value="Accepted" className="bg-stone-900 text-emerald-400">Accepted</option>
-                          <option value="Declined" className="bg-stone-900 text-stone-400">Declined</option>
-                          <option value="No response" className="bg-stone-900 text-amber-300">No response</option>
-                        </select>
+                          {g.responseStatus === 'Accepted' ? 'Accepted' : g.responseStatus === 'Declined' ? 'Declined' : 'Pending'}
+                        </span>
+                      </td>
+
+                      {/* Partner / Plus-One */}
+                      <td className="py-3.5 px-4">
+                        {g.additionalGuests && g.additionalGuests.trim() && g.additionalGuests !== 'None' && g.additionalGuests !== 'NO' && g.additionalGuests !== 'YES' ? (
+                          <div className="flex items-center gap-1.5 text-stone-200 text-xs">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                            <span>{g.additionalGuests}</span>
+                          </div>
+                        ) : (
+                          <span className="text-stone-600 font-mono text-xs">—</span>
+                        )}
                       </td>
 
                       {/* Events */}
@@ -1116,91 +1039,29 @@ export default function AdminPage() {
         )}
       </main>
 
-      {/* MODAL: Bulk Load Guests */}
-      {isBulkModalOpen && (
-        <div className="fixed inset-0 z-50 bg-stone-950/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="w-full max-w-2xl p-6 rounded-3xl bg-stone-900 border border-stone-800 shadow-2xl space-y-4 text-stone-100">
-            <div className="flex items-center justify-between pb-3 border-b border-stone-800">
-              <div className="flex items-center gap-2">
-                <Upload className="w-5 h-5 text-gold-400" />
-                <h3 className="font-serif text-lg text-stone-100 font-medium">Bulk Load Guests into Google Sheet</h3>
-              </div>
-              <button onClick={() => setIsBulkModalOpen(false)} className="text-stone-500 hover:text-stone-300 text-sm font-mono">✕</button>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <p className="text-stone-400 leading-relaxed">
-                Paste your guest list lines below. Each entry will be saved directly into your Google Sheet with <code className="text-emerald-400 font-mono">Invited: YES</code> and <code className="text-amber-400 font-mono">Response: No response</code>.
-              </p>
-
-              <div className="flex items-center justify-between">
-                <span className="text-stone-500 text-[11px]">Format: Full Name, Email, Cell Phone, Number of People</span>
-                <button
-                  type="button"
-                  onClick={insertSampleBulk}
-                  className="text-gold-400 hover:text-gold-300 text-[11px] underline font-mono"
-                >
-                  Insert Sample Data
-                </button>
-              </div>
-
-              <textarea
-                rows={8}
-                value={bulkText}
-                onChange={(e) => setBulkText(e.target.value)}
-                placeholder="Andrei and Mary Fratian, andreifratian@gmail.com, +1 (408) 555-0199, 2"
-                className="w-full p-3.5 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-gold-500/40"
-              />
-
-              {bulkError && (
-                <div className="p-2.5 rounded-xl bg-red-950/40 border border-red-800/40 text-red-300 text-xs">
-                  {bulkError}
-                </div>
-              )}
-            </div>
-
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-stone-800">
-              <button
-                type="button"
-                onClick={() => setIsBulkModalOpen(false)}
-                className="px-4 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-300 text-xs font-medium"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleBulkImport}
-                disabled={!bulkText.trim() || isSaving}
-                className="px-5 py-2 rounded-xl bg-carpathian-700 hover:bg-carpathian-600 disabled:opacity-50 text-stone-100 text-xs font-medium border border-gold-500/30 flex items-center gap-1.5"
-              >
-                {isSaving ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
-                <span>Import to Google Sheet</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL: Add Single Invitee */}
+      {/* MODAL: Record RSVP */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 bg-stone-950/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="w-full max-w-md p-6 rounded-3xl bg-stone-900 border border-stone-800 shadow-2xl space-y-4 text-stone-100">
+          <div className="w-full max-w-lg p-6 rounded-3xl bg-stone-900 border border-stone-800 shadow-2xl space-y-4 text-stone-100 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-stone-800">
-              <h3 className="font-serif text-lg text-stone-100 font-medium">Add Invitee to Google Sheet</h3>
+              <div className="flex items-center gap-2">
+                <UserCheck className="w-5 h-5 text-gold-400" />
+                <h3 className="font-serif text-lg text-stone-100 font-medium">Record Guest RSVP</h3>
+              </div>
               <button onClick={() => setIsAddModalOpen(false)} className="text-stone-500 hover:text-stone-300 text-sm font-mono">✕</button>
             </div>
 
-            <form onSubmit={handleAddSingle} className="space-y-3 text-xs">
+            <form onSubmit={handleRecordManualRsvp} className="space-y-3.5 text-xs">
               <div>
                 <label className="block text-[11px] uppercase tracking-wider text-stone-400 font-mono mb-1">
-                  Primary Name(s) *
+                  Primary Guest Full Name *
                 </label>
                 <input
                   type="text"
                   required
-                  value={newGuest.name}
-                  onChange={(e) => setNewGuest({ ...newGuest, name: e.target.value })}
-                  placeholder="e.g. Andrei and Mary Fratian"
+                  value={newRsvp.fullName}
+                  onChange={(e) => setNewRsvp({ ...newRsvp, fullName: e.target.value })}
+                  placeholder="e.g. Andrei Fratian"
                   className="w-full px-3.5 py-2.5 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 placeholder-stone-600 text-xs focus:outline-none focus:ring-2 focus:ring-gold-500/40"
                 />
               </div>
@@ -1212,9 +1073,9 @@ export default function AdminPage() {
                   </label>
                   <input
                     type="email"
-                    value={newGuest.email}
-                    onChange={(e) => setNewGuest({ ...newGuest, email: e.target.value })}
-                    placeholder="andreifratian@gmail.com"
+                    value={newRsvp.email}
+                    onChange={(e) => setNewRsvp({ ...newRsvp, email: e.target.value })}
+                    placeholder="guest@example.com"
                     className="w-full px-3.5 py-2.5 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 placeholder-stone-600 text-xs focus:outline-none focus:ring-2 focus:ring-gold-500/40"
                   />
                 </div>
@@ -1225,8 +1086,8 @@ export default function AdminPage() {
                   </label>
                   <input
                     type="tel"
-                    value={newGuest.phone}
-                    onChange={(e) => setNewGuest({ ...newGuest, phone: e.target.value })}
+                    value={newRsvp.phone}
+                    onChange={(e) => setNewRsvp({ ...newRsvp, phone: e.target.value })}
                     placeholder="+1 (408) 555-0199"
                     className="w-full px-3.5 py-2.5 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 placeholder-stone-600 text-xs focus:outline-none focus:ring-2 focus:ring-gold-500/40"
                   />
@@ -1236,44 +1097,122 @@ export default function AdminPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[11px] uppercase tracking-wider text-stone-400 font-mono mb-1">
-                    Number of People
+                    Response Status
+                  </label>
+                  <select
+                    value={newRsvp.responseStatus}
+                    onChange={(e) => setNewRsvp({ ...newRsvp, responseStatus: e.target.value as ResponseStatus })}
+                    className="w-full px-3.5 py-2.5 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 text-xs focus:outline-none focus:ring-2 focus:ring-gold-500/40"
+                  >
+                    <option value="Accepted">Accepted (Attending)</option>
+                    <option value="Declined">Declined (Regrets)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] uppercase tracking-wider text-stone-400 font-mono mb-1">
+                    Number of Seats
                   </label>
                   <input
                     type="number"
                     min="1"
                     max="10"
-                    value={newGuest.partySize}
-                    onChange={(e) => setNewGuest({ ...newGuest, partySize: Number(e.target.value) })}
+                    value={newRsvp.additionalGuests.trim() ? Math.max(2, newRsvp.partySize) : newRsvp.partySize}
+                    onChange={(e) => setNewRsvp({ ...newRsvp, partySize: Number(e.target.value) })}
                     className="w-full px-3.5 py-2.5 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 text-xs focus:outline-none focus:ring-2 focus:ring-gold-500/40"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] uppercase tracking-wider text-stone-400 font-mono mb-1">
+                  Partner / Plus-One Full Name
+                </label>
+                <input
+                  type="text"
+                  value={newRsvp.additionalGuests}
+                  onChange={(e) => setNewRsvp({ ...newRsvp, additionalGuests: e.target.value })}
+                  placeholder="e.g. Mary Fratian (optional)"
+                  className="w-full px-3.5 py-2.5 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 placeholder-stone-600 text-xs focus:outline-none focus:ring-2 focus:ring-gold-500/40"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] uppercase tracking-wider text-stone-400 font-mono mb-1">
+                  Events Attending
+                </label>
+                <div className="grid grid-cols-3 gap-2 pt-1">
+                  <label className="flex items-center gap-2 p-2.5 rounded-xl bg-stone-950 border border-stone-800 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={newRsvp.thuPeles}
+                      onChange={(e) => setNewRsvp({ ...newRsvp, thuPeles: e.target.checked })}
+                      className="w-4 h-4 rounded text-carpathian-600 accent-carpathian-600 bg-stone-900 border-stone-700"
+                    />
+                    <span className="text-[11px] text-stone-300">Peleș Tour</span>
+                  </label>
+
+                  <label className="flex items-center gap-2 p-2.5 rounded-xl bg-stone-950 border border-stone-800 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={newRsvp.satBrunch}
+                      onChange={(e) => setNewRsvp({ ...newRsvp, satBrunch: e.target.checked })}
+                      className="w-4 h-4 rounded text-carpathian-600 accent-carpathian-600 bg-stone-900 border-stone-700"
+                    />
+                    <span className="text-[11px] text-stone-300">Brunch</span>
+                  </label>
+
+                  <label className="flex items-center gap-2 p-2.5 rounded-xl bg-stone-950 border border-stone-800 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={newRsvp.satExcursion}
+                      onChange={(e) => setNewRsvp({ ...newRsvp, satExcursion: e.target.checked })}
+                      className="w-4 h-4 rounded text-carpathian-600 accent-carpathian-600 bg-stone-900 border-stone-700"
+                    />
+                    <span className="text-[11px] text-stone-300">Excursion</span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] uppercase tracking-wider text-stone-400 font-mono mb-1">
+                    Dietary Requirements
+                  </label>
+                  <input
+                    type="text"
+                    value={newRsvp.dietary}
+                    onChange={(e) => setNewRsvp({ ...newRsvp, dietary: e.target.value })}
+                    placeholder="e.g. Vegetarian, Gluten-free"
+                    className="w-full px-3.5 py-2.5 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 placeholder-stone-600 text-xs focus:outline-none focus:ring-2 focus:ring-gold-500/40"
                   />
                 </div>
 
                 <div>
                   <label className="block text-[11px] uppercase tracking-wider text-stone-400 font-mono mb-1">
-                    Response Status
+                    Lodging / Hotel
                   </label>
-                  <select
-                    value={newGuest.responseStatus}
-                    onChange={(e) => setNewGuest({ ...newGuest, responseStatus: e.target.value as ResponseStatus })}
-                    className="w-full px-3.5 py-2.5 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 text-xs focus:outline-none focus:ring-2 focus:ring-gold-500/40"
-                  >
-                    <option value="No response">No response</option>
-                    <option value="Accepted">Accepted</option>
-                    <option value="Declined">Declined</option>
-                  </select>
+                  <input
+                    type="text"
+                    value={newRsvp.lodging}
+                    onChange={(e) => setNewRsvp({ ...newRsvp, lodging: e.target.value })}
+                    placeholder="e.g. Sinaia Palace Hotel"
+                    className="w-full px-3.5 py-2.5 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 placeholder-stone-600 text-xs focus:outline-none focus:ring-2 focus:ring-gold-500/40"
+                  />
                 </div>
               </div>
 
               <div>
-                <label className="flex items-center gap-2 cursor-pointer pt-1">
-                  <input
-                    type="checkbox"
-                    checked={newGuest.invited}
-                    onChange={(e) => setNewGuest({ ...newGuest, invited: e.target.checked })}
-                    className="w-4 h-4 rounded text-carpathian-600 accent-carpathian-600 bg-stone-950 border-stone-800"
-                  />
-                  <span className="text-xs text-stone-200">Invited indicator (Planning Email / Save-the-Date sent)</span>
+                <label className="block text-[11px] uppercase tracking-wider text-stone-400 font-mono mb-1">
+                  Notes / Special Wishes
                 </label>
+                <textarea
+                  rows={2}
+                  value={newRsvp.notes}
+                  onChange={(e) => setNewRsvp({ ...newRsvp, notes: e.target.value })}
+                  placeholder="Notes from guest or host..."
+                  className="w-full px-3.5 py-2 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 placeholder-stone-600 text-xs focus:outline-none focus:ring-2 focus:ring-gold-500/40"
+                />
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-3 border-t border-stone-800">
@@ -1290,7 +1229,7 @@ export default function AdminPage() {
                   className="px-5 py-2 rounded-xl bg-carpathian-700 hover:bg-carpathian-600 text-stone-100 text-xs font-medium border border-gold-500/30 flex items-center gap-1.5"
                 >
                   {isSaving && <RefreshCw className="w-3.5 h-3.5 animate-spin" />}
-                  <span>Save to Google Sheet</span>
+                  <span>Record RSVP</span>
                 </button>
               </div>
             </form>
@@ -1330,9 +1269,9 @@ export default function AdminPage() {
               </div>
 
               <div className="p-3 rounded-xl bg-stone-950 border border-stone-800 space-y-1 text-stone-400 text-[11px]">
-                <span className="font-semibold text-gold-400 block font-mono">Unified Manifest:</span>
+                <span className="font-semibold text-gold-400 block font-mono">Live RSVP Manifest:</span>
                 <p>
-                  Both your invited roster and RSVP responses live in the same Google Sheet. It tracks both the <strong className="text-stone-200">Invited</strong> indicator and the <strong className="text-stone-200">Response Status</strong> (Accepted, Declined, No response).
+                  Guest responses submitted through the wedding RSVP portal are logged directly to your Google Sheet in real time with party sizes, dietary requirements, and event attendance.
                 </p>
               </div>
             </div>

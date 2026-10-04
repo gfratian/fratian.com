@@ -4,6 +4,30 @@ import React, { useState } from 'react';
 import { useLocale } from '@/context/LocaleContext';
 import { Heart, Send, CheckCircle2, AlertCircle, Sparkles, Music } from 'lucide-react';
 
+function getWebhookUrl(): string {
+  try {
+    const envUrl = process.env.NEXT_PUBLIC_GOOGLE_SHEETS_WEBHOOK_URL;
+    if (typeof envUrl === 'string' && envUrl.trim().startsWith('http')) {
+      return envUrl.trim();
+    }
+  } catch (err) {
+    // Ignore environment lookup error
+  }
+
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const stored = localStorage.getItem('wedding_webhook_url');
+      if (stored && stored.trim().startsWith('http')) {
+        return stored.trim();
+      }
+    }
+  } catch (err) {
+    // Ignore local storage restriction
+  }
+
+  return '';
+}
+
 export default function RsvpForm() {
   const { dict, locale } = useLocale();
 
@@ -42,8 +66,8 @@ export default function RsvpForm() {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (submitEvent: React.FormEvent) => {
+    submitEvent.preventDefault();
     if (!formData.fullName.trim() || !formData.email.trim()) {
       return;
     }
@@ -58,13 +82,11 @@ export default function RsvpForm() {
         submittedAt: new Date().toISOString(),
       };
 
-      const webhookUrl =
-        process.env.NEXT_PUBLIC_GOOGLE_SHEETS_WEBHOOK_URL ||
-        (typeof window !== 'undefined' ? localStorage.getItem('wedding_webhook_url') : '');
+      const webhookUrl = getWebhookUrl();
 
-      if (webhookUrl && webhookUrl.trim().startsWith('http')) {
+      if (webhookUrl) {
         // Direct submission to Google Apps Script Webhook (works seamlessly in static export)
-        await fetch(webhookUrl.trim(), {
+        await fetch(webhookUrl, {
           method: 'POST',
           mode: 'no-cors',
           headers: {

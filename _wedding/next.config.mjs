@@ -9,6 +9,12 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  env: {
+    NEXT_PUBLIC_GOOGLE_SHEETS_WEBHOOK_URL:
+      process.env.NEXT_PUBLIC_GOOGLE_SHEETS_WEBHOOK_URL || '',
+    NEXT_PUBLIC_WEDDING_PASSWORD:
+      process.env.NEXT_PUBLIC_WEDDING_PASSWORD || 'Cantacuzino27',
+  },
   ...(isExport
     ? {
         output: 'export',

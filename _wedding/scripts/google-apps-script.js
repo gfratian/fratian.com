@@ -1,45 +1,34 @@
 /**
- * GOOGLE APPS SCRIPT WEBHOOK: Elizabeth & George Wedding RSVP
- * Account Target: gfratian@gmail.com
+ * GOOGLE APPS SCRIPT WEBHOOK: Elizabeth & George Wedding RSVP & Guest Manifest
+ * Target: gfratian@gmail.com
  *
- * ============================================================================
- * STEP-BY-STEP DEPLOYMENT INSTRUCTIONS (2 Minutes):
- * ============================================================================
- * 1. Sign in to your Google Account (gfratian@gmail.com).
- * 2. Go to Google Drive (https://drive.google.com) or Google Sheets (https://sheets.new).
- * 3. Create a new Google Spreadsheet and name it:
- *    "Elizabeth & George Wedding RSVPs 2027"
- * 4. In the top menu, click: Extensions > Apps Script.
- * 5. Delete any placeholder code in the script editor (Code.gs).
- * 6. Copy and paste the ENTIRE contents of this file into Code.gs.
- * 7. Click the disk icon ("Save project").
- * 8. At the top right, click "Deploy" > "New deployment".
- * 9. Click the gear icon next to "Select type" and choose "Web app".
- * 10. Configure deployment settings:
- *     - Description: Wedding RSVP Webhook
- *     - Execute as: Me (gfratian@gmail.com)
- *     - Who has access: Anyone  <-- (CRITICAL: enables your Next.js site to post)
- * 11. Click "Deploy".
- * 12. Review Permissions:
- *     - Click "Authorize access", choose your gfratian@gmail.com account.
- *     - If Google displays "Google hasn't verified this app", click "Advanced"
- *       and then "Go to Untitled project (unsafe)". Click "Allow".
- * 13. Copy the "Web app URL" (it starts with https://script.google.com/macros/s/...).
- * 14. Paste this URL into your website's .env.local:
- *     GOOGLE_SHEETS_WEBHOOK_URL="https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec"
- * ============================================================================
+ * Tracks both INVITED guests and their RESPONSE STATUS (Accepted, Declined, No response).
  */
+
+var HEADERS = [
+  "Timestamp (UTC)",
+  "Primary Guest Name(s)",
+  "Email Address",
+  "Cell Phone",
+  "Number of People",
+  "Invited (Planning Email)",
+  "Response Status",
+  "Plus-One / Additional Guests",
+  "Dietary Restrictions & Allergies",
+  "Thu May 27 Peleș Tour & Welcome",
+  "Sat May 29 Farewell Brunch",
+  "Sat May 29 Cable Car / Bran Excursion",
+  "Lodging Location / Shuttle Need",
+  "Notes & Well Wishes",
+  "Language (EN/RO)"
+];
 
 function doPost(e) {
   var lock = LockService.getScriptLock();
-  // Wait up to 30 seconds for concurrent writes
   try {
     lock.waitLock(30000);
   } catch (err) {
-    return createJsonResponse({
-      status: "error",
-      message: "Server is busy. Please try again."
-    }, 503);
+    return createJsonResponse({ status: "error", message: "Server is busy. Please try again." }, 503);
   }
 
   try {
@@ -56,10 +45,71 @@ function doPost(e) {
       data = e.parameter;
     }
 
+    // 1. Bulk Import Action from Admin Portal
+    if (data.action === "bulk_invitees" && Array.isArray(data.invitees)) {
+      var addedCount = 0;
+      var existingData = sheet.getDataRange().getValues();
+
+      data.invitees.forEach(function (inv) {
+        if (!inv || !inv.name) return;
+        var name = (inv.name || "").toString().trim();
+        var email = (inv.email || "").toString().trim();
+        var phone = (inv.phone || "").toString().trim();
+        var count = parseInt(inv.partySize, 10) || 2;
+        var invited = inv.invited !== false ? "YES" : "NO";
+        var status = inv.responseStatus || "No response";
+
+        // Check if existing row matches by email or name
+        var matchedRow = -1;
+        if (existingData.length > 1) {
+          for (var r = 1; r < existingData.length; r++) {
+            var rowEmail = (existingData[r][2] || "").toString().trim().toLowerCase();
+            var rowName = (existingData[r][1] || "").toString().trim().toLowerCase();
+            if ((email && rowEmail === email.toLowerCase()) || (rowName && rowName === name.toLowerCase())) {
+              matchedRow = r + 1;
+              break;
+            }
+          }
+        }
+
+        if (matchedRow > 0) {
+          // Update existing row
+          if (phone) sheet.getRange(matchedRow, 4).setValue(phone);
+          sheet.getRange(matchedRow, 5).setValue(count);
+          sheet.getRange(matchedRow, 6).setValue(invited);
+          formatRowStatus(sheet, matchedRow, sheet.getRange(matchedRow, 7).getValue() || status);
+        } else {
+          // Append new invitee row
+          var row = [
+            new Date().toISOString(),
+            name,
+            email,
+            phone,
+            count,
+            invited,
+            status,
+            "", "", "NO", "NO", "NO", "", "", "EN"
+          ];
+          sheet.appendRow(row);
+          var lastRow = sheet.getLastRow();
+          formatRowStatus(sheet, lastRow, status);
+          addedCount++;
+        }
+      });
+
+      return createJsonResponse({
+        status: "success",
+        message: "Successfully processed invitees",
+        added: addedCount
+      }, 200);
+    }
+
+    // 2. Standard Guest RSVP Submission (from wedding portal form)
     var timestamp = new Date().toISOString();
     var primaryName = (data.fullName || data.name || "").toString().trim();
     var email = (data.email || "").toString().trim();
-    var attending = data.attending === true || data.attending === "yes" || data.attending === "true" ? "YES" : "NO";
+    var isAttending = data.attending === true || data.attending === "yes" || data.attending === "true";
+    var responseStatus = isAttending ? "Accepted" : "Declined";
     var additionalGuests = (data.additionalGuests || data.plusOne || "").toString().trim();
     var dietary = Array.isArray(data.dietary) ? data.dietary.join(", ") : (data.dietary || "None").toString().trim();
     var thuPeles = data.thuPeles ? "YES" : "NO";
@@ -69,52 +119,76 @@ function doPost(e) {
     var notes = (data.notes || "").toString().trim();
     var language = (data.language || "en").toString().toUpperCase();
 
-    // Append to sheet
-    var newRow = [
-      timestamp,
-      primaryName,
-      email,
-      attending,
-      additionalGuests,
-      dietary,
-      thuPeles,
-      satBrunch,
-      satExcursion,
-      lodging,
-      notes,
-      language
-    ];
+    // Check if guest is already in the sheet as an invited party
+    var sheetData = sheet.getDataRange().getValues();
+    var existingRow = -1;
 
-    sheet.appendRow(newRow);
-
-    // Apply clean styling to the newly appended row
-    var lastRow = sheet.getLastRow();
-    var rowRange = sheet.getRange(lastRow, 1, 1, newRow.length);
-    rowRange.setFontFamily("Arial");
-    rowRange.setFontSize(10);
-    rowRange.setVerticalAlignment("middle");
-
-    // Highlight row green if attending, gray if declining
-    if (attending === "YES") {
-      sheet.getRange(lastRow, 4).setBackground("#d4edda").setFontColor("#155724").setFontWeight("bold");
-    } else {
-      sheet.getRange(lastRow, 4).setBackground("#f8d7da").setFontColor("#721c24").setFontWeight("bold");
+    if (sheetData.length > 1) {
+      for (var i = 1; i < sheetData.length; i++) {
+        var existingEmail = (sheetData[i][2] || "").toString().trim().toLowerCase();
+        var existingName = (sheetData[i][1] || "").toString().trim().toLowerCase();
+        if ((email && existingEmail === email.toLowerCase()) || (existingName && existingName === primaryName.toLowerCase())) {
+          existingRow = i + 1;
+          break;
+        }
+      }
     }
 
-    return createJsonResponse({
-      status: "success",
-      message: "RSVP successfully recorded",
-      row: lastRow,
-      name: primaryName
-    }, 200);
+    if (existingRow > 0) {
+      // Update existing invited guest row with their response and details
+      sheet.getRange(existingRow, 1).setValue(timestamp);
+      sheet.getRange(existingRow, 7).setValue(responseStatus);
+      sheet.getRange(existingRow, 8).setValue(additionalGuests);
+      sheet.getRange(existingRow, 9).setValue(dietary);
+      sheet.getRange(existingRow, 10).setValue(thuPeles);
+      sheet.getRange(existingRow, 11).setValue(satBrunch);
+      sheet.getRange(existingRow, 12).setValue(satExcursion);
+      sheet.getRange(existingRow, 13).setValue(lodging);
+      sheet.getRange(existingRow, 14).setValue(notes);
+      sheet.getRange(existingRow, 15).setValue(language);
+      formatRowStatus(sheet, existingRow, responseStatus);
+
+      return createJsonResponse({
+        status: "success",
+        message: "RSVP response updated for invited guest",
+        row: existingRow,
+        responseStatus: responseStatus
+      }, 200);
+    } else {
+      // New RSVP submission (append row)
+      var newRow = [
+        timestamp,
+        primaryName,
+        email,
+        data.phone || "",
+        1,
+        "YES",
+        responseStatus,
+        additionalGuests,
+        dietary,
+        thuPeles,
+        satBrunch,
+        satExcursion,
+        lodging,
+        notes,
+        language
+      ];
+
+      sheet.appendRow(newRow);
+      var lastRow = sheet.getLastRow();
+      formatRowStatus(sheet, lastRow, responseStatus);
+
+      return createJsonResponse({
+        status: "success",
+        message: "RSVP recorded successfully",
+        row: lastRow,
+        responseStatus: responseStatus
+      }, 200);
+    }
 
   } catch (error) {
     Logger.log("Error processing RSVP: " + error.toString());
-    return createJsonResponse({
-      status: "error",
-      message: error.toString()
-    }, 500);
-
+    return createJsonResponse({ status: "error", message: error.toString() }, 500);
   } finally {
     lock.releaseLock();
   }
@@ -129,25 +203,58 @@ function doGet(e) {
       var data = sheet.getDataRange().getValues();
       var rows = [];
 
-      // If rows exist past header row
       if (data && data.length > 1) {
+        var headerRow = data[0];
+        // Determine whether sheet uses new 15-column format or legacy 12-column format
+        var hasNewColumns = headerRow.length >= 15 && headerRow[6] === "Response Status";
+
         for (var i = 1; i < data.length; i++) {
           var r = data[i];
-          rows.push({
-            id: i,
-            timestamp: r[0] ? new Date(r[0]).toISOString() : "",
-            fullName: (r[1] || "").toString(),
-            email: (r[2] || "").toString(),
-            attending: r[3] === "YES",
-            additionalGuests: (r[4] || "").toString(),
-            dietary: (r[5] || "").toString(),
-            thuPeles: r[6] === "YES",
-            satBrunch: r[7] === "YES",
-            satExcursion: r[8] === "YES",
-            lodging: (r[9] || "").toString(),
-            notes: (r[10] || "").toString(),
-            language: (r[11] || "EN").toString()
-          });
+          if (!r[1] && !r[2]) continue; // Skip empty rows
+
+          if (hasNewColumns) {
+            rows.push({
+              id: i,
+              timestamp: r[0] ? new Date(r[0]).toISOString() : "",
+              fullName: (r[1] || "").toString(),
+              email: (r[2] || "").toString(),
+              phone: (r[3] || "").toString(),
+              partySize: parseInt(r[4], 10) || 1,
+              invited: r[5] === "YES" || r[5] === true,
+              responseStatus: (r[6] || "No response").toString(),
+              attending: r[6] === "Accepted",
+              additionalGuests: (r[7] || "").toString(),
+              dietary: (r[8] || "").toString(),
+              thuPeles: r[9] === "YES" || r[9] === true,
+              satBrunch: r[10] === "YES" || r[10] === true,
+              satExcursion: r[11] === "YES" || r[11] === true,
+              lodging: (r[12] || "").toString(),
+              notes: (r[13] || "").toString(),
+              language: (r[14] || "EN").toString()
+            });
+          } else {
+            // Graceful fallback for legacy 12-column format
+            var attending = r[3] === "YES" || r[3] === true;
+            rows.push({
+              id: i,
+              timestamp: r[0] ? new Date(r[0]).toISOString() : "",
+              fullName: (r[1] || "").toString(),
+              email: (r[2] || "").toString(),
+              phone: "",
+              partySize: 1,
+              invited: true,
+              responseStatus: attending ? "Accepted" : "Declined",
+              attending: attending,
+              additionalGuests: (r[4] || "").toString(),
+              dietary: (r[5] || "").toString(),
+              thuPeles: r[6] === "YES" || r[6] === true,
+              satBrunch: r[7] === "YES" || r[7] === true,
+              satExcursion: r[8] === "YES" || r[8] === true,
+              lodging: (r[9] || "").toString(),
+              notes: (r[10] || "").toString(),
+              language: (r[11] || "EN").toString()
+            });
+          }
         }
       }
 
@@ -160,10 +267,7 @@ function doGet(e) {
       }, 200);
 
     } catch (err) {
-      return createJsonResponse({
-        status: "error",
-        message: err.toString()
-      }, 500);
+      return createJsonResponse({ status: "error", message: err.toString() }, 500);
     }
   }
 
@@ -177,20 +281,12 @@ function doGet(e) {
   }, 200);
 }
 
-function doOptions(e) {
-  // CORS Preflight handler
-  var output = ContentService.createTextOutput("");
-  output.setMimeType(ContentService.MimeType.TEXT);
-  return output;
-}
-
 function getOrCreateRsvpSheet() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheetName = "RSVP Responses";
   var sheet = ss.getSheetByName(sheetName);
 
   if (!sheet) {
-    // If default "Sheet1" is empty, rename it; otherwise insert new sheet
     var activeSheet = ss.getActiveSheet();
     if (activeSheet && activeSheet.getLastRow() === 0 && activeSheet.getName() === "Sheet1") {
       activeSheet.setName(sheetName);
@@ -200,46 +296,53 @@ function getOrCreateRsvpSheet() {
     }
   }
 
-  // Setup headers if sheet is brand new
+  // If brand new sheet, write the 15 headers
   if (sheet.getLastRow() === 0) {
-    var headers = [
-      "Timestamp (UTC)",
-      "Primary Guest Name(s)",
-      "Email Address",
-      "Attending Wedding (Fri May 28)",
-      "Plus-One / Additional Guests",
-      "Dietary Restrictions & Allergies",
-      "Thu May 27 Peleș Tour & Welcome",
-      "Sat May 29 Farewell Brunch",
-      "Sat May 29 Cable Car / Bran Excursion",
-      "Lodging Location / Shuttle Need",
-      "Notes & Well Wishes",
-      "Language (EN/RO)"
-    ];
-
-    sheet.appendRow(headers);
-
-    // Style the header row
-    var headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setBackground("#143729"); // Carpathian forest green
-    headerRange.setFontColor("#FFFFFF");
-    headerRange.setFontFamily("Arial");
-    headerRange.setFontSize(11);
-    headerRange.setFontWeight("bold");
-    headerRange.setHorizontalAlignment("center");
-    headerRange.setVerticalAlignment("middle");
-    sheet.setRowHeight(1, 38);
-
-    // Freeze top header row
-    sheet.setFrozenRows(1);
-
-    // Auto-resize columns
-    for (var col = 1; col <= headers.length; col++) {
-      sheet.autoResizeColumn(col);
+    sheet.appendRow(HEADERS);
+    formatHeaderRow(sheet);
+  } else {
+    // If sheet exists with old headers, upgrade row 1 headers smoothly
+    var headerValues = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), HEADERS.length)).getValues()[0];
+    if (headerValues[6] !== "Response Status") {
+      sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
+      formatHeaderRow(sheet);
     }
   }
 
   return sheet;
+}
+
+function formatHeaderRow(sheet) {
+  var headerRange = sheet.getRange(1, 1, 1, HEADERS.length);
+  headerRange.setBackground("#143729");
+  headerRange.setFontColor("#FFFFFF");
+  headerRange.setFontFamily("Arial");
+  headerRange.setFontSize(10);
+  headerRange.setFontWeight("bold");
+  headerRange.setHorizontalAlignment("center");
+  headerRange.setVerticalAlignment("middle");
+  sheet.setRowHeight(1, 38);
+  sheet.setFrozenRows(1);
+
+  for (var col = 1; col <= HEADERS.length; col++) {
+    sheet.autoResizeColumn(col);
+  }
+}
+
+function formatRowStatus(sheet, rowNum, status) {
+  var rowRange = sheet.getRange(rowNum, 1, 1, HEADERS.length);
+  rowRange.setFontFamily("Arial");
+  rowRange.setFontSize(10);
+  rowRange.setVerticalAlignment("middle");
+
+  var statusCell = sheet.getRange(rowNum, 7);
+  if (status === "Accepted") {
+    statusCell.setBackground("#d4edda").setFontColor("#155724").setFontWeight("bold");
+  } else if (status === "Declined") {
+    statusCell.setBackground("#f8d7da").setFontColor("#721c24").setFontWeight("bold");
+  } else {
+    statusCell.setBackground("#fff3cd").setFontColor("#856404").setFontWeight("bold");
+  }
 }
 
 function createJsonResponse(data, statusCode) {

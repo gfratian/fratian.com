@@ -5,7 +5,6 @@ import {
   Users,
   CheckCircle2,
   XCircle,
-  HelpCircle,
   Clock,
   Mail,
   Phone,
@@ -32,38 +31,19 @@ import {
   UserCheck,
   UserX,
   UserMinus,
-  Layers,
 } from 'lucide-react';
 
-export type InviteeStatus = 'No response' | 'Accepted' | 'Declined' | 'Maybe';
+export type ResponseStatus = 'Accepted' | 'Declined' | 'No response' | 'Maybe';
 
-export interface Invitee {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  partySize: number;
-  status: InviteeStatus;
-  planningEmailSent: boolean;
-  planningEmailNote?: string;
-  group?: string;
-  notes?: string;
-  // Merged live RSVP details if matched from Google Sheet
-  hasRsvpMatch?: boolean;
-  rsvpTimestamp?: string;
-  additionalGuests?: string;
-  dietary?: string;
-  thuPeles?: boolean;
-  satBrunch?: boolean;
-  satExcursion?: boolean;
-  lodging?: string;
-}
-
-export interface SheetRsvp {
+export interface SheetGuest {
   id: number;
   timestamp: string;
   fullName: string;
   email: string;
+  phone: string;
+  partySize: number;
+  invited: boolean;
+  responseStatus: ResponseStatus;
   attending: boolean;
   additionalGuests?: string;
   dietary?: string;
@@ -82,52 +62,47 @@ export default function AdminPage() {
   const [passcodeInput, setPasscodeInput] = useState<string>('');
   const [passcodeError, setPasscodeError] = useState<boolean>(false);
 
-  // Active Main Tab: 'invitees' (Guest Loading / Master List) vs 'rsvps' (Google Sheets Live Feed)
-  const [activeTab, setActiveTab] = useState<'invitees' | 'rsvps'>('invitees');
-
   // Configuration
   const [webhookUrl, setWebhookUrl] = useState<string>('');
   const [spreadsheetUrl, setSpreadsheetUrl] = useState<string>('');
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
 
-  // Data
-  const [invitees, setInvitees] = useState<Invitee[]>([]);
-  const [sheetRsvps, setSheetRsvps] = useState<SheetRsvp[]>([]);
+  // Google Sheet Data
+  const [guests, setGuests] = useState<SheetGuest[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
   const [isLiveConnected, setIsLiveConnected] = useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<string>('');
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
 
   // Filters & Search
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [statusFilter, setStatusFilter] = useState<'All' | 'No response' | 'Accepted' | 'Declined' | 'Maybe'>('All');
+  const [statusFilter, setStatusFilter] = useState<'All' | 'Accepted' | 'Declined' | 'No response' | 'Dietary'>('All');
 
   // Modals
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
   const [isBulkModalOpen, setIsBulkModalOpen] = useState<boolean>(false);
-  const [editingInvitee, setEditingInvitee] = useState<Invitee | null>(null);
+  const [editingGuest, setEditingGuest] = useState<SheetGuest | null>(null);
 
   // Single Add Form
-  const [newInvitee, setNewInvitee] = useState<Partial<Invitee>>({
+  const [newGuest, setNewGuest] = useState({
     name: '',
     email: '',
     phone: '',
     partySize: 2,
-    status: 'No response',
-    planningEmailSent: false,
-    group: 'General',
-    notes: '',
+    invited: true,
+    responseStatus: 'No response' as ResponseStatus,
   });
 
   // Bulk Load Text Area
   const [bulkText, setBulkText] = useState<string>('');
   const [bulkError, setBulkError] = useState<string>('');
 
-  // Load configuration & saved invitees on mount
+  // Load configuration on mount
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // Check query bypass
+    // Check query bypass ?admin_key=CantacuzinoAdmin27 or ?key=...
     const urlParams = new URLSearchParams(window.location.search);
     const keyParam = urlParams.get('admin_key') || urlParams.get('key');
     const storedAuth = localStorage.getItem('wedding_admin_auth');
@@ -139,19 +114,6 @@ export default function AdminPage() {
       setIsUnlocked(true);
     }
 
-    // Load saved invitees roster
-    try {
-      const saved = localStorage.getItem('wedding_master_invitees_v2');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setInvitees(parsed);
-        }
-      }
-    } catch (err) {
-      console.error('Failed to parse saved invitees', err);
-    }
-
     // Load webhook URL
     const envWebhook = process.env.NEXT_PUBLIC_GOOGLE_SHEETS_WEBHOOK_URL || '';
     const storedWebhook = localStorage.getItem('wedding_webhook_url') || '';
@@ -161,18 +123,8 @@ export default function AdminPage() {
     }
   }, []);
 
-  // Save invitees to localStorage whenever changed
-  const saveInvitees = (list: Invitee[]) => {
-    setInvitees(list);
-    try {
-      localStorage.setItem('wedding_master_invitees_v2', JSON.stringify(list));
-    } catch (e) {
-      console.error('Error saving invitees', e);
-    }
-  };
-
-  // Sync / Fetch live RSVPs directly from Google Apps Script
-  const fetchRsvps = async (overrideUrl?: string) => {
+  // Fetch live rows from Google Apps Script Webhook
+  const fetchSheetData = async (overrideUrl?: string) => {
     const targetUrl = (overrideUrl !== undefined ? overrideUrl : webhookUrl).trim();
     if (!targetUrl || !targetUrl.startsWith('http')) {
       setIsLiveConnected(false);
@@ -191,60 +143,43 @@ export default function AdminPage() {
         setIsLiveConnected(true);
         if (json.spreadsheetUrl) setSpreadsheetUrl(json.spreadsheetUrl);
 
-        const rsvps: SheetRsvp[] = json.data;
-        setSheetRsvps(rsvps);
-
-        // Cross-match with invitees roster:
-        // If an invitee matches an RSVP row by email or name, automatically update their acceptance status
-        setInvitees((prevInvitees) => {
-          const updated = prevInvitees.map((inv) => {
-            const invEmail = (inv.email || '').toLowerCase().trim();
-            const invName = (inv.name || '').toLowerCase().trim();
-
-            const match = rsvps.find((r) => {
-              const rEmail = (r.email || '').toLowerCase().trim();
-              const rName = (r.fullName || '').toLowerCase().trim();
-              return (invEmail && rEmail === invEmail) || (invName && rName === invName);
-            });
-
-            if (match) {
-              return {
-                ...inv,
-                status: (match.attending ? 'Accepted' : 'Declined') as InviteeStatus,
-                hasRsvpMatch: true,
-                rsvpTimestamp: match.timestamp,
-                additionalGuests: match.additionalGuests,
-                dietary: match.dietary,
-                thuPeles: match.thuPeles,
-                satBrunch: match.satBrunch,
-                satExcursion: match.satExcursion,
-                lodging: match.lodging,
-              };
-            }
-            return inv;
-          });
-
-          // Save matched updates
-          try {
-            localStorage.setItem('wedding_master_invitees_v2', JSON.stringify(updated));
-          } catch (e) {}
-
-          return updated;
+        const mapped: SheetGuest[] = json.data.map((r: any) => {
+          const resp = (r.responseStatus || (r.attending ? 'Accepted' : 'Declined')).toString() as ResponseStatus;
+          return {
+            id: r.id,
+            timestamp: r.timestamp || '',
+            fullName: r.fullName || 'Guest',
+            email: r.email || '',
+            phone: r.phone || '',
+            partySize: parseInt(r.partySize, 10) || 1,
+            invited: r.invited !== false,
+            responseStatus: resp,
+            attending: resp === 'Accepted',
+            additionalGuests: r.additionalGuests || '',
+            dietary: r.dietary || '',
+            thuPeles: !!r.thuPeles,
+            satBrunch: !!r.satBrunch,
+            satExcursion: !!r.satExcursion,
+            lodging: r.lodging || '',
+            notes: r.notes || '',
+            language: r.language || 'EN',
+          };
         });
 
-        setStatusMessage(`Successfully synced ${rsvps.length} live submissions from Google Sheets.`);
+        setGuests(mapped);
+        setStatusMessage(`Successfully synced ${mapped.length} records directly from Google Sheets.`);
       } else if (json && json.status === 'ok') {
         setIsLiveConnected(true);
         if (json.spreadsheetUrl) setSpreadsheetUrl(json.spreadsheetUrl);
-        setSheetRsvps([]);
-        setStatusMessage('Connected to Google Sheet. No RSVPs submitted yet.');
+        setGuests([]);
+        setStatusMessage('Connected to Google Sheet. Ready for invitees and RSVPs.');
       } else {
         throw new Error(json.message || 'Invalid response format');
       }
     } catch (err: any) {
-      console.warn('Could not fetch from live Google Sheet:', err.message);
+      console.warn('Could not fetch from Google Sheet:', err.message);
       setIsLiveConnected(false);
-      setStatusMessage('Notice: Google Sheet offline or unreachable. Displaying cached records.');
+      setStatusMessage('Notice: Google Sheet offline or unreachable. Check webhook configuration.');
     } finally {
       setIsLoading(false);
     }
@@ -252,7 +187,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (isUnlocked && webhookUrl) {
-      fetchRsvps();
+      fetchSheetData();
     }
   }, [isUnlocked, webhookUrl]);
 
@@ -291,62 +226,92 @@ export default function AdminPage() {
       }
     } catch (err) {}
     setSettingsOpen(false);
-    fetchRsvps(webhookUrl.trim());
+    fetchSheetData(webhookUrl.trim());
+  };
+
+  // Post new invitees directly into the Google Sheet via webhook
+  const postInviteesToSheet = async (inviteesList: any[]) => {
+    if (!webhookUrl || !webhookUrl.startsWith('http')) return;
+    setIsSaving(true);
+    try {
+      await fetch(webhookUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: 'bulk_invitees',
+          invitees: inviteesList,
+        }),
+      });
+      // Short delay then refresh from sheet
+      setTimeout(() => {
+        fetchSheetData();
+      }, 1500);
+    } catch (err) {
+      console.error('Failed to post invitees to sheet', err);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Add Single Invitee
-  const handleAddSingle = (e: React.FormEvent) => {
+  const handleAddSingle = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newInvitee.name || !newInvitee.name.trim()) return;
+    if (!newGuest.name || !newGuest.name.trim()) return;
 
-    const firstName = newInvitee.name.trim().split(' ')[0];
-    const created: Invitee = {
-      id: `inv-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
-      name: newInvitee.name.trim(),
-      email: (newInvitee.email || '').trim(),
-      phone: (newInvitee.phone || '').trim(),
-      partySize: Math.max(1, Number(newInvitee.partySize) || 1),
-      status: (newInvitee.status as InviteeStatus) || 'No response',
-      planningEmailSent: !!newInvitee.planningEmailSent,
-      planningEmailNote: newInvitee.planningEmailNote || `${firstName} — planning email`,
-      group: newInvitee.group || 'General',
-      notes: newInvitee.notes || '',
+    const inviteeItem = {
+      name: newGuest.name.trim(),
+      email: (newGuest.email || '').trim(),
+      phone: (newGuest.phone || '').trim(),
+      partySize: Math.max(1, Number(newGuest.partySize) || 1),
+      invited: newGuest.invited,
+      responseStatus: newGuest.responseStatus,
     };
 
-    saveInvitees([...invitees, created]);
-    setNewInvitee({
+    // Optimistically update UI
+    const tempGuest: SheetGuest = {
+      id: Date.now(),
+      timestamp: new Date().toISOString(),
+      fullName: inviteeItem.name,
+      email: inviteeItem.email,
+      phone: inviteeItem.phone,
+      partySize: inviteeItem.partySize,
+      invited: inviteeItem.invited,
+      responseStatus: inviteeItem.responseStatus,
+      attending: inviteeItem.responseStatus === 'Accepted',
+    };
+    setGuests((prev) => [...prev, tempGuest]);
+
+    setIsAddModalOpen(false);
+    setNewGuest({
       name: '',
       email: '',
       phone: '',
       partySize: 2,
-      status: 'No response',
-      planningEmailSent: false,
-      group: 'General',
-      notes: '',
+      invited: true,
+      responseStatus: 'No response',
     });
-    setIsAddModalOpen(false);
+
+    // Write to Google Sheet
+    await postInviteesToSheet([inviteeItem]);
   };
 
   // Bulk Load / Paste Invitees
-  const handleBulkImport = () => {
+  const handleBulkImport = async () => {
     if (!bulkText.trim()) return;
     setBulkError('');
 
     try {
       const lines = bulkText.split('\n').map((l) => l.trim()).filter((l) => l.length > 0);
-      const parsedList: Invitee[] = [];
+      const parsedList: any[] = [];
 
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
-        // Split by comma, tab, or pipe
         const parts = line.split(/,|\t|\|/).map((p) => p.trim());
         if (parts.length === 0 || !parts[0]) continue;
 
-        // Skip header lines like "Name, Email, Cell, Count"
-        if (
-          i === 0 &&
-          (parts[0].toLowerCase() === 'name' || parts[0].toLowerCase() === 'full name')
-        ) {
+        // Skip header lines
+        if (i === 0 && (parts[0].toLowerCase() === 'name' || parts[0].toLowerCase() === 'full name')) {
           continue;
         }
 
@@ -354,114 +319,121 @@ export default function AdminPage() {
         const email = parts[1] || '';
         const phone = parts[2] || '';
         const count = Math.max(1, parseInt(parts[3], 10) || 2);
-        const group = parts[4] || 'General';
 
         parsedList.push({
-          id: `bulk-${Date.now()}-${i}-${Math.random().toString(36).substr(2, 4)}`,
           name,
           email,
           phone,
           partySize: count,
-          status: 'No response',
-          planningEmailSent: false,
-          planningEmailNote: `${name.split(' ')[0]} — planning email`,
-          group,
+          invited: true,
+          responseStatus: 'No response',
         });
       }
 
       if (parsedList.length === 0) {
-        setBulkError('No valid rows found. Please format as: Name, Email, Phone, Count');
+        setBulkError('No valid rows found. Format: Name, Email, Cell, People Count');
         return;
       }
 
-      saveInvitees([...invitees, ...parsedList]);
-      setBulkText('');
       setIsBulkModalOpen(false);
-      setStatusMessage(`Successfully loaded ${parsedList.length} invitees into your master roster.`);
+      setBulkText('');
+
+      // Send to Google Sheet
+      await postInviteesToSheet(parsedList);
+      setStatusMessage(`Sending ${parsedList.length} invitees to Google Sheets...`);
     } catch (err: any) {
       setBulkError(`Import error: ${err.message}`);
     }
   };
 
-  // Pre-fill demo sample in Bulk Modal for convenience
   const insertSampleBulk = () => {
     setBulkText(
-      `Andrei and Mary Fratian, andreifratian@gmail.com, +1 (408) 555-0199, 2, Family\n` +
-      `Alexander and Elena Vancea, alex.vancea@gmail.com, +40 722 123 456, 2, Friends\n` +
-      `Marcus Aurelius Sterling, m.sterling@investments.co.uk, +44 20 7946 0912, 1, VIP\n` +
-      `David and Rachel Miller, david.miller@techfirm.io, +1 (650) 555-0144, 2, Tech\n` +
-      `Sophia Maria Popescu, sophia.m.popescu@gmail.com, +40 744 987 654, 2, Friends`
+      `Andrei and Mary Fratian, andreifratian@gmail.com, +1 (408) 555-0199, 2\n` +
+      `Alexander and Elena Vancea, alex.vancea@gmail.com, +40 722 123 456, 2\n` +
+      `Marcus Aurelius Sterling, m.sterling@investments.co.uk, +44 20 7946 0912, 1\n` +
+      `David and Rachel Miller, david.miller@techfirm.io, +1 (650) 555-0144, 2\n` +
+      `Sophia Maria Popescu, sophia.m.popescu@gmail.com, +40 744 987 654, 2`
     );
   };
 
-  // Toggle Planning Email Sent Checkbox
-  const togglePlanningEmail = (id: string) => {
-    const updated = invitees.map((inv) =>
-      inv.id === id ? { ...inv, planningEmailSent: !inv.planningEmailSent } : inv
+  // Toggle Invited Checkbox directly in row
+  const toggleInvited = async (guest: SheetGuest) => {
+    const updated = guests.map((g) => (g.id === guest.id ? { ...g, invited: !g.invited } : g));
+    setGuests(updated);
+
+    // Sync update to sheet
+    await postInviteesToSheet([
+      {
+        name: guest.fullName,
+        email: guest.email,
+        phone: guest.phone,
+        partySize: guest.partySize,
+        invited: !guest.invited,
+        responseStatus: guest.responseStatus,
+      },
+    ]);
+  };
+
+  // Update Response Status directly in row dropdown
+  const updateStatus = async (guest: SheetGuest, newStatus: ResponseStatus) => {
+    const updated = guests.map((g) =>
+      g.id === guest.id ? { ...g, responseStatus: newStatus, attending: newStatus === 'Accepted' } : g
     );
-    saveInvitees(updated);
+    setGuests(updated);
+
+    // Sync update to sheet
+    await postInviteesToSheet([
+      {
+        name: guest.fullName,
+        email: guest.email,
+        phone: guest.phone,
+        partySize: guest.partySize,
+        invited: guest.invited,
+        responseStatus: newStatus,
+      },
+    ]);
   };
 
-  // Update Status directly from row dropdown
-  const updateInviteeStatus = (id: string, newStatus: InviteeStatus) => {
-    const updated = invitees.map((inv) => (inv.id === id ? { ...inv, status: newStatus } : inv));
-    saveInvitees(updated);
-  };
-
-  // Delete Invitee
-  const deleteInvitee = (id: string, name: string) => {
-    if (typeof window !== 'undefined' && window.confirm(`Remove ${name} from your invited guest roster?`)) {
-      saveInvitees(invitees.filter((inv) => inv.id !== id));
-    }
-  };
-
-  // Save Edited Invitee
-  const handleSaveEdit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingInvitee) return;
-    const updated = invitees.map((inv) => (inv.id === editingInvitee.id ? editingInvitee : inv));
-    saveInvitees(updated);
-    setEditingInvitee(null);
-  };
-
-  // Export Master Invitees CSV
-  const exportInviteesCsv = () => {
+  // Export CSV
+  const exportCsv = () => {
     const headers = [
-      'Full Name / Party',
+      'Primary Guest Name',
       'Email Address',
-      'Cell / Phone',
+      'Cell Phone',
       'Number of People (Seats)',
-      'RSVP Status',
-      'Planning Email Sent',
-      'Group / Category',
-      'Notes',
-      'Peleș Castle Tour',
-      'Brunch',
-      'Excursion',
-      'Dietary Requirements',
+      'Invited Indicator',
+      'Response Status',
+      'Plus-One / Additional',
+      'Dietary Restrictions',
+      'Thu Peleș Tour',
+      'Sat Farewell Brunch',
+      'Sat Excursion',
+      'Lodging Location',
+      'Notes & Wishes',
     ];
 
-    const rows = filteredInvitees.map((inv) => [
-      `"${(inv.name || '').replace(/"/g, '""')}"`,
-      `"${(inv.email || '').replace(/"/g, '""')}"`,
-      `"${(inv.phone || '').replace(/"/g, '""')}"`,
-      inv.partySize,
-      inv.status,
-      inv.planningEmailSent ? 'YES' : 'NO',
-      `"${(inv.group || '').replace(/"/g, '""')}"`,
-      `"${(inv.notes || '').replace(/"/g, '""')}"`,
-      inv.thuPeles ? 'YES' : 'NO',
-      inv.satBrunch ? 'YES' : 'NO',
-      inv.satExcursion ? 'YES' : 'NO',
-      `"${(inv.dietary || '').replace(/"/g, '""')}"`,
+    const rows = filteredGuests.map((g) => [
+      `"${(g.fullName || '').replace(/"/g, '""')}"`,
+      `"${(g.email || '').replace(/"/g, '""')}"`,
+      `"${(g.phone || '').replace(/"/g, '""')}"`,
+      g.partySize,
+      g.invited ? 'YES' : 'NO',
+      g.responseStatus,
+      `"${(g.additionalGuests || '').replace(/"/g, '""')}"`,
+      `"${(g.dietary || '').replace(/"/g, '""')}"`,
+      g.thuPeles ? 'YES' : 'NO',
+      g.satBrunch ? 'YES' : 'NO',
+      g.satExcursion ? 'YES' : 'NO',
+      `"${(g.lodging || '').replace(/"/g, '""')}"`,
+      `"${(g.notes || '').replace(/"/g, '""')}"`,
     ]);
 
-    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+    const csvContent = [headers.join(','), ...rows.map((row) => row.join(','))].join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `elizabeth-george-invitees-roster-${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute('download', `wedding-guest-manifest-${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -476,28 +448,30 @@ export default function AdminPage() {
     setTimeout(() => setCopiedLink(false), 2500);
   };
 
-  // Comparison Metrics: Invitees vs Accepted vs Declined vs No Response
-  const comparisonStats = useMemo(() => {
-    const totalParties = invitees.length;
-    const totalGuests = invitees.reduce((acc, inv) => acc + (Number(inv.partySize) || 1), 0);
+  // Computed Comparison Metrics: Invitees vs Accepted vs Declined vs No Response
+  const stats = useMemo(() => {
+    const totalParties = guests.length;
+    const totalGuests = guests.reduce((acc, g) => acc + (Number(g.partySize) || 1), 0);
 
-    const acceptedList = invitees.filter((inv) => inv.status === 'Accepted');
+    const acceptedList = guests.filter((g) => g.responseStatus === 'Accepted');
     const acceptedParties = acceptedList.length;
-    const acceptedGuests = acceptedList.reduce((acc, inv) => acc + (Number(inv.partySize) || 1), 0);
+    const acceptedSeats = acceptedList.reduce((acc, g) => acc + (Number(g.partySize) || 1), 0);
 
-    const declinedList = invitees.filter((inv) => inv.status === 'Declined');
+    const declinedList = guests.filter((g) => g.responseStatus === 'Declined');
     const declinedParties = declinedList.length;
 
-    const noResponseList = invitees.filter((inv) => inv.status === 'No response');
+    const noResponseList = guests.filter((g) => g.responseStatus === 'No response');
     const noResponseParties = noResponseList.length;
-    const noResponseGuests = noResponseList.reduce((acc, inv) => acc + (Number(inv.partySize) || 1), 0);
+    const noResponseSeats = noResponseList.reduce((acc, g) => acc + (Number(g.partySize) || 1), 0);
 
-    const maybeList = invitees.filter((inv) => inv.status === 'Maybe');
-    const maybeParties = maybeList.length;
+    const invitedCount = guests.filter((g) => g.invited).length;
+    const noEmailCount = guests.filter((g) => !g.email || !g.email.trim()).length;
+    const noPhoneCount = guests.filter((g) => !g.phone || !g.phone.trim()).length;
 
-    const emailSentCount = invitees.filter((inv) => inv.planningEmailSent).length;
-    const noEmailCount = invitees.filter((inv) => !inv.email || !inv.email.trim()).length;
-    const noPhoneCount = invitees.filter((inv) => !inv.phone || !inv.phone.trim()).length;
+    const pelesCount = guests.filter((g) => g.responseStatus === 'Accepted' && g.thuPeles).length;
+    const brunchCount = guests.filter((g) => g.responseStatus === 'Accepted' && g.satBrunch).length;
+    const excursionCount = guests.filter((g) => g.responseStatus === 'Accepted' && g.satExcursion).length;
+    const dietaryCount = guests.filter((g) => g.dietary && g.dietary.trim().length > 0).length;
 
     const responseRate = totalParties > 0 ? Math.round(((totalParties - noResponseParties) / totalParties) * 100) : 0;
 
@@ -510,40 +484,44 @@ export default function AdminPage() {
       totalParties,
       totalGuests,
       acceptedParties,
-      acceptedGuests,
+      acceptedSeats,
       declinedParties,
       noResponseParties,
-      noResponseGuests,
-      maybeParties,
-      emailSentCount,
+      noResponseSeats,
+      invitedCount,
       noEmailCount,
       noPhoneCount,
+      pelesCount,
+      brunchCount,
+      excursionCount,
+      dietaryCount,
       responseRate,
       daysToGo: daysToGo > 0 ? daysToGo : 236,
     };
-  }, [invitees]);
+  }, [guests]);
 
-  // Filtered Invitees
-  const filteredInvitees = useMemo(() => {
-    return invitees.filter((inv) => {
+  // Filtered Guests
+  const filteredGuests = useMemo(() => {
+    return guests.filter((g) => {
       const q = searchQuery.toLowerCase().trim();
       const matchesSearch =
         !q ||
-        inv.name.toLowerCase().includes(q) ||
-        inv.email.toLowerCase().includes(q) ||
-        inv.phone.toLowerCase().includes(q) ||
-        (inv.group && inv.group.toLowerCase().includes(q)) ||
-        (inv.notes && inv.notes.toLowerCase().includes(q));
+        g.fullName.toLowerCase().includes(q) ||
+        g.email.toLowerCase().includes(q) ||
+        g.phone.toLowerCase().includes(q) ||
+        (g.additionalGuests && g.additionalGuests.toLowerCase().includes(q)) ||
+        (g.dietary && g.dietary.toLowerCase().includes(q)) ||
+        (g.notes && g.notes.toLowerCase().includes(q));
 
       if (!matchesSearch) return false;
 
-      if (statusFilter === 'No response') return inv.status === 'No response';
-      if (statusFilter === 'Accepted') return inv.status === 'Accepted';
-      if (statusFilter === 'Declined') return inv.status === 'Declined';
-      if (statusFilter === 'Maybe') return inv.status === 'Maybe';
+      if (statusFilter === 'Accepted') return g.responseStatus === 'Accepted';
+      if (statusFilter === 'Declined') return g.responseStatus === 'Declined';
+      if (statusFilter === 'No response') return g.responseStatus === 'No response';
+      if (statusFilter === 'Dietary') return g.dietary && g.dietary.trim().length > 0;
       return true;
     });
-  }, [invitees, searchQuery, statusFilter]);
+  }, [guests, searchQuery, statusFilter]);
 
   // Render Admin Lock Screen (Dark Luxury Design)
   if (!isUnlocked) {
@@ -624,16 +602,16 @@ export default function AdminPage() {
                 {isLiveConnected ? (
                   <span className="flex items-center gap-1 text-[11px] text-emerald-400 bg-emerald-950/50 border border-emerald-800/40 px-2 py-0.5 rounded-full">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    Live Google Sheets ({sheetRsvps.length})
+                    Live Google Sheets ({guests.length})
                   </span>
                 ) : (
                   <span className="text-[11px] text-amber-400 bg-amber-950/40 border border-amber-800/40 px-2 py-0.5 rounded-full">
-                    Sheets Connecting...
+                    Connecting to Sheets...
                   </span>
                 )}
               </div>
               <p className="text-[11px] text-stone-500 hidden sm:block">
-                Castelul Cantacuzino • May 28, 2027 • Guest Planning Manifest
+                Castelul Cantacuzino • May 28, 2027 • Unified GSheets Manifest
               </p>
             </div>
           </div>
@@ -652,17 +630,17 @@ export default function AdminPage() {
             )}
 
             <button
-              onClick={() => fetchRsvps()}
-              disabled={isLoading}
+              onClick={() => fetchSheetData()}
+              disabled={isLoading || isSaving}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-900 border border-stone-800 text-stone-300 hover:text-stone-100 text-xs font-medium hover:border-stone-700 transition-all"
-              title="Refresh Google Sheet records"
+              title="Refresh records from Google Sheets"
             >
-              <RefreshCw className={`w-3.5 h-3.5 text-gold-400 ${isLoading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 text-gold-400 ${isLoading || isSaving ? 'animate-spin' : ''}`} />
               <span className="hidden sm:inline">Sync Sheets</span>
             </button>
 
             <button
-              onClick={exportInviteesCsv}
+              onClick={exportCsv}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-carpathian-800/60 border border-gold-500/30 text-gold-300 hover:text-gold-200 text-xs font-medium hover:bg-carpathian-800 transition-all"
               title="Export CSV"
             >
@@ -689,7 +667,7 @@ export default function AdminPage() {
         </div>
       </header>
 
-      {/* Main Container */}
+      {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         {/* Banner Alert if Status Message */}
         {statusMessage && (
@@ -707,7 +685,7 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* 1. Header Banner & Countdown */}
+        {/* 1. Header Banner (Dark Carpathian Luxury with Countdown) */}
         <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-stone-900 via-stone-900 to-carpathian-950/80 border border-stone-800 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
           <div className="space-y-1.5 relative z-10">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif text-stone-100 font-medium tracking-wide">
@@ -726,480 +704,378 @@ export default function AdminPage() {
               28 MAY 2027
             </div>
             <div className="text-xs text-stone-400 font-mono">
-              {comparisonStats.daysToGo} days to go
+              {stats.daysToGo} days to go
             </div>
           </div>
 
-          {/* Ambient forest glow */}
           <div className="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-carpathian-700/10 blur-3xl pointer-events-none" />
         </div>
 
-        {/* 2. Top-Level Navigation Tabs (Invitees Master List vs Live Google Sheet Feed) */}
-        <div className="flex items-center justify-between border-b border-stone-800 pb-3">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setActiveTab('invitees')}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-medium transition-all ${
-                activeTab === 'invitees'
-                  ? 'bg-carpathian-700 text-stone-100 border border-gold-500/40 shadow-sm'
-                  : 'bg-stone-900/60 text-stone-400 hover:text-stone-200 border border-stone-800'
-              }`}
-            >
-              <Users className="w-4 h-4 text-gold-400" />
-              <span>Invitees Roster ({invitees.length} Parties)</span>
-            </button>
+        {/* 2. Timeline Milestones Row */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div className="p-4 rounded-2xl bg-stone-900/70 border border-stone-800">
+            <div className="text-[10px] uppercase tracking-wider font-mono text-stone-400 font-medium">
+              Save-the-Dates Sent
+            </div>
+            <div className="text-base font-serif font-semibold text-stone-100 mt-1">
+              By late Sept 2026
+            </div>
+          </div>
 
+          <div className="p-4 rounded-2xl bg-stone-900/90 border border-gold-500/50 shadow-sm relative">
+            <div className="flex items-center justify-between">
+              <div className="text-[10px] uppercase tracking-wider font-mono text-gold-400 font-medium">
+                Respond By
+              </div>
+              <span className="w-2 h-2 rounded-full bg-gold-400 animate-pulse" title="Active milestone" />
+            </div>
+            <div className="text-base font-serif font-semibold text-gold-300 mt-1">
+              1 Dec 2026
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-stone-900/70 border border-stone-800">
+            <div className="text-[10px] uppercase tracking-wider font-mono text-stone-400 font-medium">
+              Formal Invitations
+            </div>
+            <div className="text-base font-serif font-semibold text-stone-100 mt-1">
+              Feb 2027
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-stone-900/70 border border-stone-800">
+            <div className="text-[10px] uppercase tracking-wider font-mono text-stone-400 font-medium">
+              Wedding Day
+            </div>
+            <div className="text-base font-serif font-semibold text-stone-100 mt-1">
+              28 May 2027
+            </div>
+          </div>
+        </div>
+
+        {/* 3. Comparison Metrics: Invitees vs Accepted vs Declined vs No Response */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+          {/* Total Invitees */}
+          <div className="p-4 rounded-2xl bg-stone-900/70 border border-stone-800">
+            <div className="flex items-center justify-between text-stone-400 mb-2">
+              <span className="text-[11px] uppercase tracking-wider font-medium">Total Invitees</span>
+              <Users className="w-4 h-4 text-stone-400" />
+            </div>
+            <div className="text-2xl font-serif text-stone-100 font-semibold">{stats.totalGuests}</div>
+            <p className="text-[10px] text-stone-500 mt-1">{stats.totalParties} parties in sheet</p>
+          </div>
+
+          {/* Accepted (Yes) */}
+          <div className="p-4 rounded-2xl bg-stone-900/70 border border-emerald-900/40">
+            <div className="flex items-center justify-between text-stone-400 mb-2">
+              <span className="text-[11px] uppercase tracking-wider font-medium">Accepted (Yes)</span>
+              <UserCheck className="w-4 h-4 text-emerald-400" />
+            </div>
+            <div className="text-2xl font-serif text-emerald-400 font-semibold">{stats.acceptedSeats}</div>
+            <p className="text-[10px] text-stone-500 mt-1">{stats.acceptedParties} parties accepted</p>
+          </div>
+
+          {/* Declined (No) */}
+          <div className="p-4 rounded-2xl bg-stone-900/70 border border-stone-800">
+            <div className="flex items-center justify-between text-stone-400 mb-2">
+              <span className="text-[11px] uppercase tracking-wider font-medium">Declined (No)</span>
+              <UserX className="w-4 h-4 text-stone-500" />
+            </div>
+            <div className="text-2xl font-serif text-stone-400 font-semibold">{stats.declinedParties}</div>
+            <p className="text-[10px] text-stone-500 mt-1">With regrets</p>
+          </div>
+
+          {/* No Response */}
+          <div className="p-4 rounded-2xl bg-stone-900/70 border border-amber-900/30">
+            <div className="flex items-center justify-between text-stone-400 mb-2">
+              <span className="text-[11px] uppercase tracking-wider font-medium">No Response</span>
+              <UserMinus className="w-4 h-4 text-amber-400" />
+            </div>
+            <div className="text-2xl font-serif text-amber-400 font-semibold">{stats.noResponseSeats}</div>
+            <p className="text-[10px] text-stone-500 mt-1">{stats.noResponseParties} parties pending</p>
+          </div>
+
+          {/* Planning Email Sent (Invited) */}
+          <div className="p-4 rounded-2xl bg-stone-900/70 border border-stone-800">
+            <div className="flex items-center justify-between text-stone-400 mb-2">
+              <span className="text-[11px] uppercase tracking-wider font-medium">Invited Sent</span>
+              <Mail className="w-4 h-4 text-emerald-400" />
+            </div>
+            <div className="text-2xl font-serif text-stone-200 font-semibold">
+              {stats.invitedCount} <span className="text-sm font-sans text-stone-500">/ {stats.totalParties}</span>
+            </div>
+            <p className="text-[10px] text-stone-500 mt-1">Invited = YES</p>
+          </div>
+
+          {/* Response Rate */}
+          <div className="p-4 rounded-2xl bg-stone-900/70 border border-stone-800">
+            <div className="flex items-center justify-between text-stone-400 mb-2">
+              <span className="text-[11px] uppercase tracking-wider font-medium">Response Rate</span>
+              <Clock className="w-4 h-4 text-gold-400" />
+            </div>
+            <div className="text-2xl font-serif text-gold-400 font-semibold">{stats.responseRate}%</div>
+            <p className="text-[10px] text-stone-500 mt-1">Responded so far</p>
+          </div>
+        </div>
+
+        {/* 4. Action Bar: Search, Filters, Load Guests */}
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 pt-1">
+          {/* Status Tabs */}
+          <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-2xl bg-stone-900 border border-stone-800 text-xs">
             <button
-              onClick={() => setActiveTab('rsvps')}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-medium transition-all ${
-                activeTab === 'rsvps'
-                  ? 'bg-carpathian-700 text-stone-100 border border-gold-500/40 shadow-sm'
-                  : 'bg-stone-900/60 text-stone-400 hover:text-stone-200 border border-stone-800'
+              onClick={() => setStatusFilter('All')}
+              className={`px-3 py-1.5 rounded-xl font-medium transition-all ${
+                statusFilter === 'All'
+                  ? 'bg-carpathian-700 text-stone-100 shadow-sm border border-gold-500/30'
+                  : 'text-stone-400 hover:text-stone-200'
               }`}
             >
-              <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
-              <span>Live Google Sheet RSVPs ({sheetRsvps.length} Submissions)</span>
+              All ({guests.length})
+            </button>
+            <button
+              onClick={() => setStatusFilter('Accepted')}
+              className={`px-3 py-1.5 rounded-xl font-medium transition-all ${
+                statusFilter === 'Accepted'
+                  ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800/40 shadow-sm'
+                  : 'text-stone-400 hover:text-stone-200'
+              }`}
+            >
+              Accepted ({stats.acceptedParties})
+            </button>
+            <button
+              onClick={() => setStatusFilter('Declined')}
+              className={`px-3 py-1.5 rounded-xl font-medium transition-all ${
+                statusFilter === 'Declined'
+                  ? 'bg-stone-800 text-stone-300 border border-stone-700 shadow-sm'
+                  : 'text-stone-400 hover:text-stone-200'
+              }`}
+            >
+              Declined ({stats.declinedParties})
+            </button>
+            <button
+              onClick={() => setStatusFilter('No response')}
+              className={`px-3 py-1.5 rounded-xl font-medium transition-all ${
+                statusFilter === 'No response'
+                  ? 'bg-amber-950/80 text-amber-300 border border-amber-800/40 shadow-sm'
+                  : 'text-stone-400 hover:text-stone-200'
+              }`}
+            >
+              No Response ({stats.noResponseParties})
+            </button>
+            <button
+              onClick={() => setStatusFilter('Dietary')}
+              className={`px-3 py-1.5 rounded-xl font-medium transition-all ${
+                statusFilter === 'Dietary'
+                  ? 'bg-carpathian-700 text-stone-100 shadow-sm border border-gold-500/30'
+                  : 'text-stone-400 hover:text-stone-200'
+              }`}
+            >
+              Dietary ({stats.dietaryCount})
             </button>
           </div>
 
-          <div className="hidden sm:flex items-center gap-2">
+          {/* Right: Search + Load Buttons */}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative min-w-[240px]">
+              <Search className="w-4 h-4 text-stone-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search name, email, cell, notes..."
+                className="w-full pl-9 pr-4 py-2 bg-stone-900 border border-stone-800 rounded-xl text-xs text-stone-100 placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-gold-500/40 focus:border-gold-500"
+              />
+            </div>
+
             <button
-              onClick={copyBypassLink}
-              className="px-3 py-1.5 rounded-xl bg-stone-900 border border-stone-800 text-xs text-stone-300 hover:text-stone-100 flex items-center gap-1.5"
+              onClick={() => setIsBulkModalOpen(true)}
+              className="px-3.5 py-2 rounded-xl bg-stone-800 hover:bg-stone-750 border border-stone-700 text-stone-200 hover:text-stone-100 text-xs font-medium flex items-center gap-1.5 transition-all shadow-xs"
+              title="Bulk load guests from CSV or text paste"
             >
-              {copiedLink ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3 text-gold-400" />}
-              <span>{copiedLink ? 'Copied' : 'Bypass Link'}</span>
+              <Upload className="w-3.5 h-3.5 text-gold-400" />
+              <span>Bulk Load</span>
+            </button>
+
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="px-3.5 py-2 rounded-xl bg-gold-500/20 hover:bg-gold-500/30 border border-gold-500/40 text-gold-300 hover:text-gold-100 text-xs font-medium flex items-center gap-1.5 transition-all shadow-xs"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>+ Add Invitee</span>
             </button>
           </div>
         </div>
 
-        {/* TAB 1: INVITEES ROSTER & GUEST LOADING */}
-        {activeTab === 'invitees' && (
-          <div className="space-y-6">
-            {/* Comparison Metrics: Invitees vs Accepted vs Declined vs No Response */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-              {/* Total Invitees */}
-              <div className="p-4 rounded-2xl bg-stone-900/70 border border-stone-800">
-                <div className="flex items-center justify-between text-stone-400 mb-2">
-                  <span className="text-[11px] uppercase tracking-wider font-medium">Total Invitees</span>
-                  <Users className="w-4 h-4 text-stone-400" />
-                </div>
-                <div className="text-2xl font-serif text-stone-100 font-semibold">{comparisonStats.totalGuests}</div>
-                <p className="text-[10px] text-stone-500 mt-1">{comparisonStats.totalParties} parties invited</p>
-              </div>
-
-              {/* Accepted / Yes */}
-              <div className="p-4 rounded-2xl bg-stone-900/70 border border-emerald-900/40">
-                <div className="flex items-center justify-between text-stone-400 mb-2">
-                  <span className="text-[11px] uppercase tracking-wider font-medium">Accepted</span>
-                  <UserCheck className="w-4 h-4 text-emerald-400" />
-                </div>
-                <div className="text-2xl font-serif text-emerald-400 font-semibold">{comparisonStats.acceptedGuests}</div>
-                <p className="text-[10px] text-stone-500 mt-1">{comparisonStats.acceptedParties} parties accepted</p>
-              </div>
-
-              {/* Declined / Regrets */}
-              <div className="p-4 rounded-2xl bg-stone-900/70 border border-stone-800">
-                <div className="flex items-center justify-between text-stone-400 mb-2">
-                  <span className="text-[11px] uppercase tracking-wider font-medium">Declined</span>
-                  <UserX className="w-4 h-4 text-stone-500" />
-                </div>
-                <div className="text-2xl font-serif text-stone-400 font-semibold">{comparisonStats.declinedParties}</div>
-                <p className="text-[10px] text-stone-500 mt-1">With regrets</p>
-              </div>
-
-              {/* No Response / Awaiting */}
-              <div className="p-4 rounded-2xl bg-stone-900/70 border border-amber-900/30">
-                <div className="flex items-center justify-between text-stone-400 mb-2">
-                  <span className="text-[11px] uppercase tracking-wider font-medium">No Response</span>
-                  <UserMinus className="w-4 h-4 text-amber-400" />
-                </div>
-                <div className="text-2xl font-serif text-amber-400 font-semibold">{comparisonStats.noResponseGuests}</div>
-                <p className="text-[10px] text-stone-500 mt-1">{comparisonStats.noResponseParties} parties pending</p>
-              </div>
-
-              {/* Planning Email Sent */}
-              <div className="p-4 rounded-2xl bg-stone-900/70 border border-stone-800">
-                <div className="flex items-center justify-between text-stone-400 mb-2">
-                  <span className="text-[11px] uppercase tracking-wider font-medium">Planning Email</span>
-                  <Mail className="w-4 h-4 text-emerald-400" />
-                </div>
-                <div className="text-2xl font-serif text-stone-200 font-semibold">
-                  {comparisonStats.emailSentCount} <span className="text-sm font-sans text-stone-500">/ {comparisonStats.totalParties}</span>
-                </div>
-                <p className="text-[10px] text-stone-500 mt-1">Sent to parties</p>
-              </div>
-
-              {/* Response Rate % */}
-              <div className="p-4 rounded-2xl bg-stone-900/70 border border-stone-800">
-                <div className="flex items-center justify-between text-stone-400 mb-2">
-                  <span className="text-[11px] uppercase tracking-wider font-medium">Response Rate</span>
-                  <Clock className="w-4 h-4 text-gold-400" />
-                </div>
-                <div className="text-2xl font-serif text-gold-400 font-semibold">{comparisonStats.responseRate}%</div>
-                <p className="text-[10px] text-stone-500 mt-1">Responded so far</p>
-              </div>
+        {/* 5. Unified Google Sheets Manifest Table */}
+        {filteredGuests.length === 0 ? (
+          <div className="py-16 text-center rounded-3xl bg-stone-900/60 border border-stone-800 text-stone-400 space-y-3">
+            <Users className="w-8 h-8 text-stone-600 mx-auto" />
+            <div className="space-y-1">
+              <p className="font-medium text-stone-300">No Guests Found</p>
+              <p className="text-xs text-stone-500 max-w-md mx-auto">
+                {searchQuery
+                  ? `No guests match "${searchQuery}".`
+                  : 'Load your invitees or wait for guests to submit RSVPs. All entries sync directly to your Google Sheet.'}
+              </p>
             </div>
-
-            {/* Action Bar: Load Guests / Search / Filters */}
-            <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 pt-1">
-              {/* Left: Filter Buttons */}
-              <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-2xl bg-stone-900 border border-stone-800 text-xs">
-                <button
-                  onClick={() => setStatusFilter('All')}
-                  className={`px-3 py-1.5 rounded-xl font-medium transition-all ${
-                    statusFilter === 'All'
-                      ? 'bg-carpathian-700 text-stone-100 shadow-sm border border-gold-500/30'
-                      : 'text-stone-400 hover:text-stone-200'
-                  }`}
-                >
-                  All ({invitees.length})
-                </button>
-
-                <button
-                  onClick={() => setStatusFilter('No response')}
-                  className={`px-3 py-1.5 rounded-xl font-medium transition-all ${
-                    statusFilter === 'No response'
-                      ? 'bg-amber-950/80 text-amber-300 border border-amber-800/40 shadow-sm'
-                      : 'text-stone-400 hover:text-stone-200'
-                  }`}
-                >
-                  No Response ({comparisonStats.noResponseParties})
-                </button>
-
-                <button
-                  onClick={() => setStatusFilter('Accepted')}
-                  className={`px-3 py-1.5 rounded-xl font-medium transition-all ${
-                    statusFilter === 'Accepted'
-                      ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800/40 shadow-sm'
-                      : 'text-stone-400 hover:text-stone-200'
-                  }`}
-                >
-                  Accepted ({comparisonStats.acceptedParties})
-                </button>
-
-                <button
-                  onClick={() => setStatusFilter('Declined')}
-                  className={`px-3 py-1.5 rounded-xl font-medium transition-all ${
-                    statusFilter === 'Declined'
-                      ? 'bg-stone-800 text-stone-300 border border-stone-700 shadow-sm'
-                      : 'text-stone-400 hover:text-stone-200'
-                  }`}
-                >
-                  Declined ({comparisonStats.declinedParties})
-                </button>
-              </div>
-
-              {/* Right: Search Box + Load Buttons */}
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="relative min-w-[240px]">
-                  <Search className="w-4 h-4 text-stone-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search name, email, cell..."
-                    className="w-full pl-9 pr-4 py-2 bg-stone-900 border border-stone-800 rounded-xl text-xs text-stone-100 placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-gold-500/40 focus:border-gold-500"
-                  />
-                </div>
-
-                <button
-                  onClick={() => setIsBulkModalOpen(true)}
-                  className="px-3.5 py-2 rounded-xl bg-stone-800 hover:bg-stone-750 border border-stone-700 text-stone-200 hover:text-stone-100 text-xs font-medium flex items-center gap-1.5 transition-all"
-                  title="Bulk load guests from CSV or text paste"
-                >
-                  <Upload className="w-3.5 h-3.5 text-gold-400" />
-                  <span>Bulk Load</span>
-                </button>
-
-                <button
-                  onClick={() => setIsAddModalOpen(true)}
-                  className="px-3.5 py-2 rounded-xl bg-gold-500/20 hover:bg-gold-500/30 border border-gold-500/40 text-gold-300 hover:text-gold-100 text-xs font-medium flex items-center gap-1.5 transition-all"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>+ Add Invitee</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Invitees Table */}
-            {filteredInvitees.length === 0 ? (
-              <div className="py-16 text-center rounded-3xl bg-stone-900/60 border border-stone-800 text-stone-400 space-y-3">
-                <Users className="w-8 h-8 text-stone-600 mx-auto" />
-                <div className="space-y-1">
-                  <p className="font-medium text-stone-300">Your Master Invitee Roster is Empty</p>
-                  <p className="text-xs text-stone-500 max-w-md mx-auto">
-                    Load the people you are inviting with their email, cell phone, and number of people to track who has accepted, declined, or not responded yet.
-                  </p>
-                </div>
-                <div className="flex items-center justify-center gap-2 pt-2">
-                  <button
-                    onClick={() => setIsBulkModalOpen(true)}
-                    className="px-4 py-2 rounded-xl bg-carpathian-700 hover:bg-carpathian-600 text-stone-100 text-xs font-medium border border-gold-500/30"
-                  >
-                    ⚡ Bulk Load / Paste Guest List
-                  </button>
-                  <button
-                    onClick={() => setIsAddModalOpen(true)}
-                    className="px-4 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-300 text-xs font-medium border border-stone-700"
-                  >
-                    + Add Single Invitee
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="rounded-3xl bg-stone-900/60 border border-stone-800 overflow-hidden shadow-xl">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-stone-950/70 border-b border-stone-800 text-[11px] uppercase tracking-wider text-stone-400 font-mono">
-                      <tr>
-                        <th className="py-3.5 px-4 font-normal">Invitee / Party</th>
-                        <th className="py-3.5 px-4 font-normal">Contact (Email & Cell)</th>
-                        <th className="py-3.5 px-4 font-normal">People</th>
-                        <th className="py-3.5 px-4 font-normal">RSVP Status</th>
-                        <th className="py-3.5 px-4 font-normal">Planning Email</th>
-                        <th className="py-3.5 px-4 font-normal">Group</th>
-                        <th className="py-3.5 px-4 font-normal text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-stone-850 text-stone-300">
-                      {filteredInvitees.map((inv) => (
-                        <tr key={inv.id} className="hover:bg-stone-850/30 transition-colors">
-                          {/* Name & Additional Guests */}
-                          <td className="py-3.5 px-4">
-                            <div className="font-medium text-stone-100 flex items-center gap-2">
-                              <span>{inv.name}</span>
-                              {inv.hasRsvpMatch && (
-                                <span className="text-[10px] text-emerald-400 font-mono bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-800/40">
-                                  Synced GSheet
-                                </span>
-                              )}
-                            </div>
-                            {inv.additionalGuests && (
-                              <div className="text-[11px] text-stone-500 mt-0.5">
-                                Plus-one: {inv.additionalGuests}
-                              </div>
-                            )}
-                          </td>
-
-                          {/* Email & Cell */}
-                          <td className="py-3.5 px-4 space-y-1">
-                            <div className="flex items-center gap-1.5 text-stone-300">
-                              <Mail className="w-3 h-3 text-stone-500 shrink-0" />
-                              <span className="font-mono text-[11px]">{inv.email || <span className="text-stone-600">No email</span>}</span>
-                            </div>
-                            <div className="flex items-center gap-1.5 text-stone-400">
-                              <Phone className="w-3 h-3 text-stone-500 shrink-0" />
-                              <span className="font-mono text-[11px]">{inv.phone || <span className="text-stone-600">No cell</span>}</span>
-                            </div>
-                          </td>
-
-                          {/* Number of People */}
-                          <td className="py-3.5 px-4">
-                            <span className="text-stone-200 font-mono bg-stone-950 px-2 py-0.5 rounded border border-stone-800">
-                              {inv.partySize} {inv.partySize === 1 ? 'person' : 'people'}
-                            </span>
-                          </td>
-
-                          {/* Status Dropdown */}
-                          <td className="py-3.5 px-4 whitespace-nowrap">
-                            <select
-                              value={inv.status}
-                              onChange={(e) => updateInviteeStatus(inv.id, e.target.value as InviteeStatus)}
-                              className={`text-[11px] font-medium px-2.5 py-1 rounded-full cursor-pointer border appearance-none focus:outline-none transition-all ${
-                                inv.status === 'Accepted'
-                                  ? 'bg-emerald-950/50 text-emerald-400 border-emerald-800/40'
-                                  : inv.status === 'Declined'
-                                  ? 'bg-stone-950 text-stone-500 border-stone-800'
-                                  : inv.status === 'Maybe'
-                                  ? 'bg-amber-950/50 text-amber-400 border-amber-800/40'
-                                  : 'bg-amber-950/30 text-amber-300 border-amber-800/30'
-                              }`}
-                            >
-                              <option value="No response" className="bg-stone-900 text-amber-300">No response</option>
-                              <option value="Accepted" className="bg-stone-900 text-emerald-400">Accepted</option>
-                              <option value="Declined" className="bg-stone-900 text-stone-400">Declined</option>
-                              <option value="Maybe" className="bg-stone-900 text-gold-400">Maybe</option>
-                            </select>
-                          </td>
-
-                          {/* Planning Email Sent Toggle */}
-                          <td className="py-3.5 px-4 whitespace-nowrap">
-                            <label className="flex items-center gap-2 cursor-pointer select-none">
-                              <input
-                                type="checkbox"
-                                checked={inv.planningEmailSent}
-                                onChange={() => togglePlanningEmail(inv.id)}
-                                className="w-4 h-4 rounded text-carpathian-600 accent-carpathian-600 bg-stone-950 border-stone-800 cursor-pointer"
-                              />
-                              <span className={`text-[11px] font-mono ${inv.planningEmailSent ? 'text-emerald-400' : 'text-stone-500'}`}>
-                                {inv.planningEmailNote || (inv.planningEmailSent ? 'Sent' : 'Pending')}
-                              </span>
-                            </label>
-                          </td>
-
-                          {/* Group / Category */}
-                          <td className="py-3.5 px-4">
-                            <span className="text-[11px] text-stone-400 bg-stone-950/80 px-2 py-0.5 rounded border border-stone-850">
-                              {inv.group || 'General'}
-                            </span>
-                          </td>
-
-                          {/* Actions */}
-                          <td className="py-3.5 px-4 text-right whitespace-nowrap">
-                            <div className="inline-flex items-center gap-1.5">
-                              <button
-                                onClick={() => setEditingInvitee(inv)}
-                                className="p-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-400 hover:text-stone-100 transition-all"
-                                title="Edit"
-                              >
-                                <Edit2 className="w-3.5 h-3.5" />
-                              </button>
-                              <button
-                                onClick={() => deleteInvitee(inv.id, inv.name)}
-                                className="p-1.5 rounded-lg bg-stone-900 hover:bg-red-950/40 border border-stone-800 text-stone-400 hover:text-red-400 transition-all"
-                                title="Delete"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* TAB 2: LIVE GOOGLE SHEETS RSVP FEED */}
-        {activeTab === 'rsvps' && (
-          <div className="space-y-6">
-            <div className="p-4 rounded-2xl bg-stone-900/60 border border-stone-800 flex items-center justify-between">
-              <div>
-                <h3 className="font-medium text-stone-200 text-sm">Direct Submissions via Website RSVP Form</h3>
-                <p className="text-xs text-stone-400">
-                  These rows are written directly by guests to your Google Sheet in real time.
-                </p>
-              </div>
+            <div className="flex items-center justify-center gap-2 pt-2">
               <button
-                onClick={() => fetchRsvps()}
-                className="px-3.5 py-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 text-xs font-medium flex items-center gap-1.5 border border-stone-700"
+                onClick={() => setIsBulkModalOpen(true)}
+                className="px-4 py-2 rounded-xl bg-carpathian-700 hover:bg-carpathian-600 text-stone-100 text-xs font-medium border border-gold-500/30"
               >
-                <RefreshCw className={`w-3.5 h-3.5 text-gold-400 ${isLoading ? 'animate-spin' : ''}`} />
-                <span>Refresh Live Sheet</span>
+                ⚡ Bulk Load Guest List
+              </button>
+              <button
+                onClick={() => setIsAddModalOpen(true)}
+                className="px-4 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-300 text-xs font-medium border border-stone-700"
+              >
+                + Add Single Invitee
               </button>
             </div>
+          </div>
+        ) : (
+          <div className="rounded-3xl bg-stone-900/60 border border-stone-800 overflow-hidden shadow-xl">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-stone-950/70 border-b border-stone-800 text-[11px] uppercase tracking-wider text-stone-400 font-mono">
+                  <tr>
+                    <th className="py-3.5 px-4 font-normal">Primary Guest(s)</th>
+                    <th className="py-3.5 px-4 font-normal">Contact (Email & Cell)</th>
+                    <th className="py-3.5 px-4 font-normal">Seats</th>
+                    <th className="py-3.5 px-4 font-normal">Invited</th>
+                    <th className="py-3.5 px-4 font-normal">Response Status</th>
+                    <th className="py-3.5 px-4 font-normal">Events RSVP</th>
+                    <th className="py-3.5 px-4 font-normal">Dietary</th>
+                    <th className="py-3.5 px-4 font-normal">Lodging</th>
+                    <th className="py-3.5 px-4 font-normal">Notes</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-stone-850 text-stone-300">
+                  {filteredGuests.map((g) => (
+                    <tr key={g.id} className="hover:bg-stone-850/30 transition-colors">
+                      {/* Name & Plus-one */}
+                      <td className="py-3.5 px-4">
+                        <div className="font-medium text-stone-100">{g.fullName}</div>
+                        {g.additionalGuests && (
+                          <div className="text-[11px] text-stone-500 mt-0.5">
+                            Plus-one: {g.additionalGuests}
+                          </div>
+                        )}
+                      </td>
 
-            {sheetRsvps.length === 0 ? (
-              <div className="py-16 text-center rounded-3xl bg-stone-900/60 border border-stone-800 text-stone-500 text-sm">
-                No submissions recorded in your Google Sheet yet.
-              </div>
-            ) : (
-              <div className="rounded-3xl bg-stone-900/60 border border-stone-800 overflow-hidden shadow-xl">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-stone-950/70 border-b border-stone-800 text-[11px] uppercase tracking-wider text-stone-400 font-mono">
-                      <tr>
-                        <th className="py-3.5 px-4 font-normal">Primary Guest</th>
-                        <th className="py-3.5 px-4 font-normal">Status</th>
-                        <th className="py-3.5 px-4 font-normal">Plus-One / Additional</th>
-                        <th className="py-3.5 px-4 font-normal">Events (Peleș/Brunch/Excursion)</th>
-                        <th className="py-3.5 px-4 font-normal">Dietary</th>
-                        <th className="py-3.5 px-4 font-normal">Lodging</th>
-                        <th className="py-3.5 px-4 font-normal">Notes</th>
-                        <th className="py-3.5 px-4 font-normal">Date (UTC)</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-stone-850 text-stone-300">
-                      {sheetRsvps.map((r) => (
-                        <tr key={r.id} className="hover:bg-stone-850/30 transition-colors">
-                          <td className="py-3.5 px-4">
-                            <div className="font-medium text-stone-100">{r.fullName}</div>
-                            <div className="text-[11px] text-stone-500 font-mono">{r.email}</div>
-                          </td>
+                      {/* Email & Cell */}
+                      <td className="py-3.5 px-4 space-y-1">
+                        <div className="flex items-center gap-1.5 text-stone-300">
+                          <Mail className="w-3 h-3 text-stone-500 shrink-0" />
+                          <span className="font-mono text-[11px]">{g.email || <span className="text-stone-600">No email</span>}</span>
+                        </div>
+                        {g.phone && (
+                          <div className="flex items-center gap-1.5 text-stone-400">
+                            <Phone className="w-3 h-3 text-stone-500 shrink-0" />
+                            <span className="font-mono text-[11px]">{g.phone}</span>
+                          </div>
+                        )}
+                      </td>
 
-                          <td className="py-3.5 px-4">
-                            {r.attending ? (
-                              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-400 bg-emerald-950/50 border border-emerald-800/40 px-2.5 py-1 rounded-full">
-                                <CheckCircle2 className="w-3 h-3" />
-                                Attending
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-stone-500 bg-stone-950 border border-stone-800 px-2.5 py-1 rounded-full">
-                                <XCircle className="w-3 h-3" />
-                                Declined
-                              </span>
-                            )}
-                          </td>
+                      {/* Number of People */}
+                      <td className="py-3.5 px-4">
+                        <span className="text-stone-200 font-mono bg-stone-950 px-2 py-0.5 rounded border border-stone-800">
+                          {g.partySize} {g.partySize === 1 ? 'seat' : 'seats'}
+                        </span>
+                      </td>
 
-                          <td className="py-3.5 px-4">{r.additionalGuests || <span className="text-stone-600">—</span>}</td>
+                      {/* Invited Indicator */}
+                      <td className="py-3.5 px-4 whitespace-nowrap">
+                        <label className="flex items-center gap-2 cursor-pointer select-none">
+                          <input
+                            type="checkbox"
+                            checked={g.invited}
+                            onChange={() => toggleInvited(g)}
+                            className="w-4 h-4 rounded text-carpathian-600 accent-carpathian-600 bg-stone-950 border-stone-800 cursor-pointer"
+                          />
+                          <span className={`text-[11px] font-mono ${g.invited ? 'text-emerald-400' : 'text-stone-600'}`}>
+                            {g.invited ? 'YES' : 'NO'}
+                          </span>
+                        </label>
+                      </td>
 
-                          <td className="py-3.5 px-4">
-                            <div className="flex flex-wrap gap-1">
-                              {r.thuPeles && <span className="text-[10px] bg-gold-950/40 text-gold-400 border border-gold-800/40 px-1.5 py-0.5 rounded">Peleș</span>}
-                              {r.satBrunch && <span className="text-[10px] bg-stone-800 text-stone-300 px-1.5 py-0.5 rounded">Brunch</span>}
-                              {r.satExcursion && <span className="text-[10px] bg-carpathian-950 text-emerald-300 border border-emerald-900/40 px-1.5 py-0.5 rounded">Excursion</span>}
-                              {!r.thuPeles && !r.satBrunch && !r.satExcursion && <span className="text-stone-600">—</span>}
-                            </div>
-                          </td>
+                      {/* Response Status Indicator */}
+                      <td className="py-3.5 px-4 whitespace-nowrap">
+                        <select
+                          value={g.responseStatus}
+                          onChange={(e) => updateStatus(g, e.target.value as ResponseStatus)}
+                          className={`text-[11px] font-medium px-2.5 py-1 rounded-full cursor-pointer border appearance-none focus:outline-none transition-all ${
+                            g.responseStatus === 'Accepted'
+                              ? 'bg-emerald-950/50 text-emerald-400 border-emerald-800/40'
+                              : g.responseStatus === 'Declined'
+                              ? 'bg-stone-950 text-stone-500 border-stone-800'
+                              : 'bg-amber-950/30 text-amber-300 border-amber-800/30'
+                          }`}
+                        >
+                          <option value="Accepted" className="bg-stone-900 text-emerald-400">Accepted</option>
+                          <option value="Declined" className="bg-stone-900 text-stone-400">Declined</option>
+                          <option value="No response" className="bg-stone-900 text-amber-300">No response</option>
+                        </select>
+                      </td>
 
-                          <td className="py-3.5 px-4">
-                            {r.dietary && r.dietary.trim() ? (
-                              <span className="text-amber-300 bg-amber-950/40 px-2 py-0.5 rounded text-[10px] font-mono border border-amber-800/30">
-                                {r.dietary}
-                              </span>
-                            ) : (
-                              <span className="text-stone-600">None</span>
-                            )}
-                          </td>
+                      {/* Events */}
+                      <td className="py-3.5 px-4">
+                        <div className="flex flex-wrap gap-1">
+                          {g.thuPeles && <span className="text-[10px] bg-gold-950/40 text-gold-400 border border-gold-800/40 px-1.5 py-0.5 rounded">Peleș</span>}
+                          {g.satBrunch && <span className="text-[10px] bg-stone-800 text-stone-300 px-1.5 py-0.5 rounded">Brunch</span>}
+                          {g.satExcursion && <span className="text-[10px] bg-carpathian-950 text-emerald-300 border border-emerald-900/40 px-1.5 py-0.5 rounded">Excursion</span>}
+                          {!g.thuPeles && !g.satBrunch && !g.satExcursion && <span className="text-stone-600">—</span>}
+                        </div>
+                      </td>
 
-                          <td className="py-3.5 px-4 text-stone-400">{r.lodging || <span className="text-stone-600">—</span>}</td>
-                          <td className="py-3.5 px-4 text-stone-400 max-w-[200px] truncate">{r.notes || <span className="text-stone-600">—</span>}</td>
-                          <td className="py-3.5 px-4 text-stone-500 font-mono text-[11px] whitespace-nowrap">
-                            {r.timestamp ? new Date(r.timestamp).toLocaleDateString() : '—'}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
+                      {/* Dietary */}
+                      <td className="py-3.5 px-4">
+                        {g.dietary && g.dietary.trim() ? (
+                          <span className="text-amber-300 bg-amber-950/40 px-2 py-0.5 rounded text-[10px] font-mono border border-amber-800/30">
+                            {g.dietary}
+                          </span>
+                        ) : (
+                          <span className="text-stone-600 font-mono text-[11px]">None</span>
+                        )}
+                      </td>
+
+                      {/* Lodging */}
+                      <td className="py-3.5 px-4 text-stone-400 max-w-[130px] truncate" title={g.lodging || ''}>
+                        {g.lodging || <span className="text-stone-600">—</span>}
+                      </td>
+
+                      {/* Notes */}
+                      <td className="py-3.5 px-4 text-stone-400 max-w-[180px] truncate" title={g.notes || ''}>
+                        {g.notes || <span className="text-stone-600">—</span>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </main>
 
-      {/* MODAL: Bulk Load Guests (Paste Text or CSV) */}
+      {/* MODAL: Bulk Load Guests */}
       {isBulkModalOpen && (
         <div className="fixed inset-0 z-50 bg-stone-950/80 backdrop-blur-md flex items-center justify-center p-4">
           <div className="w-full max-w-2xl p-6 rounded-3xl bg-stone-900 border border-stone-800 shadow-2xl space-y-4 text-stone-100">
             <div className="flex items-center justify-between pb-3 border-b border-stone-800">
               <div className="flex items-center gap-2">
                 <Upload className="w-5 h-5 text-gold-400" />
-                <h3 className="font-serif text-lg text-stone-100 font-medium">Bulk Load / Paste Guest List</h3>
+                <h3 className="font-serif text-lg text-stone-100 font-medium">Bulk Load Guests into Google Sheet</h3>
               </div>
-              <button
-                onClick={() => setIsBulkModalOpen(false)}
-                className="text-stone-500 hover:text-stone-300 text-sm font-mono"
-              >
-                ✕
-              </button>
+              <button onClick={() => setIsBulkModalOpen(false)} className="text-stone-500 hover:text-stone-300 text-sm font-mono">✕</button>
             </div>
 
             <div className="space-y-3 text-xs">
               <p className="text-stone-400 leading-relaxed">
-                Paste your guest list lines below (one invitee per line). Supported format:
-                <br />
-                <code className="text-gold-400 font-mono bg-stone-950 px-2 py-0.5 rounded border border-stone-800">
-                  Full Name, Email Address, Cell Phone, Number of People, Group
-                </code>
+                Paste your guest list lines below. Each entry will be saved directly into your Google Sheet with <code className="text-emerald-400 font-mono">Invited: YES</code> and <code className="text-amber-400 font-mono">Response: No response</code>.
               </p>
 
               <div className="flex items-center justify-between">
-                <span className="text-stone-500 text-[11px]">Format: Name, Email, Cell, Count (comma, tab, or pipe separated)</span>
+                <span className="text-stone-500 text-[11px]">Format: Full Name, Email, Cell Phone, Number of People</span>
                 <button
                   type="button"
                   onClick={insertSampleBulk}
@@ -1213,7 +1089,7 @@ export default function AdminPage() {
                 rows={8}
                 value={bulkText}
                 onChange={(e) => setBulkText(e.target.value)}
-                placeholder="Andrei and Mary Fratian, andreifratian@gmail.com, +1 (408) 555-0199, 2, Family"
+                placeholder="Andrei and Mary Fratian, andreifratian@gmail.com, +1 (408) 555-0199, 2"
                 className="w-full p-3.5 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-gold-500/40"
               />
 
@@ -1235,11 +1111,11 @@ export default function AdminPage() {
               <button
                 type="button"
                 onClick={handleBulkImport}
-                disabled={!bulkText.trim()}
+                disabled={!bulkText.trim() || isSaving}
                 className="px-5 py-2 rounded-xl bg-carpathian-700 hover:bg-carpathian-600 disabled:opacity-50 text-stone-100 text-xs font-medium border border-gold-500/30 flex items-center gap-1.5"
               >
-                <Check className="w-3.5 h-3.5" />
-                <span>Import All Invitees</span>
+                {isSaving ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                <span>Import to Google Sheet</span>
               </button>
             </div>
           </div>
@@ -1251,25 +1127,20 @@ export default function AdminPage() {
         <div className="fixed inset-0 z-50 bg-stone-950/80 backdrop-blur-md flex items-center justify-center p-4">
           <div className="w-full max-w-md p-6 rounded-3xl bg-stone-900 border border-stone-800 shadow-2xl space-y-4 text-stone-100">
             <div className="flex items-center justify-between pb-3 border-b border-stone-800">
-              <h3 className="font-serif text-lg text-stone-100 font-medium">Add New Invitee</h3>
-              <button
-                onClick={() => setIsAddModalOpen(false)}
-                className="text-stone-500 hover:text-stone-300 text-sm font-mono"
-              >
-                ✕
-              </button>
+              <h3 className="font-serif text-lg text-stone-100 font-medium">Add Invitee to Google Sheet</h3>
+              <button onClick={() => setIsAddModalOpen(false)} className="text-stone-500 hover:text-stone-300 text-sm font-mono">✕</button>
             </div>
 
             <form onSubmit={handleAddSingle} className="space-y-3 text-xs">
               <div>
                 <label className="block text-[11px] uppercase tracking-wider text-stone-400 font-mono mb-1">
-                  Full Name / Party *
+                  Primary Name(s) *
                 </label>
                 <input
                   type="text"
                   required
-                  value={newInvitee.name || ''}
-                  onChange={(e) => setNewInvitee({ ...newInvitee, name: e.target.value })}
+                  value={newGuest.name}
+                  onChange={(e) => setNewGuest({ ...newGuest, name: e.target.value })}
                   placeholder="e.g. Andrei and Mary Fratian"
                   className="w-full px-3.5 py-2.5 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 placeholder-stone-600 text-xs focus:outline-none focus:ring-2 focus:ring-gold-500/40"
                 />
@@ -1282,8 +1153,8 @@ export default function AdminPage() {
                   </label>
                   <input
                     type="email"
-                    value={newInvitee.email || ''}
-                    onChange={(e) => setNewInvitee({ ...newInvitee, email: e.target.value })}
+                    value={newGuest.email}
+                    onChange={(e) => setNewGuest({ ...newGuest, email: e.target.value })}
                     placeholder="andreifratian@gmail.com"
                     className="w-full px-3.5 py-2.5 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 placeholder-stone-600 text-xs focus:outline-none focus:ring-2 focus:ring-gold-500/40"
                   />
@@ -1291,12 +1162,12 @@ export default function AdminPage() {
 
                 <div>
                   <label className="block text-[11px] uppercase tracking-wider text-stone-400 font-mono mb-1">
-                    Cell / Phone
+                    Cell Phone
                   </label>
                   <input
                     type="tel"
-                    value={newInvitee.phone || ''}
-                    onChange={(e) => setNewInvitee({ ...newInvitee, phone: e.target.value })}
+                    value={newGuest.phone}
+                    onChange={(e) => setNewGuest({ ...newGuest, phone: e.target.value })}
                     placeholder="+1 (408) 555-0199"
                     className="w-full px-3.5 py-2.5 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 placeholder-stone-600 text-xs focus:outline-none focus:ring-2 focus:ring-gold-500/40"
                   />
@@ -1312,23 +1183,25 @@ export default function AdminPage() {
                     type="number"
                     min="1"
                     max="10"
-                    value={newInvitee.partySize || 2}
-                    onChange={(e) => setNewInvitee({ ...newInvitee, partySize: Number(e.target.value) })}
+                    value={newGuest.partySize}
+                    onChange={(e) => setNewGuest({ ...newGuest, partySize: Number(e.target.value) })}
                     className="w-full px-3.5 py-2.5 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 text-xs focus:outline-none focus:ring-2 focus:ring-gold-500/40"
                   />
                 </div>
 
                 <div>
                   <label className="block text-[11px] uppercase tracking-wider text-stone-400 font-mono mb-1">
-                    Group / Category
+                    Response Status
                   </label>
-                  <input
-                    type="text"
-                    value={newInvitee.group || ''}
-                    onChange={(e) => setNewInvitee({ ...newInvitee, group: e.target.value })}
-                    placeholder="e.g. Family, Friends"
+                  <select
+                    value={newGuest.responseStatus}
+                    onChange={(e) => setNewGuest({ ...newGuest, responseStatus: e.target.value as ResponseStatus })}
                     className="w-full px-3.5 py-2.5 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 text-xs focus:outline-none focus:ring-2 focus:ring-gold-500/40"
-                  />
+                  >
+                    <option value="No response">No response</option>
+                    <option value="Accepted">Accepted</option>
+                    <option value="Declined">Declined</option>
+                  </select>
                 </div>
               </div>
 
@@ -1336,11 +1209,11 @@ export default function AdminPage() {
                 <label className="flex items-center gap-2 cursor-pointer pt-1">
                   <input
                     type="checkbox"
-                    checked={!!newInvitee.planningEmailSent}
-                    onChange={(e) => setNewInvitee({ ...newInvitee, planningEmailSent: e.target.checked })}
+                    checked={newGuest.invited}
+                    onChange={(e) => setNewGuest({ ...newGuest, invited: e.target.checked })}
                     className="w-4 h-4 rounded text-carpathian-600 accent-carpathian-600 bg-stone-950 border-stone-800"
                   />
-                  <span className="text-xs text-stone-200">Save-the-date / Planning email sent</span>
+                  <span className="text-xs text-stone-200">Invited indicator (Planning Email / Save-the-Date sent)</span>
                 </label>
               </div>
 
@@ -1354,133 +1227,11 @@ export default function AdminPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-carpathian-700 hover:bg-carpathian-600 text-stone-100 text-xs font-medium border border-gold-500/30"
+                  disabled={isSaving}
+                  className="px-5 py-2 rounded-xl bg-carpathian-700 hover:bg-carpathian-600 text-stone-100 text-xs font-medium border border-gold-500/30 flex items-center gap-1.5"
                 >
-                  Save Invitee
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL: Edit Invitee */}
-      {editingInvitee && (
-        <div className="fixed inset-0 z-50 bg-stone-950/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="w-full max-w-md p-6 rounded-3xl bg-stone-900 border border-stone-800 shadow-2xl space-y-4 text-stone-100">
-            <div className="flex items-center justify-between pb-3 border-b border-stone-800">
-              <h3 className="font-serif text-lg text-stone-100 font-medium">Edit: {editingInvitee.name}</h3>
-              <button
-                onClick={() => setEditingInvitee(null)}
-                className="text-stone-500 hover:text-stone-300 text-sm font-mono"
-              >
-                ✕
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveEdit} className="space-y-3 text-xs">
-              <div>
-                <label className="block text-[11px] uppercase tracking-wider text-stone-400 font-mono mb-1">
-                  Full Name / Party
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={editingInvitee.name}
-                  onChange={(e) => setEditingInvitee({ ...editingInvitee, name: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 text-xs"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] uppercase tracking-wider text-stone-400 font-mono mb-1">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    value={editingInvitee.email || ''}
-                    onChange={(e) => setEditingInvitee({ ...editingInvitee, email: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 text-xs"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] uppercase tracking-wider text-stone-400 font-mono mb-1">
-                    Cell / Phone
-                  </label>
-                  <input
-                    type="tel"
-                    value={editingInvitee.phone || ''}
-                    onChange={(e) => setEditingInvitee({ ...editingInvitee, phone: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 text-xs"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] uppercase tracking-wider text-stone-400 font-mono mb-1">
-                    Number of People
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="10"
-                    value={editingInvitee.partySize}
-                    onChange={(e) =>
-                      setEditingInvitee({ ...editingInvitee, partySize: Number(e.target.value) })
-                    }
-                    className="w-full px-3.5 py-2.5 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 text-xs"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] uppercase tracking-wider text-stone-400 font-mono mb-1">
-                    RSVP Status
-                  </label>
-                  <select
-                    value={editingInvitee.status}
-                    onChange={(e) =>
-                      setEditingInvitee({ ...editingInvitee, status: e.target.value as InviteeStatus })
-                    }
-                    className="w-full px-3.5 py-2.5 bg-stone-950 border border-stone-800 rounded-xl text-stone-100 text-xs"
-                  >
-                    <option value="No response">No response</option>
-                    <option value="Accepted">Accepted</option>
-                    <option value="Declined">Declined</option>
-                    <option value="Maybe">Maybe</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="flex items-center gap-2 cursor-pointer pt-1">
-                  <input
-                    type="checkbox"
-                    checked={editingInvitee.planningEmailSent}
-                    onChange={(e) =>
-                      setEditingInvitee({ ...editingInvitee, planningEmailSent: e.target.checked })
-                    }
-                    className="w-4 h-4 rounded text-carpathian-600 accent-carpathian-600 bg-stone-950 border-stone-800"
-                  />
-                  <span className="text-xs text-stone-200">Planning email sent</span>
-                </label>
-              </div>
-
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-stone-800">
-                <button
-                  type="button"
-                  onClick={() => setEditingInvitee(null)}
-                  className="px-4 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-300 text-xs font-medium"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-xl bg-carpathian-700 hover:bg-carpathian-600 text-stone-100 text-xs font-medium border border-gold-500/30"
-                >
-                  Save Changes
+                  {isSaving && <RefreshCw className="w-3.5 h-3.5 animate-spin" />}
+                  <span>Save to Google Sheet</span>
                 </button>
               </div>
             </form>
@@ -1497,12 +1248,7 @@ export default function AdminPage() {
                 <Settings className="w-5 h-5 text-gold-400" />
                 <h3 className="font-serif text-lg text-stone-100">Google Sheets Integration</h3>
               </div>
-              <button
-                onClick={() => setSettingsOpen(false)}
-                className="text-stone-500 hover:text-stone-300 text-sm font-mono"
-              >
-                ✕
-              </button>
+              <button onClick={() => setSettingsOpen(false)} className="text-stone-500 hover:text-stone-300 text-sm font-mono">✕</button>
             </div>
 
             <div className="space-y-4 text-xs">
@@ -1525,9 +1271,9 @@ export default function AdminPage() {
               </div>
 
               <div className="p-3 rounded-xl bg-stone-950 border border-stone-800 space-y-1 text-stone-400 text-[11px]">
-                <span className="font-semibold text-gold-400 block font-mono">How it syncs:</span>
+                <span className="font-semibold text-gold-400 block font-mono">Unified Manifest:</span>
                 <p>
-                  Clicking &ldquo;Sync Sheets&rdquo; fetches live records from Google Sheets and automatically cross-references your invitees roster (marking matching guests as Accepted or Declined).
+                  Both your invited roster and RSVP responses live in the same Google Sheet. It tracks both the <strong className="text-stone-200">Invited</strong> indicator and the <strong className="text-stone-200">Response Status</strong> (Accepted, Declined, No response).
                 </p>
               </div>
             </div>

@@ -294,7 +294,8 @@
     },
     "eventsLabel": "Optional Weekend Events (Check all you plan to attend):",
     "events": {
-      "thuPeles": "Thursday, May 27: Peleș Castle Royal Tour & Evening Welcome Gathering",
+      "thuPeles": "Thursday, May 27: Peleș Castle Royal Tour (11:30 AM – 2:30 PM)",
+      "thuDinner": "Thursday, May 27: Carpathian Welcome Gathering & Dinner (6:30 PM – 9:30 PM)",
       "satBrunch": "Saturday, May 29: Farewell Recovery Brunch",
       "satExcursion": "Saturday, May 29: Bușteni Cable Car (Sphinx) or Bran Castle Excursion"
     },

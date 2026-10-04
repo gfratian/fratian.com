@@ -46,6 +46,7 @@ export default function RsvpForm() {
     plusOneDietary: [] as string[],
     plusOneDietaryOther: '',
     thuPeles: false,
+    thuDinner: false,
     satBrunch: false,
     satExcursion: false,
     lodging: '',
@@ -55,7 +56,7 @@ export default function RsvpForm() {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const handleCheckboxChange = (eventKey: 'thuPeles' | 'satBrunch' | 'satExcursion') => {
+  const handleCheckboxChange = (eventKey: 'thuPeles' | 'thuDinner' | 'satBrunch' | 'satExcursion') => {
     setFormData((prev) => ({
       ...prev,
       [eventKey]: !prev[eventKey],
@@ -172,6 +173,7 @@ export default function RsvpForm() {
       plusOneDietary: [],
       plusOneDietaryOther: '',
       thuPeles: false,
+      thuDinner: false,
       satBrunch: false,
       satExcursion: false,
       lodging: '',
@@ -484,6 +486,18 @@ export default function RsvpForm() {
                     />
                     <span className="text-xs sm:text-sm text-stone-300 leading-relaxed">
                       {dict.rsvp.events.thuPeles}
+                    </span>
+                  </label>
+
+                  <label className="flex items-start gap-3 p-3.5 rounded-xl bg-stone-950/60 border border-stone-800/80 hover:border-stone-700 cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={formData.thuDinner}
+                      onChange={() => handleCheckboxChange('thuDinner')}
+                      className="mt-1 w-4 h-4 rounded border-stone-700 text-gold-600 focus:ring-gold-500/40 bg-stone-900"
+                    />
+                    <span className="text-xs sm:text-sm text-stone-300 leading-relaxed">
+                      {dict.rsvp.events.thuDinner}
                     </span>
                   </label>
 

@@ -23,6 +23,7 @@ import {
   ArrowLeft,
   ShieldCheck,
   Utensils,
+  Wine,
   Calendar,
   Mountain,
   AlertCircle,
@@ -48,6 +49,7 @@ export interface SheetGuest {
   additionalGuests?: string;
   dietary?: string;
   thuPeles?: boolean;
+  thuDinner?: boolean;
   satBrunch?: boolean;
   satExcursion?: boolean;
   lodging?: string;
@@ -93,6 +95,7 @@ export default function AdminPage() {
     additionalGuests: '',
     dietary: '',
     thuPeles: false,
+    thuDinner: false,
     satBrunch: false,
     satExcursion: false,
     lodging: '',
@@ -200,6 +203,7 @@ export default function AdminPage() {
             additionalGuests: additionalGuests,
             dietary: dietary,
             thuPeles: !!r.thuPeles,
+            thuDinner: r.thuDinner !== undefined ? !!r.thuDinner : !!r.thuPeles,
             satBrunch: !!r.satBrunch,
             satExcursion: !!r.satExcursion,
             lodging: r.lodging || '',
@@ -317,6 +321,7 @@ export default function AdminPage() {
       additionalGuests: newRsvp.additionalGuests.trim(),
       dietary: newRsvp.dietary.trim(),
       thuPeles: newRsvp.thuPeles,
+      thuDinner: newRsvp.thuDinner,
       satBrunch: newRsvp.satBrunch,
       satExcursion: newRsvp.satExcursion,
       lodging: newRsvp.lodging.trim(),
@@ -335,6 +340,7 @@ export default function AdminPage() {
       additionalGuests: '',
       dietary: '',
       thuPeles: false,
+      thuDinner: false,
       satBrunch: false,
       satExcursion: false,
       lodging: '',
@@ -357,6 +363,7 @@ export default function AdminPage() {
             additionalGuests: rsvpItem.additionalGuests,
             dietary: rsvpItem.dietary,
             thuPeles: rsvpItem.thuPeles,
+            thuDinner: rsvpItem.thuDinner,
             satBrunch: rsvpItem.satBrunch,
             satExcursion: rsvpItem.satExcursion,
             lodging: rsvpItem.lodging,
@@ -405,6 +412,7 @@ export default function AdminPage() {
       'Plus-One / Additional',
       'Dietary Restrictions',
       'Thu Peleș Tour',
+      'Thu Welcome Dinner',
       'Sat Farewell Brunch',
       'Sat Excursion',
       'Lodging Location',
@@ -420,6 +428,7 @@ export default function AdminPage() {
       `"${(g.additionalGuests || '').replace(/"/g, '""')}"`,
       `"${(g.dietary || '').replace(/"/g, '""')}"`,
       g.thuPeles ? 'YES' : 'NO',
+      g.thuDinner ? 'YES' : 'NO',
       g.satBrunch ? 'YES' : 'NO',
       g.satExcursion ? 'YES' : 'NO',
       `"${(g.lodging || '').replace(/"/g, '""')}"`,
@@ -461,6 +470,7 @@ export default function AdminPage() {
     const declinedParties = declinedList.length;
 
     const pelesCount = acceptedList.filter((g) => g.thuPeles).length;
+    const dinnerCount = acceptedList.filter((g) => g.thuDinner).length;
     const brunchCount = acceptedList.filter((g) => g.satBrunch).length;
     const excursionCount = acceptedList.filter((g) => g.satExcursion).length;
     const dietaryCount = rsvpList.filter((g) => g.dietary && g.dietary.trim().length > 0 && g.dietary.trim() !== 'None').length;
@@ -477,6 +487,7 @@ export default function AdminPage() {
       acceptedSeats,
       declinedParties,
       pelesCount,
+      dinnerCount,
       brunchCount,
       excursionCount,
       dietaryCount,
@@ -742,7 +753,7 @@ export default function AdminPage() {
         </div>
 
         {/* 3. Live RSVP Headcounts & Event Attendance */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
           {/* Total RSVPs */}
           <div className="p-4 rounded-2xl bg-stone-900/70 border border-stone-800">
             <div className="flex items-center justify-between text-stone-400 mb-2">
@@ -780,17 +791,27 @@ export default function AdminPage() {
               <Calendar className="w-4 h-4 text-gold-400" />
             </div>
             <div className="text-2xl font-serif text-gold-400 font-semibold">{stats.pelesCount}</div>
-            <p className="text-[10px] text-stone-500 mt-1">Thursday 27 May</p>
+            <p className="text-[10px] text-stone-500 mt-1">Thu 11:30 AM</p>
+          </div>
+
+          {/* Welcome Dinner */}
+          <div className="p-4 rounded-2xl bg-stone-900/70 border border-stone-800">
+            <div className="flex items-center justify-between text-stone-400 mb-2">
+              <span className="text-[11px] uppercase tracking-wider font-medium">Welcome Dinner</span>
+              <Wine className="w-4 h-4 text-amber-400" />
+            </div>
+            <div className="text-2xl font-serif text-amber-400 font-semibold">{stats.dinnerCount}</div>
+            <p className="text-[10px] text-stone-500 mt-1">Thu 6:30 PM</p>
           </div>
 
           {/* Recovery Brunch */}
           <div className="p-4 rounded-2xl bg-stone-900/70 border border-stone-800">
             <div className="flex items-center justify-between text-stone-400 mb-2">
               <span className="text-[11px] uppercase tracking-wider font-medium">Recovery Brunch</span>
-              <Utensils className="w-4 h-4 text-amber-400" />
+              <Utensils className="w-4 h-4 text-amber-300" />
             </div>
-            <div className="text-2xl font-serif text-amber-400 font-semibold">{stats.brunchCount}</div>
-            <p className="text-[10px] text-stone-500 mt-1">Saturday 29 May</p>
+            <div className="text-2xl font-serif text-amber-300 font-semibold">{stats.brunchCount}</div>
+            <p className="text-[10px] text-stone-500 mt-1">Sat 10:30 AM</p>
           </div>
 
           {/* Cable Car / Bran Excursion */}
@@ -800,7 +821,7 @@ export default function AdminPage() {
               <Mountain className="w-4 h-4 text-sky-400" />
             </div>
             <div className="text-2xl font-serif text-sky-400 font-semibold">{stats.excursionCount}</div>
-            <p className="text-[10px] text-stone-500 mt-1">Saturday excursion</p>
+            <p className="text-[10px] text-stone-500 mt-1">Sat 1:30 PM</p>
           </div>
         </div>
 
@@ -980,9 +1001,10 @@ export default function AdminPage() {
                       <td className="py-3.5 px-4">
                         <div className="flex flex-wrap gap-1">
                           {g.thuPeles && <span className="text-[10px] bg-gold-950/40 text-gold-400 border border-gold-800/40 px-1.5 py-0.5 rounded">Peleș</span>}
+                          {g.thuDinner && <span className="text-[10px] bg-amber-950/40 text-amber-300 border border-amber-800/40 px-1.5 py-0.5 rounded">Dinner</span>}
                           {g.satBrunch && <span className="text-[10px] bg-stone-800 text-stone-300 px-1.5 py-0.5 rounded">Brunch</span>}
                           {g.satExcursion && <span className="text-[10px] bg-carpathian-950 text-emerald-300 border border-emerald-900/40 px-1.5 py-0.5 rounded">Excursion</span>}
-                          {!g.thuPeles && !g.satBrunch && !g.satExcursion && <span className="text-stone-600">—</span>}
+                          {!g.thuPeles && !g.thuDinner && !g.satBrunch && !g.satExcursion && <span className="text-stone-600">—</span>}
                         </div>
                       </td>
 
@@ -1141,7 +1163,7 @@ export default function AdminPage() {
                 <label className="block text-[11px] uppercase tracking-wider text-stone-400 font-mono mb-1">
                   Events Attending
                 </label>
-                <div className="grid grid-cols-3 gap-2 pt-1">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
                   <label className="flex items-center gap-2 p-2.5 rounded-xl bg-stone-950 border border-stone-800 cursor-pointer">
                     <input
                       type="checkbox"
@@ -1150,6 +1172,16 @@ export default function AdminPage() {
                       className="w-4 h-4 rounded text-carpathian-600 accent-carpathian-600 bg-stone-900 border-stone-700"
                     />
                     <span className="text-[11px] text-stone-300">Peleș Tour</span>
+                  </label>
+
+                  <label className="flex items-center gap-2 p-2.5 rounded-xl bg-stone-950 border border-stone-800 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={newRsvp.thuDinner}
+                      onChange={(e) => setNewRsvp({ ...newRsvp, thuDinner: e.target.checked })}
+                      className="w-4 h-4 rounded text-carpathian-600 accent-carpathian-600 bg-stone-900 border-stone-700"
+                    />
+                    <span className="text-[11px] text-stone-300">Welcome Dinner</span>
                   </label>
 
                   <label className="flex items-center gap-2 p-2.5 rounded-xl bg-stone-950 border border-stone-800 cursor-pointer">

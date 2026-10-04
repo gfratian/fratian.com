@@ -51,13 +51,6 @@ export default function Hero() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-carpathian-800/25 via-stone-950/60 to-stone-950 pointer-events-none" />
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-emerald-800/10 rounded-full blur-[120px] pointer-events-none" />
 
-      {/* Subtle Mountain Peak Silhouette SVG Accent */}
-      <div className="absolute bottom-0 inset-x-0 h-40 opacity-15 pointer-events-none flex items-end justify-center">
-        <svg viewBox="0 0 1440 320" className="w-full h-full object-cover text-stone-100" fill="currentColor">
-          <path d="M0,288L60,250.7C120,213,240,139,360,128C480,117,600,171,720,186.7C840,203,960,181,1080,165.3C1200,149,1320,139,1380,133.3L1440,128L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
-        </svg>
-      </div>
-
       <div className="relative z-10 max-w-4xl mx-auto text-center space-y-8">
         {/* Subtle Welcome Tagline */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-stone-900/80 border border-gold-500/30 text-gold-400 text-xs uppercase tracking-widest font-medium shadow-sm">

@@ -34,6 +34,9 @@ export default function RootLayout({
           content="noindex, nofollow, noarchive, nosnippet, noimageindex"
         />
         <meta name="googlebot" content="noindex, nofollow" />
+        <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+        <meta httpEquiv="Pragma" content="no-cache" />
+        <meta httpEquiv="Expires" content="0" />
       </head>
       <body className="bg-stone-950 text-stone-100 antialiased selection:bg-carpathian-700 selection:text-gold-200">
         <AuthProvider>

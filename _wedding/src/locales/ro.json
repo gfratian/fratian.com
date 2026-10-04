@@ -1,0 +1,321 @@
+{
+  "lock": {
+    "title": "O Sărbătoare în Carpați",
+    "subtitle": "Mai 2027 • Bușteni, România",
+    "passcodePrompt": "Vă rugăm să introduceți codul de acces de pe invitație",
+    "passcodePlaceholder": "Introduceți codul...",
+    "unlockButton": "Intră în Portal",
+    "errorMessage": "Cod incorect. Vă rugăm să verificați cartonașul de invitație sau să contactați mirii.",
+    "keyHint": "Aveți un link direct? Folosiți ?key=cod pentru acces instantaneu."
+  },
+  "nav": {
+    "monogram": "E & G",
+    "schedule": "Program",
+    "travel": "Transport & Zboruri",
+    "lodging": "Cazare",
+    "guides": "Ghiduri Regionale",
+    "tips": "Informații Utile",
+    "rsvp": "Confirmare (RSVP)",
+    "locked": "Blocat",
+    "changeLanguage": "English"
+  },
+  "hero": {
+    "welcome": "Cu bucurie vă invităm să sărbătorim căsătoria dintre",
+    "couple": "Elizabeth & George",
+    "date": "Vineri, 28 Mai 2027",
+    "venue": "Castelul Cantacuzino",
+    "location": "Bușteni, Valea Prahovei, România",
+    "rsvpCta": "Confirmă Prezența",
+    "scheduleCta": "Vezi Programul Weekendului",
+    "countdown": {
+      "days": "Zile",
+      "hours": "Ore",
+      "minutes": "Minute",
+      "seconds": "Secunde",
+      "until": "Până ne revedem în inima Carpaților"
+    }
+  },
+  "schedule": {
+    "title": "Programul Weekendului",
+    "subtitle": "Trei zile de neuitat la poalele Munților Bucegi",
+    "thursday": {
+      "tab": "Joi, 27 Mai",
+      "date": "Joi, 27 Mai 2027",
+      "badge": "Ziua de Bun Venit",
+      "events": [
+        {
+          "time": "11:30 – 14:30",
+          "title": "Tur Regal la Castelul Peleș & Grădinile Sinaia",
+          "location": "Castelul Peleș, Sinaia",
+          "description": "Tur de grup programat în capodopera neo-renașcentistă a Regelui Carol I. Lemnărie rafinată, 160 de saloane regale și terase spectaculoase. Biletele de acces pentru grup sunt asigurate pentru toți oaspeții."
+        },
+        {
+          "time": "18:30 – 21:30",
+          "title": "Seară de Bun Venit & Toast Tradițional",
+          "location": "Valea Bușteni / Sinaia",
+          "description": "O reuniune caldă și relaxată cu bucate alese, brânzeturi artizanale, vinuri românești de colecție și un toast autentic cu țuică și pălincă carpatină."
+        }
+      ]
+    },
+    "friday": {
+      "tab": "Vineri, 28 Mai",
+      "date": "Vineri, 28 Mai 2027",
+      "badge": "Ziua Nunții",
+      "events": [
+        {
+          "time": "16:30",
+          "title": "Sosirea Oaspeților & Primirea Festivă",
+          "location": "Curtea de Piatră a Castelului Cantacuzino",
+          "description": "Oaspeții sunt întâmpinați la porțile istorice ale castelului cu șampanie, aperitive răcoritoare și o panoramă maiestuoasă a Masivului Caraiman."
+        },
+        {
+          "time": "17:30",
+          "title": "Ceremonia Religioasă în Grădină",
+          "location": "Terasa Verde a Castelului",
+          "description": "Schimbul de jurăminte cu vedere panoramică spre stâncile abrupte ale Bucegilor și Crucea Caraiman."
+        },
+        {
+          "time": "18:30",
+          "title": "Cocktail & Vizitarea Saloanelor Istorice",
+          "location": "Terasa Superioară & Galeriile de Artă Cantacuzino",
+          "description": "Cvartet de coarde, degustare de vinuri nobile și vizitarea vitraliilor originale venețiene și a stemei familiei Cantacuzino."
+        },
+        {
+          "time": "19:45 – Târziu în Noapte",
+          "title": "Banchetul Regal & Petrecerea Nunții",
+          "location": "Marea Sală de Recepție & Curtea Iluminată",
+          "description": "Meniu festiv de înaltă gastronomie ce îmbină rafinamentul european cu aromele tradiționale românești. Muzică live, dans și sărbătoare până în zori sub Crucea Caraiman luminată pe cerul nopții."
+        }
+      ]
+    },
+    "saturday": {
+      "tab": "Sâmbătă, 29 Mai",
+      "date": "Sâmbătă, 29 Mai 2027",
+      "badge": "Rămas-Bun & Excursii",
+      "events": [
+        {
+          "time": "10:30 – 13:00",
+          "title": "Brunch de Rămas-Bun & Cafea",
+          "location": "Grădina Cantacuzino / Bușteni",
+          "description": "Cafea proaspătă de munte, plăcinte calde, cozonac pufos și preparate ușoare pentru a rememora momentele magice ale serii trecute."
+        },
+        {
+          "time": "13:30 – 17:30",
+          "title": "Telecabina Bușteni (Babele & Sfinxul) sau Castelul Bran",
+          "location": "Platoul Bucegi sau Castelul Bran",
+          "description": "Alegeți aventura montană: Urcarea cu Telecabina Bușteni la 2.200m pentru a admira Babele și Sfinxul, sau o excursie de o zi la celebrul Castel Bran (Castelul lui Dracula)."
+        }
+      ]
+    }
+  },
+  "travel": {
+    "title": "Transport & Călătorie",
+    "subtitle": "Cum ajungeți în siguranță din America de Nord în inima României",
+    "flightsTitle": "Opțiuni de Zbor din Sudul Californiei (SAN / LAX)",
+    "flightsLead": "Pentru oaspeții care zboară din San Diego (SAN) sau Los Angeles (LAX) spre Aeroportul Internațional Henri Coandă București (OTP) sau Brașov-Ghimbav (GHV):",
+    "sanOpt": {
+      "airline": "Lufthansa via München (MUC)",
+      "badge": "Recomandarea Principală",
+      "detail": "SAN -> MUC -> OTP. Zboruri extrem de fiabile, conexiuni optime, transfer rapid al bagajelor și sosire timpurie la București după-amiaza."
+    },
+    "baOpt": {
+      "airline": "British Airways via Londra (LHR)",
+      "badge": "Alternativă Excelentă",
+      "detail": "SAN -> LHR -> OTP. Plecare confortabilă de zi din San Diego, segment transatlantic facil și legături zilnice frecvente Heathrow – Otopeni."
+    },
+    "klmOpt": {
+      "airline": "KLM / Air France via Amsterdam (AMS) sau Paris (CDG)",
+      "badge": "Flexibilitate Maximă",
+      "detail": "SAN -> AMS/CDG -> OTP. Multe opțiuni zilnice și aeroporturi europene de tranzit bine organizate."
+    },
+    "laxOpt": {
+      "airline": "Turkish Airlines via Istanbul (IST) din LAX",
+      "badge": "Plecări din Los Angeles",
+      "detail": "Pentru plecările din Los Angeles (LAX), Turkish Airlines prin Istanbul oferă servicii de top și conexiune directă spre OTP."
+    },
+    "memorialDayWarning": {
+      "title": "Atenționare Zboruri: Weekendul Memorial Day",
+      "text": "Sărbătoarea Memorial Day în SUA are loc luni, 31 Mai 2027. Zborurile de întoarcere peste Atlantic sunt foarte solicitate în această perioadă, motiv pentru care vă recomandăm insistent să rezervați biletele de avion cu 6–9 luni înainte (august–noiembrie 2026)."
+    },
+    "borderRequirements": {
+      "title": "Pașapoarte & Condiții de Intrare",
+      "schengenTitle": "România este membră a Spațiului Schengen",
+      "schengenDesc": "România este integrată în Spațiul European Schengen. Controalele la frontieră respectă legislația comună europeană.",
+      "passportValidity": "Valabilitate Pașaport: Pașaportul SUA/Canada trebuie să fie valabil cel puțin 3 luni după data preconizată a părăsirii spațiului Schengen (recomandăm 6 luni de valabilitate).",
+      "eesTitle": "Sistemul European de Intrare/Ieșire (EES) & ETIAS",
+      "eesDesc": "Cetățenii din afara UE vor fi înregistrați biometric (amprente și fotografie digitală) la intrarea în porturile Schengen. Urmăriți cerințele pentru autorizația electronică ETIAS pentru anul 2027."
+    }
+  },
+  "ground": {
+    "title": "Transport Terestru: OTP către Bușteni",
+    "subtitle": "Orașul Bușteni este situat la aproximativ 120 km nord de Aeroportul Otopeni, de-a lungul culoarului pitoresc DN1 prin Valea Prahovei.",
+    "driveTime": "Timpul mediu de deplasare este de 2 până la 2,5 ore, în funcție de traficul de weekend.",
+    "modes": [
+      {
+        "id": "private",
+        "title": "Transfer Privat / Microbuz cu Șofer",
+        "badge": "Cel Mai Confortabil (Recomandat)",
+        "duration": "2h 00m",
+        "cost": "€70 – €140 per vehicul (sau van împărțit)",
+        "pros": "Transport de la ușă la ușă direct la hotel; bagajele sunt preluate; fără stres de orientare după un zbor lung.",
+        "cons": "Necesită rezervare în avans cu detaliile zborului de sosire.",
+        "services": "Operatori de încredere: Daytrip (mydaytrip.com), Welcome Pickups sau City Airport Taxis."
+      },
+      {
+        "id": "train",
+        "title": "Tren Direct (CFR Călători & Astra Trans)",
+        "badge": "Pitoresc & Fără Ambuteiaje",
+        "duration": "2h 15m în total",
+        "cost": "€8 – €18 de persoană (clasa 1 / 2)",
+        "pros": "Evită complet aglomerația de pe DN1; peisaje montane superbe la intrarea în Bușteni.",
+        "cons": "Necesită trenul de legătură de la aeroport la Gara de Nord București (20 min) înainte de a urca în trenul de munte.",
+        "services": "CFR Călători sau Astra Trans Carpatic (operator privat modern cu locuri rezervate confortabile)."
+      },
+      {
+        "id": "rental",
+        "title": "Închiriere Mașină din Aeroportul OTP",
+        "badge": "Libertate Maximă de Mișcare",
+        "duration": "2h 00m – 3h 00m",
+        "cost": "€35 – €75 / zi + combustibil",
+        "pros": "Autonomie completă pentru a vizita Castelul Bran, Brașovul și traseele montane.",
+        "cons": "Trafic aglomerat în weekend pe DN1; toleranță zero la alcool la volan în România.",
+        "services": "Important: Rezervați transmisie AUTOMATĂ din timp; permis de conducere internațional (IDP); asigurați-vă că rovinieta este activă."
+      }
+    ]
+  },
+  "lodging": {
+    "title": "Opțiuni de Cazare & Unde Să Vă Stabiliți",
+    "subtitle": "Zone selectate în Valea Prahovei și Sudul Transilvaniei",
+    "roomBlock": {
+      "badge": "Bloc de Camere Rezervate",
+      "title": "Blocurile de Camere vor fi Anunțate în Curând",
+      "desc": "Finalizăm în prezent acordurile de grup cu tarife preferențiale pentru oaspeții noștri în Bușteni și Sinaia. Detaliile și codurile promoționale vor fi publicate aici până la sfârșitul anului 2026. Vă rugăm să rezervați până în februarie 2027."
+    },
+    "hubs": [
+      {
+        "name": "Bușteni (Orașul Evenimentului)",
+        "distance": "0 – 5 minute până la Castelul Cantacuzino",
+        "vibe": "Liniște montană, acces pietonal la castel și telecabină",
+        "desc": "Alegerea ideală dacă doriți să fiți la câțiva pași sau la 3 minute cu mașina de toate evenimentele nunții. Numeroase pensiuni cochete și vile montane cu balcoane din lemn și priveliști spectaculoase.",
+        "picks": "Villa Leonida, Pensiunea Silva, Pensiunea Cantacuzino, vile de pe Strada Zamora."
+      },
+      {
+        "name": "Sinaia (Orașul Regal & Balnear)",
+        "distance": "10 – 15 minute la sud de castel",
+        "vibe": "Arhitectură Belle Époque, parcuri regale, Castelul Peleș",
+        "desc": "Reședința de vară istorică a Familiei Regale a României. Oferă hoteluri de 4 și 5 stele cu spa, promenade animate, terase elegante și restaurante de primă clasă.",
+        "picks": "Hotel International Sinaia, Alexandrion Experience / New Montana, Hotel Rina Sinaia, Villa Obelisc."
+      },
+      {
+        "name": "Brașov (Cetatea Medievală Săsească)",
+        "distance": "35 – 45 minute la nord de castel",
+        "vibe": "Străzi pavate medievale, Biserica Neagră, viață urbană cosmopolită",
+        "desc": "Bijuteria Transilvaniei. O opțiune minunată pentru cei care doresc să exploreze o cetate istorică vibrantă, cu restaurante și cafenele în Piața Sfatului, folosind transportul organizat spre Bușteni.",
+        "picks": "Radisson Blu Aurum Brașov, Aro Palace, Hotel Casa Chitic, Schuster Boarding House."
+      }
+    ]
+  },
+  "lore": {
+    "title": "Istoria Locului & Itinerarii Extinse",
+    "subtitle": "O privire detaliată asupra patrimoniului, legendelor și excursiilor din România",
+    "buttonOpen": "Citește Istoria Locului & Traseele Extinse",
+    "buttonClose": "Închide Ghidul",
+    "cantacuzinoTitle": "Castelul Cantacuzino: Viziunea Alpină a Nababului",
+    "cantacuzinoExcerpt": "Finalizat în anul 1911 de către Prințul Gheorghe Grigore Cantacuzino (poreclit «Nababul»), unul dintre cei mai bogați boieri și Prim-Miniștri ai României.",
+    "cantacuzinoFull": "Amplasat pe platoul Zamora cu o perspectivă panoramică asupra Bucegilor, Castelul Cantacuzino a fost proiectat de arhitectul Grigore Cerchez în stil neoromânesc (brâncovenesc). Castelul păstrează plafoane sculptate în stejar masiv, scări monumentale din marmură de Carrara, vitralii venețiene și o galerie heraldică unică cu stemele familiei Cantacuzino. În ultimii ani, silueta sa gotic-romanescă a devenit faimoasă la nivel mondial ca decor pentru Academia Nevermore din serialul fenomen Wednesday de pe Netflix.",
+    "pelesTitle": "Castelul Peleș: Capodopera Regală din Sinaia",
+    "pelesExcerpt": "Ctitorit în 1873 de Regele Carol I al României, Peleșul a fost recunoscut drept unul dintre cele mai avansate tehnologic și spectaculoase palate din Europa.",
+    "pelesFull": "Înconjurat de pădurile seculare din Sinaia, Castelul Peleș a fost primul castel complet electrificat din Europa, având încălzire centralizată, ascensor și uzină electrică proprie. Cele 160 de camere adăpostesc sculpturi excepționale din lemn în stil renascentist german, candelabre din cristal de Murano, vitralii elvețiene pictate manual și o armurărie impresionantă de peste 4.000 de piese istorice.",
+    "transylvaniaTitle": "Marele Circuit al Transilvaniei (1 Săptămână)",
+    "transylvaniaExcerpt": "Un traseu de neuitat prin sate medievale săsești, biserici fortificate UNESCO și cetăți de poveste.",
+    "transylvaniaFull": "Traseu recomandat:\n• Zilele 1-3: Bușteni, Sinaia (Peleș) și turnurile impunătoare ale Castelului Bran.\n• Ziua 4: Brașovul medieval și satul Viscri cu biserica sa fortificată UNESCO (unde Regele Charles al III-lea deține și conservă proprietăți tradiționale).\n• Ziua 5: Sighișoara — singura cetate medievală locuită fără întrerupere din Europa de Est și locul nașterii lui Vlad al III-lea Țepeș.\n• Zilele 6-7: Sibiu — fosta Capitală Culturală Europeană, celebru pentru «casele cu ochi», Podul Minciunilor și gastronomia transilvăneană.",
+    "deltaTitle": "Delta Dunării & Litoralul Mării Negre",
+    "deltaExcerpt": "Pentru cei cu spirit de explorare: descoperiți cel mai bine conservat sanctuar acvatic din Europa, urmat de țărmul Mării Negre.",
+    "deltaFull": "De la București sau Brașov, călătoriți spre est către Tulcea, poarta de intrare în Rezervația Biosferei Delta Dunării (patrimoniu mondial UNESCO). Urcați în bărci tradiționale pentru a explora canalele retrase pline de nuferi albi, colonii impresionante de pelicani și hergheliile de cai sălbatici din Pădurea Letea. Încheiați călătoria la Constanța, admirând Cazinoul Art Nouveau restaurat pe faleza Mării Negre."
+  },
+  "tips": {
+    "title": "Ghid Practic de Călătorie",
+    "subtitle": "Informații utile pentru o ședere lină și plăcută în România",
+    "items": [
+      {
+        "title": "Monedă & Plăți cu Cardul",
+        "icon": "CreditCard",
+        "desc": "Moneda națională este Leul Românesc (RON). Plățile cu cardul și plățile contactless cu telefonul (Apple Pay / Google Pay) sunt acceptate aproape peste tot. Este bine să aveți 100–200 RON numerar pentru mici suveniruri montane sau bacșișuri locale."
+      },
+      {
+        "title": "Conducerea Auto: Toleranță Zero Alcool",
+        "icon": "Car",
+        "desc": "România aplică o limită strictă de 0,0‰ alcool în sânge pentru toți conducătorii auto — toleranță absolut zero. Pentru a vă bucura în siguranță de petrecere, folosiți microbuzele asigurate pentru nuntă sau taxiurile locale. Folosiți întotdeauna aplicația Waze pe DN1 pentru radare și trafic."
+      },
+      {
+        "title": "Eticheta Bacșișului",
+        "icon": "Coins",
+        "desc": "În România este uzual să lăsați bacșiș. La restaurante și cafenele, 10% reprezintă standardul pentru un serviciu bun (12–15% pentru atenție excepțională). Multe POS-uri oferă direct pe ecran opțiunea de bacșiș procentual."
+      },
+      {
+        "title": "Atenție la Fauna Montană",
+        "icon": "ShieldAlert",
+        "desc": "Munții Carpați adăpostesc cea mai mare populație de urși bruni din Europa. Zonele castelului și orașele sunt sigure și supravegheate, dar evitați plimbările solitare în pădure la lăsarea serii, nu hrăniți animalele sălbatice și asigurați resturile menajere."
+      },
+      {
+        "title": "Internet Mobil & Cartele SIM",
+        "icon": "Wifi",
+        "desc": "România are unele dintre cele mai rapide rețele de internet și acoperire 5G din Europa. Călătorii din străinătate pot activa roaming sau pot instala un eSIM accesibil (Airalo, Maya Mobile sau Orange România) în doar câteva secunde."
+      },
+      {
+        "title": "Prize & Tensiune Electrică",
+        "icon": "Zap",
+        "desc": "Sunt utilizate prize standard europene (Tip C & F, 230V / 50Hz). Oaspeții din America de Nord vor avea nevoie de adaptoare de priză pentru încărcătoare și aparate electronice."
+      }
+    ]
+  },
+  "rsvp": {
+    "badge": "Confirmare Online",
+    "title": "Sărbătoriți Alături de Noi",
+    "subtitle": "Vă rugăm să ne confirmați prezența până la 1 Februarie 2027 pentru a finaliza aranjamentele cu echipa castelului.",
+    "fullNameLabel": "Nume și Prenume",
+    "fullNamePlaceholder": "Elizabeth Darcy & Fitzwilliam Darcy",
+    "emailLabel": "Adresă de Email",
+    "emailPlaceholder": "emailul.dumneavoastra@exemplu.com",
+    "attendingLabel": "Veți participa la Nunta de Vineri, 28 Mai, la Castelul Cantacuzino?",
+    "attendingYes": "Accept cu Mare Bucurie",
+    "attendingNo": "Cu Părere de Rău, Nu Pot Participa",
+    "plusOneLabel": "Numele Partenerului / Invitatului Suplimentar",
+    "plusOnePlaceholder": "Numele invitatului (dacă este cazul)",
+    "dietaryLabel": "Restricții Alimentare & Alergii",
+    "dietaryOptions": {
+      "none": "Fără restricții alimentare",
+      "vegetarian": "Vegetarian",
+      "vegan": "Vegan",
+      "glutenFree": "Fără Gluten",
+      "dairyFree": "Fără Lactoză",
+      "nutAllergy": "Alergie la Nuci / Arahide",
+      "other": "Altele (detaliați mai jos)"
+    },
+    "eventsLabel": "Evenimente Opționale din Weekend (Bifați tot ce doriți să participați):",
+    "events": {
+      "thuPeles": "Joi, 27 Mai: Turul Regal Peleș & Reuniunea de Bun Venit",
+      "satBrunch": "Sâmbătă, 29 Mai: Brunch-ul de Rămas-Bun",
+      "satExcursion": "Sâmbătă, 29 Mai: Telecabina Bușteni (Sfinxul) sau Excursia la Bran"
+    },
+    "lodgingLabel": "Unde intenționați să vă cazați?",
+    "lodgingPlaceholder": "ex: Pensiune Bușteni, Hotel Sinaia, Brașov, sau încă nehotărât...",
+    "notesLabel": "Melodia Preferată, Amintiri sau Mesaj pentru Elizabeth & George",
+    "notesPlaceholder": "Scrieți piesa care vă aduce negreșit pe ringul de dans sau trimiteți-ne un gând bun...",
+    "submitButton": "Trimite Răspunsul (RSVP)",
+    "submittingButton": "Se înregistrează la castel...",
+    "successTitle": "Mulțumim din suflet! Răspuns înregistrat!",
+    "successMessage": "Vă mulțumim pentru confirmare! Răspunsul dumneavoastră a fost salvat în registrul nostru. Abia așteptăm să sărbătorim împreună sub crestele Carpaților!",
+    "declineMessage": "Ne va fi dor de dumneavoastră în România, dar vă mulțumim că ne-ați anunțat. Vă trimitem toată dragostea noastră!",
+    "submitAnother": "Trimite alt răspuns",
+    "errorMessage": "A apărut o eroare la trimiterea răspunsului. Vă rugăm să verificați conexiunea sau să contactați direct mirii.",
+    "contactHelp": "Doriți să actualizați răspunsul sau aveți întrebări? Trimiteți-ne un email la"
+  },
+  "footer": {
+    "couple": "Elizabeth & George",
+    "date": "28 Mai 2027 • Castelul Cantacuzino, Bușteni",
+    "tagline": "O Sărbătoare în Carpați • A Carpathian Celebration",
+    "confidential": "Portal Privat pentru Familie și Prieteni • Confidențial",
+    "lockAgain": "Blochează Site-ul"
+  }
+}

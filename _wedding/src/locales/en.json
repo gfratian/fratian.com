@@ -1,0 +1,321 @@
+{
+  "lock": {
+    "title": "A Carpathian Celebration",
+    "subtitle": "May 2027 • Bușteni, Romania",
+    "passcodePrompt": "Please enter the guest passcode from your invitation",
+    "passcodePlaceholder": "Enter passcode...",
+    "unlockButton": "Enter Celebration",
+    "errorMessage": "Incorrect passcode. Please check your invitation card or message the couple.",
+    "keyHint": "Have an access link? Use ?key=passcode to bypass directly."
+  },
+  "nav": {
+    "monogram": "E & G",
+    "schedule": "Schedule",
+    "travel": "Travel & Transit",
+    "lodging": "Accommodations",
+    "guides": "Regional Guides",
+    "tips": "Practical Tips",
+    "rsvp": "RSVP",
+    "locked": "Locked",
+    "changeLanguage": "Limba Română"
+  },
+  "hero": {
+    "welcome": "Joyfully Celebrating the Marriage of",
+    "couple": "Elizabeth & George",
+    "date": "Friday, May 28, 2027",
+    "venue": "Castelul Cantacuzino",
+    "location": "Bușteni, Prahova Valley, Romania",
+    "rsvpCta": "RSVP Online",
+    "scheduleCta": "View Weekend Schedule",
+    "countdown": {
+      "days": "Days",
+      "hours": "Hours",
+      "minutes": "Minutes",
+      "seconds": "Seconds",
+      "until": "Until we gather in the Carpathians"
+    }
+  },
+  "schedule": {
+    "title": "Weekend Itinerary",
+    "subtitle": "Three memorable days in the shadow of the Bucegi Mountains",
+    "thursday": {
+      "tab": "Thursday, May 27",
+      "date": "Thursday, May 27, 2027",
+      "badge": "Welcome Day",
+      "events": [
+        {
+          "time": "11:30 AM – 2:30 PM",
+          "title": "Peleș Castle Royal Tour & Sinaia Gardens",
+          "location": "Castelul Peleș, Sinaia",
+          "description": "Exclusive timed group tour of King Carol I's Neo-Renaissance masterpiece, featuring German woodwork, 160 royal chambers, and magnificent landscaped terraces. Private group entry passes provided for all wedding guests."
+        },
+        {
+          "time": "6:30 PM – 9:30 PM",
+          "title": "Carpathian Welcome Gathering & Toasts",
+          "location": "Bușteni / Sinaia Valley",
+          "description": "An informal mountain gathering featuring traditional Romanian delicacies, local artisanal cheeses, Romanian wines, and a traditional țuică and pălincă welcome toast."
+        }
+      ]
+    },
+    "friday": {
+      "tab": "Friday, May 28",
+      "date": "Friday, May 28, 2027",
+      "badge": "The Wedding Day",
+      "events": [
+        {
+          "time": "4:30 PM",
+          "title": "Guest Arrival & Welcome Refreshments",
+          "location": "Castelul Cantacuzino Stone Courtyard",
+          "description": "Guests arrive at the historic castle gates. Sparkling wine, mountain berry elixirs, and views of the Caraiman Massif."
+        },
+        {
+          "time": "5:30 PM",
+          "title": "Garden Nuptial Ceremony",
+          "location": "The Castle Terrace Lawn",
+          "description": "Vows exchanged overlooking the towering cliffs of the Bucegi Mountains and the Caraiman Cross."
+        },
+        {
+          "time": "6:30 PM",
+          "title": "Cocktail Hour & Castle Exploration",
+          "location": "Upper Terrace & Cantacuzino Art Galleries",
+          "description": "Acoustic violin and cello, canapés, wine tasting, and guided viewings of the castle's stained-glass windows and historic masonry."
+        },
+        {
+          "time": "7:45 PM – Late",
+          "title": "The Royal Banquet & Midnight Dancing",
+          "location": "The Grand Hall & Illuminated Grounds",
+          "description": "Multi-course feast blending contemporary European fine dining with rich Romanian culinary heritage. Live band, dancing, and midnight revelry beneath the illuminated Caraiman Peak."
+        }
+      ]
+    },
+    "saturday": {
+      "tab": "Saturday, May 29",
+      "date": "Saturday, May 29, 2027",
+      "badge": "Farewell & Excursions",
+      "events": [
+        {
+          "time": "10:30 AM – 1:00 PM",
+          "title": "Farewell Recovery Brunch",
+          "location": "Cantacuzino Gardens / Bușteni",
+          "description": "Fresh mountain espresso, local pastries (plăcinte & cozonac), fresh berries, and light bites to reminisce about the night before."
+        },
+        {
+          "time": "1:30 PM – 5:30 PM",
+          "title": "High Alpine Cable Car or Bran Castle Excursion",
+          "location": "Bucegi Plateau (Babele & Sphinx) or Bran Castle",
+          "description": "Choose your adventure: Take the Telecabina Bușteni cable car 2,200 meters up to the ancient rock formations of Babele and the enigmatic Romanian Sphinx, or take an organized day excursion to legendary Bran Castle ('Dracula's Castle')."
+        }
+      ]
+    }
+  },
+  "travel": {
+    "title": "Travel & Journey",
+    "subtitle": "Navigating from North America to the heart of Romania",
+    "flightsTitle": "Flight Recommendations from Southern California",
+    "flightsLead": "Most guests will depart from San Diego (SAN) or Los Angeles (LAX) heading into Bucharest Henri Coandă International Airport (OTP) or Brașov-Ghimbav International (GHV).",
+    "sanOpt": {
+      "airline": "Lufthansa via Munich (MUC)",
+      "badge": "Top Recommendation",
+      "detail": "SAN -> MUC -> OTP. Extremely reliable connections, modern aircraft, seamless luggage transit, and consistent arrival times into Bucharest in the early afternoon."
+    },
+    "baOpt": {
+      "airline": "British Airways via London (LHR)",
+      "badge": "Great Alternative",
+      "detail": "SAN -> LHR -> OTP. Convenient daytime departure from San Diego, smooth transatlantic leg, and frequent daily flights from Heathrow to OTP."
+    },
+    "klmOpt": {
+      "airline": "KLM / Air France via Amsterdam (AMS) or Paris (CDG)",
+      "badge": "Flexible Options",
+      "detail": "SAN -> AMS/CDG -> OTP. High daily frequency and pleasant European transfer hubs."
+    },
+    "laxOpt": {
+      "airline": "Turkish Airlines via Istanbul (IST) or Star Alliance from LAX",
+      "badge": "LAX Departures",
+      "detail": "For guests departing from Los Angeles (LAX), Turkish Airlines via IST offers award-winning service and direct connections into OTP."
+    },
+    "memorialDayWarning": {
+      "title": "Memorial Day Weekend Flight Advisory",
+      "text": "Memorial Day in the United States falls on Monday, May 31, 2027. Because transatlantic return flights around Memorial Day experience elevated demand, we strongly urge all guests to book airline tickets 6 to 9 months ahead (between August and November 2026)."
+    },
+    "borderRequirements": {
+      "title": "Passport & Entry Requirements",
+      "schengenTitle": "Romania is in the Schengen Area",
+      "schengenDesc": "Romania joined the European Schengen Zone for air and maritime borders in 2024 and full land borders. Passport control operates under unified Schengen regulations.",
+      "passportValidity": "Passport Validity: Your US/Canadian passport must remain valid for at least 3 months beyond your planned departure date from the Schengen territory (6 months validity is highly recommended).",
+      "eesTitle": "European Entry/Exit System (EES) & ETIAS Alert",
+      "eesDesc": "US and non-EU passport holders will undergo digital biometric registration (fingerprints and facial image) upon entry into Schengen ports. Monitor whether ETIAS electronic travel authorization is required for 2027 travel."
+    }
+  },
+  "ground": {
+    "title": "Ground Transit: OTP to Bușteni",
+    "subtitle": "Bușteni is located approximately 120 km (75 miles) north of Bucharest OTP Airport along the scenic DN1 corridor through the Prahova Valley.",
+    "driveTime": "Typical transit time is 2 to 2.5 hours depending on weekend mountain traffic.",
+    "modes": [
+      {
+        "id": "private",
+        "title": "Private Chauffeur / Shuttle Van",
+        "badge": "Most Relaxing (Recommended)",
+        "duration": "2h 00m",
+        "cost": "€70 – €140 per vehicle (or shared van)",
+        "pros": "Door-to-door directly to your hotel; luggage handled; zero navigation stress after long flights.",
+        "cons": "Requires pre-booking with arrival flight details.",
+        "services": "Recommended operators: Daytrip (mydaytrip.com), Welcome Pickups, or City Airport Taxis."
+      },
+      {
+        "id": "train",
+        "title": "Direct Train (CFR & Astra Trans)",
+        "badge": "Scenic & Traffic-Free",
+        "duration": "2h 15m total",
+        "cost": "€8 – €18 per passenger (1st / 2nd class)",
+        "pros": "Bypasses all weekend highway traffic on DN1; beautiful mountain views approaching Bușteni.",
+        "cons": "Requires a 20-minute airport train to Bucharest Gara de Nord station before boarding the mountain train.",
+        "services": "CFR Călători or Astra Trans Carpatic (comfortable private carrier with clean assigned seating)."
+      },
+      {
+        "id": "rental",
+        "title": "Rental Car at OTP Airport",
+        "badge": "Maximum Freedom",
+        "duration": "2h 00m – 3h 00m",
+        "cost": "€35 – €75 / day + fuel",
+        "pros": "Complete independence to explore Bran Castle, Brașov, and alpine viewpoints.",
+        "cons": "Heavier weekend traffic on DN1; Romanian road rules require 0.0 alcohol tolerance.",
+        "services": "Important: Book AUTOMATIC transmission early (manual is default in Europe); carry International Driving Permit (IDP); verify rovinietă (road vignette)."
+      }
+    ]
+  },
+  "lodging": {
+    "title": "Accommodations & Where to Stay",
+    "subtitle": "Selected hubs across the Prahova Valley and Southern Transylvania",
+    "roomBlock": {
+      "badge": "Room Block Notice",
+      "title": "Hotel Room Blocks Announcing Soon",
+      "desc": "We are currently finalizing group room blocks with preferred rates across Bușteni and Sinaia. Details and booking discount codes will be released here by late 2026. Please reserve by February 2027."
+    },
+    "hubs": [
+      {
+        "name": "Bușteni (Venue Town)",
+        "distance": "0 – 5 minutes to Cantacuzino Castle",
+        "vibe": "Alpine serenity, walking distance to castle and cable car",
+        "desc": "Perfect if you want to be within steps or a 3-minute cab of all wedding celebrations. Numerous charming boutique pensiuni (Romanian mountain chalets and villas) with wooden balconies and mountain views.",
+        "picks": "Villa Leonida, Pensiunea Silva, Pensiunea Cantacuzino, boutique villas on Strada Zamora."
+      },
+      {
+        "name": "Sinaia (Royal Spa Town)",
+        "distance": "10 – 15 minutes south of venue",
+        "vibe": "Historic Belle Époque architecture, royal parklands, Peleș Castle",
+        "desc": "The summer residence of Romanian royalty. Full of historic 4-star and 5-star spa hotels, lively pedestrian promenades, outdoor cafes, and excellent restaurants.",
+        "picks": "Hotel International Sinaia, Alexandrion Experience / New Montana, Hotel Rina Sinaia, Villa Obelisc."
+      },
+      {
+        "name": "Brașov (Medieval Saxon City)",
+        "distance": "35 – 45 minutes north of venue",
+        "vibe": "Vibrant medieval cobblestone streets, Gothic Black Church, boutique nightlife",
+        "desc": "Transylvania's crown jewel. Ideal for guests who want to stay in a bustling historical city with sprawling cafes around Piața Sfatului (Council Square) and take wedding shuttles south into Bușteni.",
+        "picks": "Radisson Blu Aurum Brașov, Aro Palace, Hotel Casa Chitic, Schuster Boarding House."
+      }
+    ]
+  },
+  "lore": {
+    "title": "Regional Lore & Travel Itineraries",
+    "subtitle": "Curated deep dives into the history, legends, and extended journeys across Romania",
+    "buttonOpen": "Read Historical Lore & Extended Itineraries",
+    "buttonClose": "Close Guide",
+    "cantacuzinoTitle": "Castelul Cantacuzino: The Prince's Alpine Vision",
+    "cantacuzinoExcerpt": "Completed in 1911 by Prince Gheorghe Grigore Cantacuzino ('Nababul' — The Nabob), one of the wealthiest landowners and Prime Ministers of Romania.",
+    "cantacuzinoFull": "Perched on the Zamora plateau overlooking the Bușteni valley, Castelul Cantacuzino was designed by architect Grigore Cerchez in the distinctive Neo-Romanian (Brâncovenesc) style. The castle features hand-carved oak ceilings, Carrera marble stairs, Venetian stained glass, and a unique heraldic gallery displaying the blazons of the Cantacuzino dynasty. In recent years, its striking Gothic-Romanesque silhouette gained international fame as the filming location for 'Nevermore Academy' in Netflix's global hit Wednesday.",
+    "pelesTitle": "Castelul Peleș: A Royal Masterpiece in Sinaia",
+    "pelesExcerpt": "Commissioned in 1873 by King Carol I of Romania, Peleș was hailed as one of the most technologically advanced and architecturally breathtaking palaces in Europe.",
+    "pelesFull": "Surrounded by pine forests in Sinaia, Peleș Castle was the first castle in Europe to have central heating, an electric elevator, and its own hydro-electric power plant. Its 160 rooms display extraordinary German Renaissance woodwork, Murano crystal chandeliers, hand-painted Swiss glass, and an immense armory containing over 4,000 European and Oriental weapons.",
+    "transylvaniaTitle": "1-Week Transylvania Grand Loop",
+    "transylvaniaExcerpt": "An unforgettable driving or private tour through medieval Saxon fortified churches, UNESCO heritage citadels, and storybook villages.",
+    "transylvaniaFull": "Recommended route:\n• Day 1-3: Bușteni, Sinaia (Peleș), and the dramatic towers of Bran Castle.\n• Day 4: Medieval Brașov & the UNESCO fortified church village of Viscri (where King Charles III preserves historic Saxon heritage homes).\n• Day 5: Sighișoara — the only continuously inhabited medieval citadel in Eastern Europe and birthplace of Vlad III Țepeș (The Impaler).\n• Day 6-7: Sibiu — European Capital of Culture, famous for its 'houses with eyes', Bridge of Lies, and vibrant culinary scene.",
+    "deltaTitle": "Danube Delta & Black Sea Route",
+    "deltaExcerpt": "For adventurous travelers: explore Europe's largest pristine wetland sanctuary followed by the historic Black Sea coast.",
+    "deltaFull": "From Bucharest or Transylvania, travel east to Tulcea, the gateway to the UNESCO Danube Delta Biosphere Reserve. Board private wooden skiffs to weave through secluded water channels filled with white water lilies, migrating European pelicans, and wild horses in the Letea Forest. Finish your journey in Constanța, viewing the iconic Art Nouveau Casino on the Black Sea promenade."
+  },
+  "tips": {
+    "title": "Essential Practical Information",
+    "subtitle": "Helpful insights for smooth travel throughout Romania",
+    "items": [
+      {
+        "title": "Currency & Payments",
+        "icon": "CreditCard",
+        "desc": "The national currency is the Romanian Leu (RON). Credit cards and contactless Apple Pay / Google Pay are accepted virtually everywhere (restaurants, taxis, shops). Keep a small amount of cash (100–200 RON) for small mountain souvenir stands or rural tipping."
+      },
+      {
+        "title": "Zero-Tolerance Driving",
+        "icon": "Car",
+        "desc": "Romania strictly enforces a 0.0‰ Blood Alcohol Concentration limit for all drivers — absolute zero tolerance. If you plan to enjoy Romanian wine or pălincă, always use our wedding shuttles or local taxis. Always use Waze for navigation on DN1 to track police alerts and traffic."
+      },
+      {
+        "title": "Tipping Etiquette",
+        "icon": "Coins",
+        "desc": "Tipping is customary in Romania. In restaurants and cafes, 10% is standard for good service (12–15% for exceptional service). Many restaurant card terminals now offer a tipping percentage prompt on screen."
+      },
+      {
+        "title": "Mountain & Wildlife Awareness",
+        "icon": "ShieldAlert",
+        "desc": "The Carpathian Mountains are home to Europe's largest population of brown bears. While castle grounds and town centers are completely safe and monitored, never hike alone into unlit forests at dusk, never feed wildlife, and secure food waste."
+      },
+      {
+        "title": "Connectivity & SIMs",
+        "icon": "Wifi",
+        "desc": "Romania possesses some of the fastest broadband and 5G mobile networks in the world. US travelers can enable an international roaming plan or install an inexpensive local eSIM (Airalo, Maya Mobile, or Orange Romania) in seconds."
+      },
+      {
+        "title": "Electrical Plugs & Voltage",
+        "icon": "Zap",
+        "desc": "Standard European electrical plugs (Type C & F, 230V / 50Hz). North American travelers will need plug adapters for phones and laptops, and dual-voltage appliances for heated hair tools."
+      }
+    ]
+  },
+  "rsvp": {
+    "badge": "RSVP Online",
+    "title": "Celebrate With Us",
+    "subtitle": "Please respond by February 1, 2027 so we may coordinate with the castle staff.",
+    "fullNameLabel": "Full Name(s)",
+    "fullNamePlaceholder": "Elizabeth Darcy & Fitzwilliam Darcy",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "your.email@example.com",
+    "attendingLabel": "Will you be attending the Friday, May 28 Wedding at Castelul Cantacuzino?",
+    "attendingYes": "Joyfully Accepts",
+    "attendingNo": "Regretfully Declines",
+    "plusOneLabel": "Name of Additional Guest / Partner",
+    "plusOnePlaceholder": "Guest name (if applicable)",
+    "dietaryLabel": "Dietary Restrictions & Allergies",
+    "dietaryOptions": {
+      "none": "No dietary restrictions",
+      "vegetarian": "Vegetarian",
+      "vegan": "Vegan",
+      "glutenFree": "Gluten-Free",
+      "dairyFree": "Dairy-Free",
+      "nutAllergy": "Nut Allergy",
+      "other": "Other (please detail below)"
+    },
+    "eventsLabel": "Optional Weekend Events (Check all you plan to attend):",
+    "events": {
+      "thuPeles": "Thursday, May 27: Peleș Castle Royal Tour & Evening Welcome Gathering",
+      "satBrunch": "Saturday, May 29: Farewell Recovery Brunch",
+      "satExcursion": "Saturday, May 29: Bușteni Cable Car (Sphinx) or Bran Castle Excursion"
+    },
+    "lodgingLabel": "Where do you plan to stay?",
+    "lodgingPlaceholder": "e.g., Bușteni pensiune, Hotel International Sinaia, Brașov old town, or undecided...",
+    "notesLabel": "Song Requests, Favorite Memories, or Notes for Elizabeth & George",
+    "notesPlaceholder": "Drop a song that will get you onto the dance floor, or send your love...",
+    "submitButton": "Submit RSVP Response",
+    "submittingButton": "Confirming with Castle...",
+    "successTitle": "Mulțumim! RSVP Received!",
+    "successMessage": "Thank you for letting us know! We have safely recorded your response in our registry. We cannot wait to celebrate together under the peaks of the Carpathians.",
+    "declineMessage": "We will miss you deeply in Romania, but thank you for letting us know. Sending all our love!",
+    "submitAnother": "Submit another response",
+    "errorMessage": "There was an issue transmitting your RSVP. Please verify your connection or email your response directly to the couple.",
+    "contactHelp": "Need to update your RSVP or have questions? Email us directly at"
+  },
+  "footer": {
+    "couple": "Elizabeth & George",
+    "date": "May 28, 2027 • Castelul Cantacuzino, Bușteni",
+    "tagline": "A Carpathian Celebration • O Sărbătoare în Carpați",
+    "confidential": "Private Family & Friends Portal • Confidential",
+    "lockAgain": "Lock Site"
+  }
+}

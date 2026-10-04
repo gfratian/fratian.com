@@ -9,3 +9,9 @@ Gemfile.lock
 
 # visual brainstorming companion (local only)
 .superpowers/
+
+# Node & Next.js in _wedding
+_wedding/node_modules/
+_wedding/.next/
+_wedding/out/
+_wedding/.env*.local

@@ -1,4 +1,4 @@
-name: Build and deploy (Jekyll + polyglot)
+name: Build and deploy (Jekyll + polyglot + Wedding)
 
 on:
   push:
@@ -19,17 +19,42 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.3"
           bundler-cache: true
+
       - name: Configure Pages
         id: pages
         uses: actions/configure-pages@v5
+
       - name: Build with Jekyll
         run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
         env:
           JEKYLL_ENV: production
+
+      - name: Setup Node for Wedding Micro-Site
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: "_wedding/package-lock.json"
+
+      - name: Build Wedding Micro-Site
+        run: |
+          cd _wedding
+          npm ci
+          OUTPUT_EXPORT=true npm run build
+          mkdir -p ../_site/may2027
+          cp -r out/* ../_site/may2027/
+          cd ..
+          mkdir -p ./_site/may28 ./_site/wedding ./_site/rsvp
+          cp may28/index.html ./_site/may28/
+          cp wedding/index.html ./_site/wedding/
+          cp rsvp/index.html ./_site/rsvp/
+          touch ./_site/.nojekyll
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./_site

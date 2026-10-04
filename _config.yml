@@ -49,6 +49,11 @@ exclude:
   - Gemfile.lock
   - vendor
   - .jekyll-cache
+  - _wedding
+  - may2027
+  - may28
+  - wedding
+  - rsvp
 
 # Built with GitHub Actions (see .github/workflows/pages.yml) so we can use
 # jekyll-polyglot for the four-language site.
@@ -58,5 +63,5 @@ plugins:
 # --- Multilingual (jekyll-polyglot) ---
 languages: ["en", "ro", "it", "fr"]
 default_lang: "en"
-exclude_from_localization: ["assets", "CNAME", ".nojekyll"]
+exclude_from_localization: ["assets", "CNAME", ".nojekyll", "may2027", "may28", "wedding", "rsvp"]
 parallel_localization: false

@@ -1,0 +1,39 @@
+# Strict Zero-Crawler Policy for Elizabeth & George Wedding Micro-Site
+
+User-agent: *
+Disallow: /may2027
+Disallow: /may2027/
+Disallow: /may28
+Disallow: /may28/
+Disallow: /wedding
+Disallow: /wedding/
+Disallow: /rsvp
+Disallow: /rsvp/
+
+# Explicit blocks for generative AI and commercial scrapers
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: PerplexityBot
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /

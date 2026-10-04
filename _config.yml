@@ -54,6 +54,7 @@ exclude:
   - may28
   - wedding
   - rsvp
+  - admin
 
 # Built with GitHub Actions (see .github/workflows/pages.yml) so we can use
 # jekyll-polyglot for the four-language site.
@@ -63,5 +64,5 @@ plugins:
 # --- Multilingual (jekyll-polyglot) ---
 languages: ["en", "ro", "it", "fr"]
 default_lang: "en"
-exclude_from_localization: ["assets", "CNAME", ".nojekyll", "may2027", "may28", "wedding", "rsvp"]
+exclude_from_localization: ["assets", "CNAME", ".nojekyll", "may2027", "may28", "wedding", "rsvp", "admin"]
 parallel_localization: false

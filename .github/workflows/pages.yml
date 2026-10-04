@@ -49,10 +49,11 @@ jobs:
           mkdir -p ../_site/may2027
           cp -r out/* ../_site/may2027/
           cd ..
-          mkdir -p ./_site/may28 ./_site/wedding ./_site/rsvp
+          mkdir -p ./_site/may28 ./_site/wedding ./_site/rsvp ./_site/admin
           cp may28/index.html ./_site/may28/
           cp wedding/index.html ./_site/wedding/
           cp rsvp/index.html ./_site/rsvp/
+          cp admin/index.html ./_site/admin/
           touch ./_site/.nojekyll
 
       - uses: actions/upload-pages-artifact@v3

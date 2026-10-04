@@ -121,10 +121,58 @@ function doPost(e) {
 }
 
 function doGet(e) {
+  var action = (e && e.parameter && e.parameter.action) || "health";
+
+  if (action === "list" || action === "stats") {
+    try {
+      var sheet = getOrCreateRsvpSheet();
+      var data = sheet.getDataRange().getValues();
+      var rows = [];
+
+      // If rows exist past header row
+      if (data && data.length > 1) {
+        for (var i = 1; i < data.length; i++) {
+          var r = data[i];
+          rows.push({
+            id: i,
+            timestamp: r[0] ? new Date(r[0]).toISOString() : "",
+            fullName: (r[1] || "").toString(),
+            email: (r[2] || "").toString(),
+            attending: r[3] === "YES",
+            additionalGuests: (r[4] || "").toString(),
+            dietary: (r[5] || "").toString(),
+            thuPeles: r[6] === "YES",
+            satBrunch: r[7] === "YES",
+            satExcursion: r[8] === "YES",
+            lodging: (r[9] || "").toString(),
+            notes: (r[10] || "").toString(),
+            language: (r[11] || "EN").toString()
+          });
+        }
+      }
+
+      var ss = SpreadsheetApp.getActiveSpreadsheet();
+      return createJsonResponse({
+        status: "success",
+        spreadsheetUrl: ss ? ss.getUrl() : "",
+        count: rows.length,
+        data: rows
+      }, 200);
+
+    } catch (err) {
+      return createJsonResponse({
+        status: "error",
+        message: err.toString()
+      }, 500);
+    }
+  }
+
   // Health check endpoint
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
   return createJsonResponse({
     status: "ok",
     message: "Elizabeth & George Wedding RSVP Webhook is active.",
+    spreadsheetUrl: ss ? ss.getUrl() : "",
     time: new Date().toISOString()
   }, 200);
 }

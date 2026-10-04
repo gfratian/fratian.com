@@ -48,199 +48,10 @@ export interface GuestParty {
   lodging?: string;
   notes?: string;
   updatedAt?: string;
+  isManual?: boolean;
 }
 
 const DEFAULT_ADMIN_PASSCODE = 'CantacuzinoAdmin27';
-
-// 20 Initial Parties totaling 41 Guests to match Elizabeth & George's roster
-const INITIAL_PARTIES: GuestParty[] = [
-  {
-    id: '1',
-    name: 'Amy Benjamine',
-    email: 'amyb828@gmail.com',
-    partySize: 1,
-    status: 'Pending',
-    planningEmailSent: true,
-    planningEmailNote: 'Amy Benjamone — planning email',
-  },
-  {
-    id: '2',
-    name: 'Andrei and Mary Fratian',
-    email: 'andreifratian@gmail.com',
-    partySize: 2,
-    status: 'Pending',
-    planningEmailSent: true,
-    planningEmailNote: 'Andrei — planning email',
-    additionalGuests: 'Mary Fratian',
-  },
-  {
-    id: '3',
-    name: 'Alexander and Elena Vancea',
-    email: 'alex.vancea@gmail.com',
-    partySize: 2,
-    status: 'Pending',
-    planningEmailSent: true,
-    planningEmailNote: 'Alexander — planning email',
-    additionalGuests: 'Elena Vancea',
-    dietary: 'Vegetarian (Elena)',
-  },
-  {
-    id: '4',
-    name: 'Marcus Aurelius Sterling',
-    email: 'm.sterling@investments.co.uk',
-    partySize: 1,
-    status: 'Pending',
-    planningEmailSent: true,
-    planningEmailNote: 'Marcus — planning email',
-    dietary: 'Gluten-Free, Dairy-Free',
-  },
-  {
-    id: '5',
-    name: 'David and Rachel Miller',
-    email: 'david.miller@techfirm.io',
-    partySize: 2,
-    status: 'Pending',
-    planningEmailSent: true,
-    planningEmailNote: 'David — planning email',
-    additionalGuests: 'Rachel Miller',
-    dietary: 'Nut allergy (David)',
-  },
-  {
-    id: '6',
-    name: 'Sophia Maria Popescu',
-    email: 'sophia.m.popescu@gmail.com',
-    partySize: 2,
-    status: 'Pending',
-    planningEmailSent: true,
-    planningEmailNote: 'Sophia — planning email',
-  },
-  {
-    id: '7',
-    name: 'Radu and Ioana Cantacuzino',
-    email: 'radu.cantacuzino@heritage.ro',
-    partySize: 2,
-    status: 'Pending',
-    planningEmailSent: true,
-    planningEmailNote: 'Radu — planning email',
-  },
-  {
-    id: '8',
-    name: 'Christian and Clara Beaumont',
-    email: 'clara.beaumont@luxuryparis.fr',
-    partySize: 2,
-    status: 'Pending',
-    planningEmailSent: true,
-    planningEmailNote: 'Clara — planning email',
-  },
-  {
-    id: '9',
-    name: 'Matei and Simona Georgescu',
-    email: 'matei.georgescu@bucharest.ro',
-    partySize: 2,
-    status: 'Pending',
-    planningEmailSent: true,
-    planningEmailNote: 'Matei — planning email',
-  },
-  {
-    id: '10',
-    name: 'Nicholas and Victoria Bennett',
-    email: 'n.bennett@londonfinance.co.uk',
-    partySize: 2,
-    status: 'Pending',
-    planningEmailSent: true,
-    planningEmailNote: 'Nicholas — planning email',
-  },
-  {
-    id: '11',
-    name: 'Stefan and Diana Ionescu',
-    email: 'stefan.ionescu@brasov.ro',
-    partySize: 2,
-    status: 'Pending',
-    planningEmailSent: true,
-    planningEmailNote: 'Stefan — planning email',
-  },
-  {
-    id: '12',
-    name: 'Julian and Helene Rousseau',
-    email: 'julian.rousseau@geneva.ch',
-    partySize: 2,
-    status: 'Pending',
-    planningEmailSent: true,
-    planningEmailNote: 'Julian — planning email',
-  },
-  {
-    id: '13',
-    name: 'Florin and Anca Dumitrescu',
-    email: 'florin.d@clujtech.ro',
-    partySize: 2,
-    status: 'Pending',
-    planningEmailSent: true,
-    planningEmailNote: 'Florin — planning email',
-  },
-  {
-    id: '14',
-    name: 'Gabriel and Cristina Moraru',
-    email: 'g.moraru@architects.ro',
-    partySize: 2,
-    status: 'Pending',
-    planningEmailSent: true,
-    planningEmailNote: 'Gabriel — planning email',
-  },
-  {
-    id: '15',
-    name: 'William and Charlotte Hughes',
-    email: 'w.hughes@edinburgh.ac.uk',
-    partySize: 2,
-    status: 'Pending',
-    planningEmailSent: true,
-    planningEmailNote: 'William — planning email',
-  },
-  {
-    id: '16',
-    name: 'Victor and Laura Costache',
-    email: 'victor.costache@med-center.ro',
-    partySize: 2,
-    status: 'Pending',
-    planningEmailSent: true,
-    planningEmailNote: 'Victor — planning email',
-  },
-  {
-    id: '17',
-    name: 'Sebastian and Maria Enache',
-    email: 's.enache@invest.ro',
-    partySize: 2,
-    status: 'Pending',
-    planningEmailSent: true,
-    planningEmailNote: 'Sebastian — planning email',
-  },
-  {
-    id: '18',
-    name: 'Oliver and Emily Campbell',
-    email: 'o.campbell@oxfordalumni.org',
-    partySize: 2,
-    status: 'Pending',
-    planningEmailSent: true,
-    planningEmailNote: 'Oliver — planning email',
-  },
-  {
-    id: '19',
-    name: 'Ciprian and Teodora Vasilescu',
-    email: 'c.vasilescu@consulting.ro',
-    partySize: 2,
-    status: 'Pending',
-    planningEmailSent: true,
-    planningEmailNote: 'Ciprian — planning email',
-  },
-  {
-    id: '20',
-    name: 'Dan and Roxana Marinescu',
-    email: 'dan.marinescu@bucharestlaw.ro',
-    partySize: 4,
-    status: 'Pending',
-    planningEmailSent: true,
-    planningEmailNote: 'Dan — planning email',
-  },
-];
 
 export default function AdminPage() {
   const [isUnlocked, setIsUnlocked] = useState<boolean>(false);
@@ -252,8 +63,8 @@ export default function AdminPage() {
   const [spreadsheetUrl, setSpreadsheetUrl] = useState<string>('');
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
 
-  // Data
-  const [parties, setParties] = useState<GuestParty[]>(INITIAL_PARTIES);
+  // Data - starts empty and populates strictly from live Google Sheet submissions
+  const [parties, setParties] = useState<GuestParty[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isLiveConnected, setIsLiveConnected] = useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<string>('');
@@ -262,7 +73,7 @@ export default function AdminPage() {
   // Filters & Search
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeFilter, setActiveFilter] = useState<'All' | 'Pending' | 'Yes' | 'Maybe' | 'No' | 'Dietary'>('All');
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>('table');
+  const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
 
   // Modals
   const [editingGuest, setEditingGuest] = useState<GuestParty | null>(null);
@@ -276,7 +87,7 @@ export default function AdminPage() {
     planningEmailNote: '',
   });
 
-  // Load configuration & cached parties on mount
+  // Load configuration & manual additions on mount
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -292,17 +103,22 @@ export default function AdminPage() {
       setIsUnlocked(true);
     }
 
-    // Load saved parties
+    // Clean up any legacy mock data from previous version
     try {
-      const savedParties = localStorage.getItem('wedding_guest_parties');
-      if (savedParties) {
-        const parsed = JSON.parse(savedParties);
+      localStorage.removeItem('wedding_guest_parties');
+    } catch (e) {}
+
+    // Load saved manual parties if any
+    try {
+      const savedManual = localStorage.getItem('wedding_manual_parties_v2');
+      if (savedManual) {
+        const parsed = JSON.parse(savedManual);
         if (Array.isArray(parsed) && parsed.length > 0) {
           setParties(parsed);
         }
       }
     } catch (err) {
-      console.error('Failed to parse cached parties', err);
+      console.error('Failed to parse manual parties', err);
     }
 
     // Load saved webhook URL
@@ -314,17 +130,7 @@ export default function AdminPage() {
     }
   }, []);
 
-  // Save parties to localStorage whenever updated
-  const savePartiesToStorage = (updatedParties: GuestParty[]) => {
-    setParties(updatedParties);
-    try {
-      localStorage.setItem('wedding_guest_parties', JSON.stringify(updatedParties));
-    } catch (err) {
-      console.error('Failed to save parties', err);
-    }
-  };
-
-  // Sync / Fetch live RSVPs from Google Apps Script
+  // Fetch live RSVPs directly from Google Apps Script
   const fetchRsvps = async (overrideUrl?: string) => {
     const targetUrl = (overrideUrl !== undefined ? overrideUrl : webhookUrl).trim();
     if (!targetUrl || !targetUrl.startsWith('http')) {
@@ -346,80 +152,80 @@ export default function AdminPage() {
           setSpreadsheetUrl(json.spreadsheetUrl);
         }
 
-        // Merge Google Sheet RSVPs into our parties list
         const remoteRsvps: any[] = json.data;
-        const currentParties = [...parties];
 
-        remoteRsvps.forEach((r) => {
-          if (!r.fullName) return;
-          const rEmail = (r.email || '').trim().toLowerCase();
-          const rName = (r.fullName || '').trim().toLowerCase();
+        // Load host preferences for planning emails (stored locally by email/name)
+        let savedMeta: Record<string, { planningEmailSent?: boolean; planningEmailNote?: string }> = {};
+        try {
+          const metaRaw = localStorage.getItem('wedding_guest_meta_v2');
+          if (metaRaw) savedMeta = JSON.parse(metaRaw);
+        } catch (e) {}
 
-          // Match by email or name
-          const existingIdx = currentParties.findIndex((p) => {
-            const pEmail = (p.email || '').trim().toLowerCase();
-            const pName = (p.name || '').trim().toLowerCase();
-            return (rEmail && pEmail === rEmail) || pName === rName;
-          });
-
-          // Calculate party size
+        // Map live Google Sheet rows directly to Guest Parties
+        const liveParties: GuestParty[] = remoteRsvps.map((r) => {
           let size = 1;
           if (r.additionalGuests && r.additionalGuests.trim()) {
             const plus = r.additionalGuests.split(/,|&|and/i).filter((s: string) => s.trim().length > 0).length;
             size += Math.max(1, plus);
           }
 
-          const mappedStatus: GuestStatus = r.attending ? 'Yes' : 'No';
+          const metaKey = (r.email || r.fullName || '').toLowerCase().trim();
+          const hostPref = savedMeta[metaKey] || {};
 
-          if (existingIdx >= 0) {
-            currentParties[existingIdx] = {
-              ...currentParties[existingIdx],
-              status: mappedStatus,
-              partySize: size,
-              additionalGuests: r.additionalGuests || currentParties[existingIdx].additionalGuests,
-              dietary: r.dietary || currentParties[existingIdx].dietary,
-              thuPeles: r.thuPeles !== undefined ? r.thuPeles : currentParties[existingIdx].thuPeles,
-              satBrunch: r.satBrunch !== undefined ? r.satBrunch : currentParties[existingIdx].satBrunch,
-              satExcursion: r.satExcursion !== undefined ? r.satExcursion : currentParties[existingIdx].satExcursion,
-              lodging: r.lodging || currentParties[existingIdx].lodging,
-              notes: r.notes || currentParties[existingIdx].notes,
-              updatedAt: r.timestamp || new Date().toISOString(),
-            };
-          } else {
-            // New RSVP not in pre-seeded list
-            currentParties.push({
-              id: `remote-${r.id || Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
-              name: r.fullName,
-              email: r.email || '',
-              partySize: size,
-              status: mappedStatus,
-              planningEmailSent: true,
-              planningEmailNote: `${r.fullName.split(' ')[0]} — planning email`,
-              additionalGuests: r.additionalGuests,
-              dietary: r.dietary,
-              thuPeles: r.thuPeles,
-              satBrunch: r.satBrunch,
-              satExcursion: r.satExcursion,
-              lodging: r.lodging,
-              notes: r.notes,
-              updatedAt: r.timestamp || new Date().toISOString(),
-            });
-          }
+          return {
+            id: `sheet-${r.id}`,
+            name: r.fullName || 'Guest',
+            email: r.email || '',
+            partySize: size,
+            status: r.attending ? 'Yes' : 'No',
+            planningEmailSent: hostPref.planningEmailSent !== undefined ? hostPref.planningEmailSent : true,
+            planningEmailNote: hostPref.planningEmailNote || `${(r.fullName || '').split(' ')[0]} — planning email`,
+            additionalGuests: r.additionalGuests || '',
+            dietary: r.dietary || '',
+            thuPeles: !!r.thuPeles,
+            satBrunch: !!r.satBrunch,
+            satExcursion: !!r.satExcursion,
+            lodging: r.lodging || '',
+            notes: r.notes || '',
+            updatedAt: r.timestamp || '',
+            isManual: false,
+          };
         });
 
-        savePartiesToStorage(currentParties);
-        setStatusMessage(`Successfully synced ${remoteRsvps.length} RSVP submissions from Google Sheets.`);
+        // Also preserve any manually added pending guests that haven't RSVPed yet
+        let manualParties: GuestParty[] = [];
+        try {
+          const manualRaw = localStorage.getItem('wedding_manual_parties_v2');
+          if (manualRaw) {
+            const parsed = JSON.parse(manualRaw);
+            if (Array.isArray(parsed)) {
+              manualParties = parsed.filter(
+                (mp) =>
+                  !liveParties.some(
+                    (lp) =>
+                      (lp.email && mp.email && lp.email.toLowerCase() === mp.email.toLowerCase()) ||
+                      lp.name.toLowerCase() === mp.name.toLowerCase()
+                  )
+              );
+            }
+          }
+        } catch (e) {}
+
+        const combined = [...liveParties, ...manualParties];
+        setParties(combined);
+        setStatusMessage(`Successfully synced ${liveParties.length} live records directly from Google Sheets.`);
       } else if (json && json.status === 'ok') {
         setIsLiveConnected(true);
         if (json.spreadsheetUrl) setSpreadsheetUrl(json.spreadsheetUrl);
-        setStatusMessage('Connected to Google Apps Script. Ready for incoming RSVPs.');
+        setParties([]);
+        setStatusMessage('Connected to Google Sheet. No RSVP submissions recorded yet.');
       } else {
         throw new Error(json.message || 'Invalid response format');
       }
     } catch (err: any) {
       console.warn('Could not fetch from live Google Sheet:', err.message);
       setIsLiveConnected(false);
-      setStatusMessage('Notice: Google Sheet unreachable or offline. Displaying local manifest.');
+      setStatusMessage('Notice: Google Sheet offline or unreachable. Displaying cached records.');
     } finally {
       setIsLoading(false);
     }
@@ -469,25 +275,55 @@ export default function AdminPage() {
     fetchRsvps(webhookUrl.trim());
   };
 
+  // Helper to persist host per-guest planning email preferences
+  const saveGuestMeta = (party: GuestParty) => {
+    try {
+      const metaKey = (party.email || party.name || '').toLowerCase().trim();
+      let meta: Record<string, any> = {};
+      const raw = localStorage.getItem('wedding_guest_meta_v2');
+      if (raw) meta = JSON.parse(raw);
+      meta[metaKey] = {
+        planningEmailSent: party.planningEmailSent,
+        planningEmailNote: party.planningEmailNote,
+      };
+      localStorage.setItem('wedding_guest_meta_v2', JSON.stringify(meta));
+    } catch (e) {}
+  };
+
   // Quick Inline Status Update
   const updateGuestStatus = (id: string, newStatus: GuestStatus) => {
     const updated = parties.map((p) => (p.id === id ? { ...p, status: newStatus } : p));
-    savePartiesToStorage(updated);
+    setParties(updated);
   };
 
   // Quick Inline Planning Email Checkbox Toggle
   const togglePlanningEmail = (id: string) => {
-    const updated = parties.map((p) =>
-      p.id === id ? { ...p, planningEmailSent: !p.planningEmailSent } : p
-    );
-    savePartiesToStorage(updated);
+    const updated = parties.map((p) => {
+      if (p.id === id) {
+        const toggled = { ...p, planningEmailSent: !p.planningEmailSent };
+        saveGuestMeta(toggled);
+        return toggled;
+      }
+      return p;
+    });
+    setParties(updated);
   };
 
   // Delete Guest Party
   const deleteGuest = (id: string, name: string) => {
-    if (typeof window !== 'undefined' && window.confirm(`Remove ${name} from the invited manifest?`)) {
+    if (typeof window !== 'undefined' && window.confirm(`Remove ${name} from this view?`)) {
       const updated = parties.filter((p) => p.id !== id);
-      savePartiesToStorage(updated);
+      setParties(updated);
+
+      // If manual party, remove from manual storage
+      try {
+        const manualRaw = localStorage.getItem('wedding_manual_parties_v2');
+        if (manualRaw) {
+          const parsed = JSON.parse(manualRaw);
+          const filtered = parsed.filter((mp: any) => mp.id !== id);
+          localStorage.setItem('wedding_manual_parties_v2', JSON.stringify(filtered));
+        }
+      } catch (e) {}
     }
   };
 
@@ -496,18 +332,19 @@ export default function AdminPage() {
     e.preventDefault();
     if (!editingGuest) return;
     const updated = parties.map((p) => (p.id === editingGuest.id ? editingGuest : p));
-    savePartiesToStorage(updated);
+    setParties(updated);
+    saveGuestMeta(editingGuest);
     setEditingGuest(null);
   };
 
-  // Add New Guest Party
+  // Add New Manual Guest Party (e.g. to track invitation before RSVP submission)
   const handleAddGuest = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newGuest.name || !newGuest.name.trim()) return;
 
     const firstName = newGuest.name.trim().split(' ')[0];
     const created: GuestParty = {
-      id: `party-${Date.now()}`,
+      id: `manual-${Date.now()}`,
       name: newGuest.name.trim(),
       email: (newGuest.email || '').trim(),
       partySize: Math.max(1, Number(newGuest.partySize) || 1),
@@ -516,9 +353,20 @@ export default function AdminPage() {
       planningEmailNote: newGuest.planningEmailNote || `${firstName} — planning email`,
       dietary: newGuest.dietary || '',
       notes: newGuest.notes || '',
+      isManual: true,
     };
 
-    savePartiesToStorage([...parties, created]);
+    const updated = [...parties, created];
+    setParties(updated);
+
+    // Save to manual storage
+    try {
+      const manualRaw = localStorage.getItem('wedding_manual_parties_v2');
+      let manualList: GuestParty[] = manualRaw ? JSON.parse(manualRaw) : [];
+      manualList.push(created);
+      localStorage.setItem('wedding_manual_parties_v2', JSON.stringify(manualList));
+    } catch (e) {}
+
     setNewGuest({
       name: '',
       email: '',
@@ -535,7 +383,7 @@ export default function AdminPage() {
     const headers = [
       'Party / Primary Name',
       'Email',
-      'Party Size (Guests)',
+      'Party Size (Seats)',
       'RSVP Status',
       'Planning Email Sent',
       'Planning Email Note',
@@ -584,7 +432,7 @@ export default function AdminPage() {
     setTimeout(() => setCopiedLink(false), 2500);
   };
 
-  // Computed Metrics
+  // Computed Metrics strictly matching the live manifest
   const stats = useMemo(() => {
     const totalParties = parties.length;
     const totalGuests = parties.reduce((acc, p) => acc + (Number(p.partySize) || 1), 0);
@@ -736,7 +584,7 @@ export default function AdminPage() {
                   </span>
                 ) : (
                   <span className="text-[11px] text-amber-400 bg-amber-950/40 border border-amber-800/40 px-2 py-0.5 rounded-full">
-                    Local Manifest Mode
+                    Connecting to Sheets...
                   </span>
                 )}
               </div>
@@ -916,7 +764,7 @@ export default function AdminPage() {
           </button>
         </div>
 
-        {/* 4. KPI Stat Cards Grid (Combining Original + Reference Metrics) */}
+        {/* 4. KPI Stat Cards Grid (Live Data from Google Sheets) */}
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 sm:gap-4">
           {/* Total Guests */}
           <div className="p-4 rounded-2xl bg-stone-900/70 border border-stone-800">
@@ -935,7 +783,7 @@ export default function AdminPage() {
               <Users className="w-4 h-4 text-gold-400" />
             </div>
             <div className="text-2xl font-serif text-stone-100 font-semibold">{stats.totalParties}</div>
-            <p className="text-[10px] text-stone-500 mt-1">Invited units</p>
+            <p className="text-[10px] text-stone-500 mt-1">Manifest units</p>
           </div>
 
           {/* Yes / Attending */}
@@ -1161,13 +1009,19 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* 7. Guest Manifest: Table View or Cards View in Dark Luxury Aesthetic */}
+        {/* 7. Guest Manifest: Table View or Cards View */}
         {filteredParties.length === 0 ? (
-          <div className="py-12 text-center rounded-3xl bg-stone-900/60 border border-stone-800 text-stone-500 text-sm">
-            No guest records match &ldquo;{searchQuery}&rdquo; under {activeFilter} status.
+          <div className="py-16 text-center rounded-3xl bg-stone-900/60 border border-stone-800 text-stone-400 text-sm space-y-2">
+            <Users className="w-8 h-8 text-stone-600 mx-auto" />
+            <p className="font-medium text-stone-300">No RSVP records found</p>
+            <p className="text-xs text-stone-500 max-w-sm mx-auto">
+              {searchQuery
+                ? `No submissions matched "${searchQuery}".`
+                : 'Responses submitted via the guest RSVP form will sync automatically from your Google Sheet.'}
+            </p>
           </div>
         ) : viewMode === 'table' ? (
-          /* Table View in original dark luxury design */
+          /* Table View */
           <div className="rounded-3xl bg-stone-900/60 border border-stone-800 overflow-hidden shadow-xl">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
@@ -1179,6 +1033,7 @@ export default function AdminPage() {
                     <th className="py-3.5 px-4 font-normal">Planning Email Sent</th>
                     <th className="py-3.5 px-4 font-normal">Events RSVP</th>
                     <th className="py-3.5 px-4 font-normal">Dietary</th>
+                    <th className="py-3.5 px-4 font-normal">Lodging</th>
                     <th className="py-3.5 px-4 font-normal">Notes</th>
                     <th className="py-3.5 px-4 font-normal text-right">Actions</th>
                   </tr>
@@ -1188,7 +1043,14 @@ export default function AdminPage() {
                     <tr key={p.id} className="hover:bg-stone-850/30 transition-colors">
                       {/* Guest Name & Email */}
                       <td className="py-3.5 px-4">
-                        <div className="font-medium text-stone-100">{p.name}</div>
+                        <div className="font-medium text-stone-100 flex items-center gap-2">
+                          <span>{p.name}</span>
+                          {p.additionalGuests && (
+                            <span className="text-[10px] text-stone-400 font-mono bg-stone-950 px-1.5 py-0.5 rounded border border-stone-800">
+                              +{p.additionalGuests}
+                            </span>
+                          )}
+                        </div>
                         <a
                           href={`mailto:${p.email}`}
                           className="text-[11px] text-stone-500 hover:text-gold-400 transition-colors flex items-center gap-1 mt-0.5"
@@ -1277,6 +1139,11 @@ export default function AdminPage() {
                         )}
                       </td>
 
+                      {/* Lodging */}
+                      <td className="py-3.5 px-4 max-w-[150px] truncate text-stone-400 text-[11px]" title={p.lodging || ''}>
+                        {p.lodging || <span className="text-stone-600">—</span>}
+                      </td>
+
                       {/* Notes */}
                       <td className="py-3.5 px-4 max-w-[200px] truncate text-stone-400 text-[11px]" title={p.notes || ''}>
                         {p.notes || <span className="text-stone-600">—</span>}
@@ -1308,7 +1175,7 @@ export default function AdminPage() {
             </div>
           </div>
         ) : (
-          /* Cards View in dark luxury design */
+          /* Cards View */
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredParties.map((p) => (
               <div
@@ -1326,7 +1193,7 @@ export default function AdminPage() {
 
                   <div className="flex items-center gap-2">
                     <span className="px-2.5 py-0.5 rounded-full bg-stone-950 text-stone-300 border border-stone-800 text-xs font-mono">
-                      {p.partySize} {p.partySize === 1 ? 'guest' : 'guests'}
+                      {p.partySize} {p.partySize === 1 ? 'seat' : 'seats'}
                     </span>
 
                     <select
@@ -1685,7 +1552,7 @@ export default function AdminPage() {
               <div className="p-3 rounded-xl bg-stone-950 border border-stone-800 space-y-1 text-stone-400 text-[11px]">
                 <span className="font-semibold text-gold-400 block font-mono">How it syncs:</span>
                 <p>
-                  RSVPs submitted on the guest portal write to your Google Sheet. Clicking &ldquo;Sync Sheets&rdquo; fetches live records and merges them into this manifest.
+                  RSVPs submitted on the guest portal write to your Google Sheet. Clicking &ldquo;Sync Sheets&rdquo; fetches live records and displays them in this manifest 1:1.
                 </p>
               </div>
             </div>

@@ -55,6 +55,7 @@ function doPost(e) {
         var name = (inv.name || "").toString().trim();
         var email = (inv.email || "").toString().trim();
         var phone = (inv.phone || "").toString().trim();
+        var safePhone = phone ? (phone.indexOf("+") === 0 ? "'" + phone : phone) : "";
         var count = parseInt(inv.partySize, 10) || 2;
         var invited = inv.invited !== false ? "YES" : "NO";
         var status = inv.responseStatus || "No response";
@@ -74,7 +75,7 @@ function doPost(e) {
 
         if (matchedRow > 0) {
           // Update existing row
-          if (phone) sheet.getRange(matchedRow, 4).setValue(phone);
+          if (phone) sheet.getRange(matchedRow, 4).setValue(safePhone);
           sheet.getRange(matchedRow, 5).setValue(count);
           sheet.getRange(matchedRow, 6).setValue(invited);
           formatRowStatus(sheet, matchedRow, sheet.getRange(matchedRow, 7).getValue() || status);
@@ -84,7 +85,7 @@ function doPost(e) {
             new Date().toISOString(),
             name,
             email,
-            phone,
+            safePhone,
             count,
             invited,
             status,
@@ -156,11 +157,13 @@ function doPost(e) {
       }, 200);
     } else {
       // New RSVP submission (append row)
+      var phone = (data.phone || "").toString().trim();
+      var safePhone = phone ? (phone.indexOf("+") === 0 ? "'" + phone : phone) : "";
       var newRow = [
         timestamp,
         primaryName,
         email,
-        data.phone || "",
+        safePhone,
         1,
         "YES",
         responseStatus,
@@ -324,6 +327,7 @@ function formatHeaderRow(sheet) {
   sheet.setRowHeight(1, 38);
   sheet.setFrozenRows(1);
 
+  sheet.getRange("D:D").setNumberFormat("@");
   for (var col = 1; col <= HEADERS.length; col++) {
     sheet.autoResizeColumn(col);
   }

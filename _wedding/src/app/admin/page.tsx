@@ -115,9 +115,15 @@ export default function AdminPage() {
     }
 
     // Load webhook URL
-    const envWebhook = process.env.NEXT_PUBLIC_GOOGLE_SHEETS_WEBHOOK_URL || '';
-    const storedWebhook = localStorage.getItem('wedding_webhook_url') || '';
-    const activeUrl = storedWebhook.trim() || envWebhook.trim();
+    const envWebhook =
+      process.env.NEXT_PUBLIC_GOOGLE_SHEETS_WEBHOOK_URL ||
+      'https://script.google.com/macros/s/AKfycbzVbqtZEU5MoD2yZSnR8GS7SiWmN-29T-bP60Uug2TSm4w67SqQ0mNZq76MKgLJRyq_/exec';
+    let storedWebhook = localStorage.getItem('wedding_webhook_url') || '';
+    if (storedWebhook && storedWebhook.includes('AKfycbxK9b0KzufVehgZJiCkyTl5S3zMg08c4l7oHC4c1sKczjAoOVEr0C0TyiLVDvmwqcpn')) {
+      localStorage.removeItem('wedding_webhook_url');
+      storedWebhook = '';
+    }
+    const activeUrl = envWebhook.trim() || storedWebhook.trim();
     if (activeUrl) {
       setWebhookUrl(activeUrl);
     }
@@ -144,19 +150,48 @@ export default function AdminPage() {
         if (json.spreadsheetUrl) setSpreadsheetUrl(json.spreadsheetUrl);
 
         const mapped: SheetGuest[] = json.data.map((r: any) => {
-          const resp = (r.responseStatus || (r.attending ? 'Accepted' : 'Declined')).toString() as ResponseStatus;
+          let phone = (r.phone || '').toString().trim();
+          let responseStatus = (r.responseStatus || '').toString().trim();
+          let additionalGuests = (r.additionalGuests || '').toString().trim();
+          let dietary = (r.dietary || '').toString().trim();
+
+          // Normalize legacy 12-column test rows
+          if (phone === 'YES' || phone === 'NO') {
+            responseStatus = phone === 'YES' ? 'Accepted' : 'Declined';
+            phone = '';
+          }
+          if (phone === '#ERROR!' || phone.startsWith('#')) {
+            phone = '';
+          }
+          if (additionalGuests === 'YES' || additionalGuests === 'NO') {
+            additionalGuests = '';
+          }
+          if (dietary === 'YES' || dietary === 'NO') {
+            dietary = '';
+          }
+          if (responseStatus === 'YES') {
+            responseStatus = 'Accepted';
+          } else if (responseStatus === 'NO') {
+            responseStatus = 'Declined';
+          } else if (
+            !responseStatus ||
+            (responseStatus !== 'Accepted' && responseStatus !== 'Declined' && responseStatus !== 'No response')
+          ) {
+            responseStatus = r.attending ? 'Accepted' : 'No response';
+          }
+
           return {
             id: r.id,
             timestamp: r.timestamp || '',
             fullName: r.fullName || 'Guest',
             email: r.email || '',
-            phone: r.phone || '',
+            phone: phone,
             partySize: parseInt(r.partySize, 10) || 1,
             invited: r.invited !== false,
-            responseStatus: resp,
-            attending: resp === 'Accepted',
-            additionalGuests: r.additionalGuests || '',
-            dietary: r.dietary || '',
+            responseStatus: responseStatus as ResponseStatus,
+            attending: responseStatus === 'Accepted',
+            additionalGuests: additionalGuests,
+            dietary: dietary,
             thuPeles: !!r.thuPeles,
             satBrunch: !!r.satBrunch,
             satExcursion: !!r.satExcursion,

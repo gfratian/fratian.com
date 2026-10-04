@@ -16,7 +16,11 @@ function getWebhookUrl(): string {
 
   try {
     if (typeof window !== 'undefined' && window.localStorage) {
-      const stored = localStorage.getItem('wedding_webhook_url');
+      let stored = localStorage.getItem('wedding_webhook_url');
+      if (stored && stored.includes('AKfycbxK9b0KzufVehgZJiCkyTl5S3zMg08c4l7oHC4c1sKczjAoOVEr0C0TyiLVDvmwqcpn')) {
+        localStorage.removeItem('wedding_webhook_url');
+        stored = null;
+      }
       if (stored && stored.trim().startsWith('http')) {
         return stored.trim();
       }
@@ -25,7 +29,7 @@ function getWebhookUrl(): string {
     // Ignore local storage restriction
   }
 
-  return '';
+  return 'https://script.google.com/macros/s/AKfycbzVbqtZEU5MoD2yZSnR8GS7SiWmN-29T-bP60Uug2TSm4w67SqQ0mNZq76MKgLJRyq_/exec';
 }
 
 export default function RsvpForm() {

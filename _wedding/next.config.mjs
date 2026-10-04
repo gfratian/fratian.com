@@ -12,7 +12,7 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_GOOGLE_SHEETS_WEBHOOK_URL:
       process.env.NEXT_PUBLIC_GOOGLE_SHEETS_WEBHOOK_URL ||
-      'https://script.google.com/macros/s/AKfycbxK9b0KzufVehgZJiCkyTl5S3zMg08c4l7oHC4c1sKczjAoOVEr0C0TyiLVDvmwqcpn/exec',
+      'https://script.google.com/macros/s/AKfycbzVbqtZEU5MoD2yZSnR8GS7SiWmN-29T-bP60Uug2TSm4w67SqQ0mNZq76MKgLJRyq_/exec',
     NEXT_PUBLIC_WEDDING_PASSWORD:
       process.env.NEXT_PUBLIC_WEDDING_PASSWORD || 'Cantacuzino27',
   },

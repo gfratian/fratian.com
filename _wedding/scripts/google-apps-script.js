@@ -112,7 +112,9 @@ function doPost(e) {
     var isAttending = data.attending === true || data.attending === "yes" || data.attending === "true";
     var responseStatus = isAttending ? "Accepted" : "Declined";
     var additionalGuests = (data.additionalGuests || data.plusOne || "").toString().trim();
-    var partySize = parseInt(data.partySize, 10) || (additionalGuests ? 2 : 1);
+    var hasPartner = additionalGuests && additionalGuests !== "None" && additionalGuests !== "NO" && additionalGuests !== "YES";
+    var rawParty = parseInt(data.partySize, 10);
+    var partySize = hasPartner ? (rawParty > 1 ? rawParty : 2) : (rawParty > 0 ? rawParty : 1);
     var dietary = Array.isArray(data.dietary) ? data.dietary.join(", ") : (data.dietary || "None").toString().trim();
     var thuPeles = data.thuPeles ? "YES" : "NO";
     var satBrunch = data.satBrunch ? "YES" : "NO";
@@ -218,17 +220,22 @@ function doGet(e) {
           if (!r[1] && !r[2]) continue; // Skip empty rows
 
           if (hasNewColumns) {
+            var additionalGuests = (r[7] || "").toString().trim();
+            var rawParty = parseInt(r[4], 10);
+            var hasPartner = additionalGuests && additionalGuests !== "None" && additionalGuests !== "NO" && additionalGuests !== "YES";
+            var partySize = hasPartner ? (rawParty > 1 ? rawParty : 2) : (rawParty > 0 ? rawParty : 1);
+
             rows.push({
               id: i,
               timestamp: r[0] ? new Date(r[0]).toISOString() : "",
               fullName: (r[1] || "").toString(),
               email: (r[2] || "").toString(),
               phone: (r[3] || "").toString(),
-              partySize: parseInt(r[4], 10) || 1,
+              partySize: partySize,
               invited: r[5] === "YES" || r[5] === true,
               responseStatus: (r[6] || "No response").toString(),
               attending: r[6] === "Accepted",
-              additionalGuests: (r[7] || "").toString(),
+              additionalGuests: additionalGuests,
               dietary: (r[8] || "").toString(),
               thuPeles: r[9] === "YES" || r[9] === true,
               satBrunch: r[10] === "YES" || r[10] === true,

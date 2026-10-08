@@ -37,3 +37,7 @@
 - **Design & Aesthetics**:
   - Obsidian dark luxury aesthetic (`bg-stone-950`, gold and emerald accents, Cormorant Garamond serif).
   - Cleaned up RSVP form: removed unnecessary wavy decorative SVG divider.
+- **Journey Page (`/may2027/journey/`)**:
+  - Source: `src/app/journey/page.tsx` + `src/components/SpaceJourney.tsx`; canvas flight from deep space past Jupiter/Saturn/Mars/Earth down to Castelul Cantacuzino.
+  - Bilingual via the `journey` block in `locales/en.json`/`ro.json`; gated by the same guest passcode through client-side `AuthContext` (middleware does not run in the static-export deployment).
+  - Linked from the portal `Header` nav (desktop + mobile).

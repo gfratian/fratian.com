@@ -42,9 +42,14 @@ const config: Config = {
           "20%, 60%": { transform: "translateX(-8px)" },
           "40%, 80%": { transform: "translateX(8px)" },
         },
+        fadeUp: {
+          "0%": { opacity: "0", transform: "translateY(12px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
       },
       animation: {
         shake: "shake 0.4s ease-in-out",
+        fadeUp: "fadeUp 0.7s ease-out both",
       },
     },
   },

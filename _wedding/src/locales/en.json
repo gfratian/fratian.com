@@ -15,9 +15,67 @@
     "lodging": "Accommodations",
     "guides": "Regional Guides",
     "tips": "Practical Tips",
+    "journey": "Journey",
     "rsvp": "RSVP",
     "locked": "Locked",
     "changeLanguage": "Limba Română"
+  },
+  "journey": {
+    "eyebrow": "An invitation, inbound",
+    "title": "From Deep Space to the Carpathians",
+    "subtitle": "Follow the ship in from the edge of the Solar System, past the great planets, all the way down to Castelul Cantacuzino.",
+    "begin": "Begin Descent",
+    "pause": "Pause",
+    "play": "Resume",
+    "restart": "Fly again",
+    "back": "Return to Portal",
+    "ship": "SS CANTACUZINO",
+    "hud": {
+      "destination": "Destination",
+      "distance": "Distance to castle",
+      "velocity": "Velocity"
+    },
+    "units": {
+      "ly": "light-years",
+      "billionKm": "billion km",
+      "millionKm": "million km",
+      "thousandKm": "thousand km",
+      "km": "km",
+      "m": "m"
+    },
+    "waypoints": [
+      {
+        "name": "Deep Space",
+        "caption": "Crossing the outer dark — the Sun is still just the brightest star straight ahead."
+      },
+      {
+        "name": "Jupiter",
+        "caption": "Slingshot past the gas giant: four hundred storm bands and the Great Red Spot."
+      },
+      {
+        "name": "Saturn",
+        "caption": "Threading the rings — ice and stone, wider than a million Earths."
+      },
+      {
+        "name": "Mars",
+        "caption": "A rust-colored pause — Olympus Mons sleeping under the polar frost."
+      },
+      {
+        "name": "Earth",
+        "caption": "The blue marble, then closer still: the Prahova Valley and the Bucegi massifs."
+      },
+      {
+        "name": "Bușteni",
+        "caption": "Wheels down among the pines — Castelul Cantacuzino, at last."
+      }
+    ],
+    "arrival": {
+      "title": "You Have Arrived",
+      "venue": "Castelul Cantacuzino • Bușteni, Romania",
+      "date": "FRIDAY, MAY 28, 2027",
+      "line": "The ship has landed. Everything else awaits you on the portal.",
+      "cta": "Enter the Portal"
+    }
   },
   "hero": {
     "welcome": "Joyfully Celebrating the Marriage of",

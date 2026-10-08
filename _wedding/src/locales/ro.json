@@ -15,9 +15,67 @@
     "lodging": "Cazare",
     "guides": "Ghiduri Regionale",
     "tips": "Informații Utile",
+    "journey": "Călătoria",
     "rsvp": "Confirmare (RSVP)",
     "locked": "Blocat",
     "changeLanguage": "English"
+  },
+  "journey": {
+    "eyebrow": "O invitație, în apropiere",
+    "title": "Din spațiul îndepărtat, în Carpați",
+    "subtitle": "Urmăriți nava de la marginea Sistemului Solar, pe lângă marile planete, până la poalele Castelului Cantacuzino.",
+    "begin": "Începe Coborârea",
+    "pause": "Pauză",
+    "play": "Reia",
+    "restart": "Zboară din nou",
+    "back": "Înapoi la Portal",
+    "ship": "SS CANTACUZINO",
+    "hud": {
+      "destination": "Destinație",
+      "distance": "Distanță până la castel",
+      "velocity": "Viteză"
+    },
+    "units": {
+      "ly": "ani-lumină",
+      "billionKm": "miliarde km",
+      "millionKm": "milioane km",
+      "thousandKm": "mii km",
+      "km": "km",
+      "m": "m"
+    },
+    "waypoints": [
+      {
+        "name": "Spațiu profund",
+        "caption": "Traversăm întunericul din afara — Soarele e încă doar cea mai strălucitoare stea din față."
+      },
+      {
+        "name": "Jupiter",
+        "caption": "Asist gravitațional pe lângă uriașa gazoasă: patru sute de benzi de furtuni și Marea Pată Roșie."
+      },
+      {
+        "name": "Saturn",
+        "caption": "Printre inele — gheață și piatră, mai late decât un milion de Pământuri."
+      },
+      {
+        "name": "Marte",
+        "caption": "O pauză ruginie — Olympus Mons adormit sub gheața polară."
+      },
+      {
+        "name": "Pământ",
+        "caption": "Globul albastru, apoi și mai aproape: valea Prahovei și masivele Bucegi."
+      },
+      {
+        "name": "Bușteni",
+        "caption": "Am aterizat printre brazi — Castelul Cantacuzino, în sfârșit."
+      }
+    ],
+    "arrival": {
+      "title": "Ați Ajuns",
+      "venue": "Castelul Cantacuzino • Bușteni, România",
+      "date": "VINERI, 28 MAI 2027",
+      "line": "Nava a aterizat. Tot restul vă așteaptă pe portal.",
+      "cta": "Intră în Portal"
+    }
   },
   "hero": {
     "welcome": "Cu bucurie vă invităm să sărbătorim căsătoria dintre",

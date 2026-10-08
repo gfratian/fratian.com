@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useLocale } from '@/context/LocaleContext';
 import { useAuth } from '@/context/AuthContext';
 import { Globe, Lock, Menu, X } from 'lucide-react';
@@ -25,8 +26,16 @@ export default function Header() {
     { href: '#lodging', label: dict.nav.lodging },
     { href: '#lore', label: dict.nav.guides },
     { href: '#tips', label: dict.nav.tips },
+    { href: '/journey', label: dict.nav.journey, route: true },
     { href: '#rsvp', label: dict.nav.rsvp, highlight: true },
   ];
+
+  const linkClass = (link: { highlight?: boolean }) =>
+    `text-xs uppercase tracking-wider font-medium transition-colors ${
+      link.highlight
+        ? 'px-3 py-1.5 rounded-full bg-carpathian-700/80 hover:bg-carpathian-600 text-stone-100 border border-gold-500/40 shadow-sm'
+        : 'text-stone-300 hover:text-gold-400'
+    }`;
 
   return (
     <header
@@ -53,19 +62,17 @@ export default function Header() {
 
           {/* Desktop Nav Items */}
           <nav className="hidden md:flex items-center gap-6">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className={`text-xs uppercase tracking-wider font-medium transition-colors ${
-                  link.highlight
-                    ? 'px-3 py-1.5 rounded-full bg-carpathian-700/80 hover:bg-carpathian-600 text-stone-100 border border-gold-500/40 shadow-sm'
-                    : 'text-stone-300 hover:text-gold-400'
-                }`}
-              >
-                {link.label}
-              </a>
-            ))}
+            {navLinks.map((link) =>
+              'route' in link && link.route ? (
+                <Link key={link.href} href={link.href} className={linkClass(link)}>
+                  {link.label}
+                </Link>
+              ) : (
+                <a key={link.href} href={link.href} className={linkClass(link)}>
+                  {link.label}
+                </a>
+              )
+            )}
           </nav>
 
           {/* Right Controls: Language Switcher & Lock Button */}
@@ -115,18 +122,30 @@ export default function Header() {
       {mobileMenuOpen && (
         <div className="md:hidden backdrop-blur-xl bg-stone-950/95 border-b border-stone-800 px-6 py-5 space-y-4">
           <nav className="flex flex-col space-y-3">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`text-sm tracking-wide font-medium py-1 ${
-                  link.highlight ? 'text-gold-400 font-semibold' : 'text-stone-200'
-                }`}
-              >
-                {link.label}
-              </a>
-            ))}
+            {navLinks.map((link) => {
+              const cls = `text-sm tracking-wide font-medium py-1 ${
+                link.highlight ? 'text-gold-400 font-semibold' : 'text-stone-200'
+              }`;
+              return 'route' in link && link.route ? (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={cls}
+                >
+                  {link.label}
+                </Link>
+              ) : (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={cls}
+                >
+                  {link.label}
+                </a>
+              );
+            })}
           </nav>
         </div>
       )}
